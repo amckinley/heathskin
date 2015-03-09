@@ -28,12 +28,10 @@ class Entity(object):
         self.tags = {}
 
         for k, v in kwargs.items():
-            #print "setting {} = {}".format(k, v)
             setattr(self, k, v)
 
     def tag_change(self, tag_name, tag_value):
         self.tags[tag_name] = self._cast_tag(tag_value)
-        
 
     def get_tag(self, tag_name):
         return self.tags[tag_name]
@@ -46,7 +44,6 @@ class Entity(object):
             pass
 
         return tag_value
-
 
     def __repr__(self):
         try:
@@ -69,18 +66,9 @@ def parse_temp():
     pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+) - (?P<action_type>\S+) Entity=\[(?P<entity_data>.+?)\]"
 
     parse_results = re.match(pattern, l).groupdict()
-
-    #'name=Violet Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW1_026t player=2'
     data = params_to_dict(parse_results["entity_data"])
-
     e = Entity(data["id"], data["name"])
 
-
     change_tag_line = "TAG_CHANGE Entity=[name=Violet Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW1_026t player=2] tag=ATTACKING value=1"
-
-    # print parse_tag_change(change_tag_line)
-
-    # print data
-
 
 

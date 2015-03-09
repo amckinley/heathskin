@@ -3,7 +3,7 @@ import copy
 import json
 import operator
 
-CARD_DATA_PATH = "AllSets.json"
+CARD_DATA_PATH = "data/AllSets.json"
 
 def deck_from_file(path):
     with open(path) as f:

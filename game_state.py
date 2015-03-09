@@ -14,7 +14,6 @@ class GameState(object):
         pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+) - (?P<action_type>.+) \[(?P<entity_data>.+?)\] to( (?P<dest_zone>.+)|)"
         results = re.match(pattern, line).groupdict()
         self.update_entity(results["entity_data"], results["dest_zone"])
-        #self.print_current_state()
 
     def find_zone_for_entity(self, entity_id):
         for z_name, z_contents in self.zones.items():
@@ -53,8 +52,6 @@ class GameState(object):
         print
 
         self.entities[new_ent.id] = new_ent
-        
-        #print "created new ent, it looks like this:", new_ent
 
     def convert_log_zone(self, log_zone):
         if not log_zone:
