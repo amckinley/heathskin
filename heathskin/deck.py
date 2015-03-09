@@ -13,6 +13,9 @@ def deck_from_file(path):
 
 class Deck(object):
     def __init__(self, card_list):
+        if len(card_list) != 30:
+            raise Exception("you must have exactly 30 cards; found {}".format(len(card_list)))
+
         self.card_list = card_list
 
         valid_cards = self.get_all_valid_names()
