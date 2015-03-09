@@ -1,11 +1,13 @@
+#!/usr/bin/env python
+
 import threading
 import Queue
 import subprocess
 import time
 import argparse
 
-from game_state import GameState
-import deck
+from heathskin.game_state import GameState
+from heathskin.deck import deck_from_file
 
 LOG_PATH = "/Users/amckinley/Library/Logs/Unity/Player.log"
 
@@ -50,7 +52,7 @@ class TailThread(threading.Thread):
 
 def run(args):
     my_log = open(my_log_path, "w")
-    d = deck.deck_from_file("rage_mage.deck")
+    d = deck_from_file("data/decks/rage_mage.deck")
     gs = GameState(friendly_deck=d)
 
     def shutdown():
