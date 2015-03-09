@@ -57,7 +57,7 @@ class GameState(object):
         if not log_zone:
             return log_zone
         log_zone = "".join([c for c in log_zone.lower() if c not in ["(", ")"]])
-        
+
         result = "_".join(log_zone.split(" "))
         return result
 
@@ -66,7 +66,7 @@ class GameState(object):
         for z_name, z_contents in self.zones.items():
             if z_name in ["opposing_deck", "friendly_deck"] or "hero" in z_name:
                 continue
-            
+
             contents = str(z_contents)
 
             print z_name, ":", contents
