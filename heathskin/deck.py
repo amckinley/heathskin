@@ -32,7 +32,6 @@ class Deck(object):
 
         return valid_names
 
-
     def consume_card_by_name(self, card_name):
         if card_name in self.in_deck:
             print "consuming card", card_name
