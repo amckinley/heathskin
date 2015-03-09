@@ -1,0 +1,1 @@
+[Zone] ZoneChangeList.ProcessChanges() - TRANSITIONING card [name=Jaina Proudmoore id=4 zone=PLAY zonePos=0 cardId=HERO_08 player=1] to FRIENDLY PLAY (Hero)
