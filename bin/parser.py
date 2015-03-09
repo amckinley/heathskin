@@ -4,13 +4,12 @@ import subprocess
 import time
 import argparse
 
-from game_state import GameState
+from heathskins.game_state import GameState
 import deck
 
 LOG_PATH = "/Users/amckinley/Library/Logs/Unity/Player.log"
 
 my_log_path = "./game_log.txt"
-
 
 class TailThread(threading.Thread):
     def __init__(self, stop_flag, queue):
@@ -20,7 +19,6 @@ class TailThread(threading.Thread):
         self.daemon = False
 
         self.process = subprocess.Popen(["tail", "-f", LOG_PATH], stdout=subprocess.PIPE)
- 
  
     def run(self):
         print "starting tailer thread"
@@ -50,22 +48,15 @@ class TailThread(threading.Thread):
         print "child process killed"
 
 
-
 def run(args):
-    
-    #t = threading.Thread(target=tail_forever, args=(LOG_PATH,)).start()
-    
     my_log = open(my_log_path, "w")
     d = deck.deck_from_file("rage_mage.deck")
     gs = GameState(friendly_deck=d)
-    
-    # noop
 
     def shutdown():
         stopper.set()
         print "set the event"
         t.join()
-
 
     try:
         if args.dev:
@@ -74,7 +65,6 @@ def run(args):
                 gs.feed_line(l.rstrip())
             print "done with fake data"
             return
-
 
         stopper = threading.Event()
         output_queue = Queue.Queue(maxsize=10) # buffer at most 100 lines
@@ -89,7 +79,6 @@ def run(args):
 
             #line = output_queue.get() # blocks
             my_log.write(line)
-            
 
             if "m_currentTaskList" in line:
                 continue
@@ -97,21 +86,18 @@ def run(args):
             if "TRANSITIONING" not in line:
                 continue
 
-            # trans_log.write(line)
             gs.feed_line(line.rstrip()) 
             #print tailq.get_nowait() # throws Queue.Empty if there are no lines to read
     except KeyboardInterrupt:
         print "got ctrl c"
         shutdown()
 
-
 def main(args):
     run(args)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('--dev', action="store_true", default=False,
-            help='sum the integers (default: find the max)')
+    parser = argparse.ArgumentParser(description='Track some skins')
+    parser.add_argument('--dev', action="store_true", default=False)
     args = parser.parse_args()
 
     main(args)
