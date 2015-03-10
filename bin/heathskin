@@ -98,11 +98,17 @@ def run(args):
             #line = output_queue.get() # blocks
             my_log.write(line)
 
-            if "m_currentTaskList" in line:
-                continue
+            if "name=" and "player=2" in line:
+                pass
+            
+            if "GameEntity tag=STATE value=RUNNING" in line:
+                print "Game Start"
+                
+            if "tag=STATE value=COMPLETE" in line:
+                print "Game Over"
 
-            if "TRANSITIONING" not in line:
-                continue
+            if "TRANSITIONING" in line:
+                gs.feed_line(line.rstrip())
 
             gs.feed_line(line.rstrip())
             #print tailq.get_nowait() # throws Queue.Empty if there are no lines to read
