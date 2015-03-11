@@ -1,3 +1,6 @@
+import operator
+
+
 from tabulate import tabulate
 
 def params_to_dict(param_str):
@@ -48,7 +51,11 @@ class MultiDictDiffer(object):
                 diff_table.append(values)
 
         # sort diff table by property name
-
+        diff_table = sorted(diff_table, key=operator.itemgetter(0))
+        for d in diff_table:
+            for idx, col in enumerate(d):
+                new_col = " ".join((str(col)[:45] + (str(col)[45:] and '...')).strip().split())
+                d[idx] = new_col
 
         print tabulate(diff_table)
 
