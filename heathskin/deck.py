@@ -38,6 +38,33 @@ class Deck(object):
             raw = json.load(f)
             self.card_data = {n: d for n, d in raw.items() if n in self.get_real_set_names()}
 
+    @property
+    def cards_by_id(self):
+        ids = dict()
+        for c in self.all_cards:
+            if c['id'] in ids:
+                raise Exception("lol, same id for two cards: '{}'".format(c['id']))
+
+            ids[c['id']] = c
+
+        return ids
+
+    @property
+    def all_cards(self):
+        for n, card_set in self.card_data.items():
+            for c in card_set:
+                yield c
+
+    @property
+    def cards_by_mechanic(self):
+        mechs = defaultdict(list)
+        for c in self.all_cards:
+            if 'mechanics' in c:
+                for m in c['mechanics']:
+                    mechs[m].append(c)
+
+        return mechs
+
     def get_real_set_names(self):
         names = [
             "Basic",
@@ -76,7 +103,20 @@ class Deck(object):
 
             differ = utils.MultiDictDiffer(cards)
             print "[{}] {}".format(name, len(cards))
-            differ.get_diff()
+
+            flavor_flavs = [c.get('flavor', None) for c in cards]
+
+            found_flav = False
+            for f in flavor_flavs:
+                if f is not None:
+                    found_flav = True
+                    print "flavor resolved!"
+                    break
+
+            if not found_flav:
+                differ.get_diff()
+
+
             print
             # for k in changed:
             #     print "{} [{}] - [{}]".format(k, cards[0][k], cards[1][k])

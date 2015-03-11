@@ -9,10 +9,10 @@ import logging
 log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 logging.basicConfig(level=logging.INFO, format=log_fmt)
 
-# XXX: stupid hack to make piping of utf-8 stdout work correctly. this might break
-# everything: http://stackoverflow.com/a/17628350
+# XXX: stupid hack to make piping of utf-8 stdout work correctly.
+# this might break everything: http://stackoverflow.com/a/17628350
 import sys
-reload(sys)  # Reload does the trick!
+reload(sys)
 sys.setdefaultencoding('UTF8')
 
 from os.path import expanduser
@@ -20,11 +20,7 @@ from os.path import expanduser
 from heathskin.game_state import GameState
 from heathskin.deck import deck_from_file
 
-
-
 my_log_path = "./game_log.txt"
-
-
 
 class TailThread(threading.Thread):
     def __init__(self, hs_log_path, stop_flag, queue):
@@ -70,6 +66,7 @@ class TailThread(threading.Thread):
 def run(args):
     my_log = open(my_log_path, "w")
     d = deck_from_file("data/decks/rage_mage.deck")
+    return
     gs = GameState(friendly_deck=d)
     logger = logging.getLogger()
 
@@ -100,10 +97,10 @@ def run(args):
 
             if "name=" and "player=2" in line:
                 pass
-            
+
             if "GameEntity tag=STATE value=RUNNING" in line:
                 print "Game Start"
-                
+
             if "tag=STATE value=COMPLETE" in line:
                 print "Game Over"
 

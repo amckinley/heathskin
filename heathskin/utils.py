@@ -47,6 +47,9 @@ class MultiDictDiffer(object):
                 values.insert(0, k)
                 diff_table.append(values)
 
+        # sort diff table by property name
+
+
         print tabulate(diff_table)
 
 
