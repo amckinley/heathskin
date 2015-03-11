@@ -5,8 +5,7 @@ import operator
 import logging
 
 from heathskin import utils
-
-CARD_DATA_PATH = "data/AllSets.json"
+from heathskin import card_database
 
 def deck_from_file(path):
     with open(path) as f:
@@ -20,124 +19,25 @@ class Deck(object):
         if len(card_list) != 30:
             raise Exception("you must have exactly 30 cards; found {}".format(len(card_list)))
 
-        self.read_card_data()
         self.card_list = card_list
+        self.card_db = card_database.CardDatabase()
 
-        valid_cards = self.get_all_valid_names()
+        collectible_card_names = [c['name'] for c in self.card_db.all_collectible_cards]
         for c in self.card_list:
-            if c not in valid_cards:
+            if c not in collectible_card_names:
                 raise Exception("card is not valid: {}".format(c))
 
+        print "no collectible", len(list(self.card_db.search(collectible=False)))
+        print "collectible", len(list(self.card_db.search()))
+        print "name match ortal", len(list(self.card_db.search(name='ortal')))
+        print "cost match 7", len(list(self.card_db.search(cost=7)))
+        print "type is minion", len(list(self.card_db.search(card_type="Minion")))
+        print "rarity is legendary", len(list(self.card_db.search(rarity="Legendary")))
+        print "faction is alliance", len(list(self.card_db.search(faction="Alliance")))
 
-        #self.get_real_set_names()
-        #print self.card_data.keys()
-        self.get_taunters()
-
-    def read_card_data(self):
-        with open(CARD_DATA_PATH) as f:
-            raw = json.load(f)
-            self.card_data = {n: d for n, d in raw.items() if n in self.get_real_set_names()}
-
-    @property
-    def cards_by_id(self):
-        ids = dict()
-        for c in self.all_cards:
-            if c['id'] in ids:
-                raise Exception("lol, same id for two cards: '{}'".format(c['id']))
-
-            ids[c['id']] = c
-
-        return ids
-
-    @property
-    def all_cards(self):
-        for n, card_set in self.card_data.items():
-            for c in card_set:
-                yield c
-
-    @property
-    def cards_by_mechanic(self):
-        mechs = defaultdict(list)
-        for c in self.all_cards:
-            if 'mechanics' in c:
-                for m in c['mechanics']:
-                    mechs[m].append(c)
-
-        return mechs
-
-    def get_real_set_names(self):
-        names = [
-            "Basic",
-            "Classic",
-            #"Credits",
-            "Curse of Naxxramas",
-            #"Debug",
-            "Goblins vs Gnomes",
-            #"Missions",
-            "Promotion",
-            "Reward"]
-            #"System"]
-        return names
-
-        print len(self.card_data.items())
-
-        for n in names:
-            card_set = self.card_data[n]
-            print n, len(card_set)
-            for c in card_set:
-                print c['name']
-
-            print
-
-    def get_taunters(self):
-        name_check = defaultdict(list)
-        taunters = list()
-        for set_name, card_set in self.card_data.items():
-            for c in card_set:
-                name_check[c['name']].append(c)
+        print "taunters with 4 attack", len(list(self.card_db.search(attack=4, mechanics=['Taunt'])))
 
 
-        for name, cards in name_check.items():
-            if len(cards) == 1:
-                continue
-
-            differ = utils.MultiDictDiffer(cards)
-            print "[{}] {}".format(name, len(cards))
-
-            flavor_flavs = [c.get('flavor', None) for c in cards]
-
-            found_flav = False
-            for f in flavor_flavs:
-                if f is not None:
-                    found_flav = True
-                    print "flavor resolved!"
-                    break
-
-            if not found_flav:
-                differ.get_diff()
-
-
-            print
-            # for k in changed:
-            #     print "{} [{}] - [{}]".format(k, cards[0][k], cards[1][k])
-
-            # print
-
-                #[c['id'] for c in cards]
-
-        #         if 'mechanics' in c and "Taunt" in c['mechanics']:
-        #             taunters.append(c)
-
-        # for c in taunters:
-        #     print c['name'], c['id']
-
-    def get_all_valid_names(self):
-        valid_names = set()
-        for set_name, card_set in self.card_data.items():
-            for c in card_set:
-                valid_names.add(c["name"])
-
-        return valid_names
 
     def consume_card_by_name(self, card_name):
         if card_name in self.in_deck:

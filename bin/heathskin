@@ -66,7 +66,6 @@ class TailThread(threading.Thread):
 def run(args):
     my_log = open(my_log_path, "w")
     d = deck_from_file("data/decks/rage_mage.deck")
-    return
     gs = GameState(friendly_deck=d)
     logger = logging.getLogger()
 
@@ -95,19 +94,19 @@ def run(args):
             #line = output_queue.get() # blocks
             my_log.write(line)
 
-            if "name=" and "player=2" in line:
-                pass
+            # if "name=" and "player=2" in line:
+            #     pass
 
-            if "GameEntity tag=STATE value=RUNNING" in line:
-                print "Game Start"
+            # if "GameEntity tag=STATE value=RUNNING" in line:
+            #     print "Game Start"
 
-            if "tag=STATE value=COMPLETE" in line:
-                print "Game Over"
+            # if "tag=STATE value=COMPLETE" in line:
+            #     print "Game Over"
 
             if "TRANSITIONING" in line:
                 gs.feed_line(line.rstrip())
 
-            gs.feed_line(line.rstrip())
+            #gs.feed_line(line.rstrip())
             #print tailq.get_nowait() # throws Queue.Empty if there are no lines to read
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
