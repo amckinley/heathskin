@@ -13,14 +13,14 @@ class CardDatabase(object):
     _db_cache = {}
 
     @classmethod
-    def get_database(cls, db_path):
+    def get_database(cls, db_path=CARD_DATABASE_JSON_PATH):
         if db_path not in cls._db_cache:
             print "creating db for path", db_path
             cls._db_cache[db_path] = CardDatabase(db_path)
 
         return cls._db_cache[db_path]
 
-    def __init__(self, database_path=CARD_DATABASE_JSON_PATH):
+    def __init__(self, database_path):
         self.database_path = database_path
         self.logger = logging.getLogger()
 

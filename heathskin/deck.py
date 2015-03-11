@@ -20,7 +20,7 @@ class Deck(object):
             raise Exception("you must have exactly 30 cards; found {}".format(len(card_list)))
 
         self.card_list = card_list
-        self.card_db = card_database.CardDatabase()
+        self.card_db = card_database.CardDatabase.get_database()
 
         collectible_card_names = [c['name'] for c in self.card_db.all_collectible_cards]
         for c in self.card_list:
