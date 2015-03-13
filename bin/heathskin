@@ -69,12 +69,13 @@ def run(args):
         level = logging.DEBUG
     else:
         level = logging.INFO
+
     logging.basicConfig(level=level, format=log_fmt)
     logger = logging.getLogger()
 
     my_log = open(my_log_path, "w")
-    d = deck_from_file("data/decks/rage_mage.deck")
-    gs = GameState(friendly_deck=d, friendly_user_name="austin")
+    d = deck_from_file("data/decks/{}.deck".format(args.deck))
+    gs = GameState(friendly_deck=d, friendly_user_name="{}".format(args.name))
 
     def shutdown():
         stopper.set()
@@ -116,11 +117,13 @@ def main(args):
     run(args)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Track some skins') # <- lol
+    parser = argparse.ArgumentParser(description='Track some skins')
     parser.add_argument('--use_replay_log', default=False)
     default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
     parser.add_argument('--log_file_path', default=default_log_location)
     parser.add_argument('--debug', default=False, action='store_true')
+    parser.add_argument('--name', default='Lord_Jaraxxus', required=True)
+    parser.add_argument('--deck', default='handlock', required=True)
     args = parser.parse_args()
 
     main(args)
