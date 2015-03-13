@@ -14,21 +14,20 @@ def card_handler():
     hand = random.sample(card_db.search(health=2), 5)
     return Response(json.dumps(hand), mimetype='application/json', headers={'Cache-Control': 'no-cache'})
 
-def make_image_url():
-    # return redirect('/card_images/EX1_066.png')
-    return url_for('/card_images', filename='EX1_066.png')
+@app.route('/card_images/<card_id>')
+def make_image_url(id):
+    return url_for('make_image_url', card_id=id) + '.png'
 
 @app.route('/random_card_image.json')
 def imgur():
     card_db = card_database.CardDatabase.get_database()
     hand = random.sample(card_db.search(health=2), 5)
-    print url_for('card_handler', next='/')
+    temp = ''
+    for card in hand:
+        temp += (str(make_image_url(id=card['id'])) + ' ')
+    # print temp
+    return temp
 
-    # return hand[0]['id']
-    # return url_for('/card_images', filename=hand[0]['id'])
-    # return url_for('card_images', filename='EX1_066.png')
-    # for card in hand:
-    # dest = url_for('/card_images', filename='EX1_066.png')
 
 if __name__ == '__main__':
     app.debug = True
