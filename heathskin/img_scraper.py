@@ -12,6 +12,7 @@ def main():
 
     card_db = card_database.CardDatabase.get_database()
     collectible_card_names = [c['id'] for c in card_db.all_collectible_cards]
+
     for card_id in collectible_card_names:
         file_name = "data/card_images/{}.png".format(card_id)
         gold_file_name = "data/card_images/{}_premium.gif".format(card_id)
@@ -29,9 +30,6 @@ def main():
             with open(gold_file_name, 'wb') as f:
                 res.raw.decode_content = True
                 shutil.copyfileobj(res.raw, f)
-
-
-
         else:
             print res.status_code
             return

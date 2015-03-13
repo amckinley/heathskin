@@ -26,28 +26,6 @@ var Comment = React.createClass({
   }
 });
 
-// var Imgur = React.createClass({
-//     render: function() {
-//         return <div><img src={"data/card_images/EX01_66.png"} alt="foo" className="img-responsive"/><span>Hello {this.props.name}</span></div>;
-//     }
-// });
-
-// React.renderComponent(<Hello name="World" />, document.body);
-
-// var Img = React.createClass({
-//   render: function() {
-//     var img = this.props.name;
-//     return (
-//       <div className="cardImage">
-//       <h2 className="cardImageAuthor">
-//         {this.props.name}
-//       </h2>
-//       <span dangerouslySetInnerHTML={{__html: newVar}} />
-//       </div>
-//     );
-//   }
-// });
-
 var CommentBox = React.createClass({
   loadCommentsFromServer: function() {
     $.ajax({
@@ -98,8 +76,7 @@ var CommentList = React.createClass({
   }
 });
 
-
 React.render(
   <CommentBox url="random_card.json" pollInterval={2000} />,
-  document.getElementById('content')
+  document.getElementById("content")
 );
