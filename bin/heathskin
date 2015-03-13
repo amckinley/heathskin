@@ -116,7 +116,7 @@ def main(args):
     run(args)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Track some skins')
+    parser = argparse.ArgumentParser(description='Track some skins') # <- lol
     parser.add_argument('--use_replay_log', default=False)
     default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
     parser.add_argument('--log_file_path', default=default_log_location)
