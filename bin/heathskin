@@ -6,8 +6,7 @@ import subprocess
 import time
 import argparse
 import logging
-log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
-logging.basicConfig(level=logging.INFO, format=log_fmt)
+import operator
 
 # XXX: stupid hack to make piping of utf-8 stdout work correctly.
 # this might break everything: http://stackoverflow.com/a/17628350
@@ -64,24 +63,35 @@ class TailThread(threading.Thread):
         self.logger.info("Log tailer shutdown")
 
 def run(args):
+    log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
+
+    if args.debug:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
+    logging.basicConfig(level=level, format=log_fmt)
+    logger = logging.getLogger()
+
     my_log = open(my_log_path, "w")
     d = deck_from_file("data/decks/rage_mage.deck")
-    gs = GameState(friendly_deck=d)
-    logger = logging.getLogger()
+    gs = GameState(friendly_deck=d, friendly_user_name="austin")
 
     def shutdown():
         stopper.set()
         t.join()
 
     try:
-        if args.dev:
-            fake_lines = open("data/trans_log2.txt")
+        if args.use_replay_log:
+            logger.info("Starting data reply from %s", args.use_replay_log)
+            fake_lines = open(args.use_replay_log)
             for l in fake_lines.readlines():
-                gs.feed_line(l.rstrip())
+                if l.rstrip() and not l.startswith('#'):
+                    gs.feed_line(l.rstrip())
+            logger.info("Finished with fake data")
             return
 
         stopper = threading.Event()
-        output_queue = Queue.Queue(maxsize=10) # buffer at most 100 lines
+        output_queue = Queue.Queue(maxsize=100) # buffer at most 100 lines
         t = TailThread(args.log_file_path, stopper, output_queue)
         t.start()
 
@@ -91,23 +101,13 @@ def run(args):
             except Queue.Empty:
                 continue
 
-            #line = output_queue.get() # blocks
             my_log.write(line)
 
-            # if "name=" and "player=2" in line:
-            #     pass
-
-            # if "GameEntity tag=STATE value=RUNNING" in line:
-            #     print "Game Start"
-
-            # if "tag=STATE value=COMPLETE" in line:
-            #     print "Game Over"
-
-            if "TRANSITIONING" in line:
+            try:
                 gs.feed_line(line.rstrip())
+            except Exception, e:
+                logger.exception("crashed while feeding line")
 
-            #gs.feed_line(line.rstrip())
-            #print tailq.get_nowait() # throws Queue.Empty if there are no lines to read
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
         shutdown()
@@ -117,9 +117,10 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Track some skins')
-    parser.add_argument('--dev', action="store_true", default=False)
+    parser.add_argument('--use_replay_log', default=False)
     default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
     parser.add_argument('--log_file_path', default=default_log_location)
+    parser.add_argument('--debug', default=False, action='store_true')
     args = parser.parse_args()
 
     main(args)

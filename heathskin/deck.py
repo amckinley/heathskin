@@ -14,37 +14,39 @@ def deck_from_file(path):
     return Deck(card_names)
 
 class Deck(object):
-    def __init__(self, card_list):
+    def __init__(self, card_names):
         self.logger = logging.getLogger()
-        if len(card_list) != 30:
-            raise Exception("you must have exactly 30 cards; found {}".format(len(card_list)))
+        if len(card_names) != 30:
+            raise Exception("you must have exactly 30 cards; found {}".format(len(card_names)))
 
-        self.card_list = card_list
         self.card_db = card_database.CardDatabase.get_database()
 
-        collectible_card_names = [c['name'] for c in self.card_db.all_collectible_cards]
-        for c in self.card_list:
-            if c not in collectible_card_names:
-                raise Exception("card is not valid: {}".format(c))
+        self.card_list = list()
+        for n in card_names:
+            res = self.card_db.search(name=n)
+            if len(res) == 1:
+                self.card_list.append(res[0])
+            else:
+                raise Exception("couldnt find card with name {}".format(n))
 
-        print "no collectible", len(list(self.card_db.search(collectible=False)))
-        print "collectible", len(list(self.card_db.search()))
-        print "name match ortal", len(list(self.card_db.search(name='ortal')))
-        print "cost match 7", len(list(self.card_db.search(cost=7)))
-        print "type is minion", len(list(self.card_db.search(card_type="Minion")))
-        print "rarity is legendary", len(list(self.card_db.search(rarity="Legendary")))
-        print "faction is alliance", len(list(self.card_db.search(faction="Alliance")))
+        # print "no collectible", len(list(self.card_db.search(collectible=False)))
+        # print "collectible", len(list(self.card_db.search()))
+        # print "name match ortal", len(list(self.card_db.search(name='ortal')))
+        # print "cost match 7", len(list(self.card_db.search(cost=7)))
+        # print "type is minion", len(list(self.card_db.search(card_type="Minion")))
+        # print "rarity is legendary", len(list(self.card_db.search(rarity="Legendary")))
+        # print "faction is alliance", len(list(self.card_db.search(faction="Alliance")))
 
-        print "taunters with 4 attack", len(list(self.card_db.search(attack=4, mechanics=['Taunt'])))
+        # print "taunters with 4 attack", len(list(self.card_db.search(attack=4, mechanics=['Taunt'])))
 
+        # all_types = set([c['type'] for c in self.card_db.all_collectible_cards])
+        # for t in all_types:
+        #     print t
 
+        # #print self.card_db.cards_by_mechanic.keys()
 
-    def consume_card_by_name(self, card_name):
-        if card_name in self.in_deck:
-            self.in_deck.remove(card_name)
-            self.consumed.append(card_name)
-        else:
-            print "couldnt find {}".format(card_name)
+        # print "hunter secrets", [c['name'] for c in self.card_db.search(player_class="Hunter", mechanics=['Secret'])]
+
 
     def print_draw_probs(self, deck, hand, play, graveyard):
         deck_size = len(deck)

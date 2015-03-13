@@ -8,6 +8,7 @@ from heathskin import utils
 
 CARD_DATABASE_JSON_PATH = "data/AllSets.json"
 
+logger = logging.getLogger()
 
 class CardDatabase(object):
     _db_cache = {}
@@ -15,58 +16,69 @@ class CardDatabase(object):
     @classmethod
     def get_database(cls, db_path=CARD_DATABASE_JSON_PATH):
         if db_path not in cls._db_cache:
-            print "creating db for path", db_path
+            logger.info("Creating card database from path %s", db_path)
             cls._db_cache[db_path] = CardDatabase(db_path)
 
         return cls._db_cache[db_path]
 
     def __init__(self, database_path):
         self.database_path = database_path
-        self.logger = logging.getLogger()
+        self.logger = logger
 
         self.read_card_data()
 
-        #self.get_taunters()
 
     def read_card_data(self):
         with open(self.database_path) as f:
             raw = json.load(f)
             self.card_data = {n: d for n, d in raw.items() if n in self.get_real_set_names()}
 
-    def search(self, collectible=True, name=None, cost=None, card_type=None,
-        rarity=None, faction=None, mechanics=None, attack=None, health=None):
+    def search(self, initial_cards=None, collectible=True, name=None, cost=None, card_type=None,
+        rarity=None, faction=None, mechanics=None, attack=None, health=None, player_class=None):
 
-        cards_remaining = self.all_cards
+        def _filter(cs, key, value):
+            return [c for c in cs if key in c and c[key] == value]
+
+        if initial_cards:
+            cards_remaining = initial_cards
+        else:
+            cards_remaining = self.all_cards
 
         if collectible:
-            cards_remaining = [c for c in cards_remaining if 'collectible' in c and c['collectible']]
+            cards_remaining = _filter(cards_remaining, 'collectible', True)
 
+        if cost:
+            cards_remaining = _filter(cards_remaining, 'cost', cost)
+
+        if card_type:
+            cards_remaining = _filter(cards_remaining, 'type', card_type)
+
+        if rarity:
+            cards_remaining = _filter(cards_remaining, 'rarity', rarity)
+
+        if faction:
+            cards_remaining = _filter(cards_remaining, 'faction', faction)
+
+        if attack:
+            cards_remaining = _filter(cards_remaining, 'attack', attack)
+
+        if health:
+            cards_remaining = _filter(cards_remaining, 'health', health)
+
+        if player_class:
+            cards_remaining = _filter(cards_remaining, 'playerClass', player_class)
+
+        # substring match
         if name:
             cards_remaining = [c for c in cards_remaining if name in c['name']]
 
-        if cost:
-            cards_remaining = [c for c in cards_remaining if 'cost' in c and c['cost'] == cost]
-
-        if card_type:
-            cards_remaining = [c for c in cards_remaining if 'type' in c and c['type'] == card_type]
-
-        if rarity:
-            cards_remaining = [c for c in cards_remaining if 'rarity' in c and c['rarity'] == rarity]
-
-        if faction:
-            cards_remaining = [c for c in cards_remaining if 'faction' in c and c['faction'] == faction]
-
+        # logical AND
         if mechanics:
             for m in mechanics:
                 cards_remaining = [c for c in cards_remaining if 'mechanics' in c and m in c['mechanics']]
 
-        if attack:
-            cards_remaining = [c for c in cards_remaining if 'attack' in c and c['attack'] == attack]
 
-        if health:
-            cards_remaining = [c for c in cards_remaining if 'health' in c and c['health'] == health]
-
-        return cards_remaining
+        return list(cards_remaining)
 
     @property
     def cards_by_id(self):

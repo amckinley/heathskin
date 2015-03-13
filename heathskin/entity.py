@@ -22,15 +22,31 @@ ACTION_END
 """
 
 import re
+import logging
 
 class Entity(object):
     def __init__(self, **kwargs):
+        """
+        entity_id
+        card_id
+        """
+        self.logger = logging.getLogger()
         self.tags = {}
+        self.entity_id = None
+        self.card_id = None
 
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-    def tag_change(self, tag_name, tag_value):
+        if not self.entity_id:
+            raise Exception("failed to set entity id! wtf?!")
+
+    def update_tag(self, tag_name, tag_value):
+        if tag_name in self.tags:
+            old_str = " (old={}".format(self.tags[tag_name])
+        else:
+            old_str = ""
+        self.logger.info("Updating entity %s: %s=%s %s", self.entity_id, tag_name, tag_value, old_str)
         self.tags[tag_name] = self._cast_tag(tag_value)
 
     def get_tag(self, tag_name):
@@ -57,8 +73,8 @@ def parse_tag_change(l):
     pattern = "\w*TAG_CHANGE Entity=\[(?P<ent_data>.+?)\] tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
     parse_results = re.match(pattern, l).groupdict()
     return {
-        "ent_id": params_to_dict(parse_results["ent_data"])["id"], 
-        "tag_name": parse_results["tag_name"], 
+        "ent_id": params_to_dict(parse_results["ent_data"])["id"],
+        "tag_name": parse_results["tag_name"],
         "tag_value": parse_results["tag_value"]}
 
 def parse_temp():

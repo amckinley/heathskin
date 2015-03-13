@@ -21,6 +21,21 @@ def params_to_dict(param_str):
             prev_val = new_val
 
     data[prev_key] = prev_val
+
+    # and now some sanity checking, because this is so stupid
+    expected_params = param_str.count("=")
+    expected_len = len(param_str) - expected_params
+
+    actual_len = 0
+    for k, v in data.items():
+        actual_len += len(k), len(v)
+
+    if expected_params != len(data.items()):
+        raise Exception("fucked param count. expected {}, got {}".format(expected_params, len(data.items())))
+
+    if expected_len != actual_len:
+        raise Exception("fucked param len. expected {}, got {}".format(expected_len, actual_len))
+
     return data
 
 class MultiDictDiffer(object):

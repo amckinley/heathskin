@@ -1,0 +1,9 @@
+{
+    "game_entity": 1,
+    "player_1": 2,
+    "player_2": 3,
+    "player_1_hero": 4,
+    "player_1_hero_power": 5,
+    "player_2_hero": 36,
+    "player_2_hero_power": 37
+}
