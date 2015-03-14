@@ -3,12 +3,10 @@ import shutil
 from heathskin import card_database
 
 def main():
-    #           http://wow.zamimg.com/images/hearthstone/cards/enus/original/EX1_066.png
-    url_base = "http://wow.zamimg.com/images/hearthstone/cards/enus/original/{}.png"
-    # gold card url
-    gold_url_base = "http://wow.zamimg.com/images/hearthstone/cards/enus/animated/{}_premium.gif"
     # card_id = "EX1_066_premium"
-
+    # http://wow.zamimg.com/images/hearthstone/cards/enus/original/EX1_066.png
+    url_base = "http://wow.zamimg.com/images/hearthstone/cards/enus/original/{}.png"
+    gold_url_base = "http://wow.zamimg.com/images/hearthstone/cards/enus/animated/{}_premium.gif"
 
     card_db = card_database.CardDatabase.get_database()
     collectible_card_names = [c['id'] for c in card_db.all_collectible_cards]
@@ -33,5 +31,6 @@ def main():
         else:
             print res.status_code
             return
+
 if __name__ == '__main__':
     main()

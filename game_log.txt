@@ -1,4 +1,4 @@
-Unloading 0 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
-Unloading 303 unused Assets to reduce memory usage. Loaded Objects now: 15182.
-Total: 29.753433 ms (FindLiveObjects: 1.477034 ms CreateObjectMapping: 1.087431 ms MarkObjects: 24.335218 ms  DeleteObjects: 2.817280 ms)
-[Mike] FatalErrorScene.Awake() - calling DialogManager.Get().Suppress()
+[Kyle] UberText Cache Stored: /Users/andrewkoch/Library/Preferences/Blizzard/Hearthstone/text_enUS.cache
+Unloading 1 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
+Unloading 6834 unused Assets to reduce memory usage. Loaded Objects now: 6059.
+Total: 29.863132 ms (FindLiveObjects: 0.509225 ms CreateObjectMapping: 0.898601 ms MarkObjects: 13.289252 ms  DeleteObjects: 15.069665 ms)

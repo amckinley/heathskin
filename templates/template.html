@@ -1,0 +1,10 @@
+<!doctype html>
+<title>Heathskin</title>
+<ul class=deckcolumn>
+{% for name in filenames %}
+    <div><img src="{{name}}" height="20"></div>
+{% endfor %}
+{% for title in cardnames %}
+    <div>{{title}}</div>
+{% endfor %}
+</ul>
