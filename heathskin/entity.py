@@ -43,10 +43,10 @@ class Entity(object):
 
     def update_tag(self, tag_name, tag_value):
         if tag_name in self.tags:
-            old_str = " (old={}".format(self.tags[tag_name])
+            old_str = " (old={})".format(self.tags[tag_name])
         else:
             old_str = ""
-        self.logger.info("Updating entity %s: %s=%s %s", self.entity_id, tag_name, tag_value, old_str)
+        self.logger.debug("Updating entity %s: tag %s=%s %s", self.entity_id, tag_name, tag_value, old_str)
         self.tags[tag_name] = self._cast_tag(tag_value)
 
     def get_tag(self, tag_name):
