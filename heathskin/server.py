@@ -23,6 +23,27 @@ app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 #         temp += (str(make_image_url(id=card['id'])) + ' ')
 #     return temp
 
+
+app_state = {}
+@app.route('/update_state',  methods=['GET', 'POST'])
+def update_state():
+    global app_state
+    content = request.json
+    for k, v in content.items():
+        if k in app_state:
+            print "updating app_state: key={}, old={}, new={}".format(k, app_state[k], v)
+        else:
+            print "adding new app_state: key={} value={}".format(k, v)
+
+        app_state[k] = v
+
+    return ""
+
+@app.route("/balls")
+def balls():
+    global app_state
+    return "friendly hand: {}".format(app_state['friendly_hand'])
+
 @app.route('/jque')
 def jquerytest():
     card_db = card_database.CardDatabase.get_database()

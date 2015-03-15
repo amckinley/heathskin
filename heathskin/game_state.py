@@ -1,6 +1,8 @@
 import re
 import logging
 from collections import defaultdict
+import requests
+import json
 
 from log_parser import LogParser
 from entity import Entity
@@ -22,10 +24,18 @@ class GameState(object):
 
         self.parser.feed_line(**results.groupdict())
 
-        fr_hand = self.get_entity_counts_by_zone()
+        fr_hand = self.get_friendly_hand()
         if fr_hand:
             # self.logger.info("friendly hand: %s", self.get_friendly_hand())
             self.logger.info("entities in zones: %s", self.get_entity_counts_by_zone())
+
+
+        ent_counts = self.get_entity_counts_by_zone()
+
+        data = { "friendly_hand": fr_hand, "entity_counts_by_zone": ent_counts}
+        target_url = "http://127.0.0.1:3000/update_state"
+        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+        r = requests.post(target_url, data=json.dumps(data), headers=headers)
 
     def convert_log_zone(self, log_zone):
         if not log_zone:

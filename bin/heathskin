@@ -14,6 +14,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('UTF8')
 
+
+
 from os.path import expanduser
 
 from heathskin.game_state import GameState
@@ -33,6 +35,9 @@ def run(args):
         level = logging.INFO
 
     logging.basicConfig(level=level, format=log_fmt)
+
+    # GOD, please SHUT UP
+    logging.getLogger("requests").setLevel(logging.WARNING)
     logger = logging.getLogger()
 
     my_log = open(my_log_path, "w")
