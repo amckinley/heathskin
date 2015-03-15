@@ -22,9 +22,10 @@ class GameState(object):
 
         self.parser.feed_line(**results.groupdict())
 
-        fr_hand = self.get_friendly_hand
+        fr_hand = self.get_entity_counts_by_zone()
         if fr_hand:
-            self.logger.info("friendly hand: %s", self.get_friendly_hand())
+            # self.logger.info("friendly hand: %s", self.get_friendly_hand())
+            self.logger.info("entities in zones: %s", self.get_entity_counts_by_zone())
 
     def convert_log_zone(self, log_zone):
         if not log_zone:
@@ -62,3 +63,10 @@ class GameState(object):
         return results
 
 
+    def get_entity_counts_by_zone(self):
+        results = defaultdict(int)
+        for ent in self.entities.values():
+            zone = ent.tags.get("ZONE", None)
+            results[zone] += 1
+        # {"zone": "entity id"}
+        return results
