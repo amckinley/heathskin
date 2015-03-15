@@ -22,6 +22,10 @@ class GameState(object):
 
         self.parser.feed_line(**results.groupdict())
 
+        fr_hand = self.get_friendly_hand
+        if fr_hand:
+            self.logger.info("friendly hand: %s", self.get_friendly_hand())
+
     def convert_log_zone(self, log_zone):
         if not log_zone:
             return log_zone
@@ -46,5 +50,15 @@ class GameState(object):
 
         return self.entities[result_id]
 
+
+    def get_friendly_hand(self):
+        results = []
+        for ent in self.entities.values():
+            zone = ent.tags.get("ZONE", None)
+            if zone == "FRIENDLY HAND":
+                #self.logger.info(ent.tags)
+                results.append(ent.card_id)
+
+        return results
 
 

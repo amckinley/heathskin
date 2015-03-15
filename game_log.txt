@@ -1,4 +1,0 @@
-[Kyle] UberText Cache Stored: /Users/andrewkoch/Library/Preferences/Blizzard/Hearthstone/text_enUS.cache
-Unloading 1 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
-Unloading 6834 unused Assets to reduce memory usage. Loaded Objects now: 6059.
-Total: 29.863132 ms (FindLiveObjects: 0.509225 ms CreateObjectMapping: 0.898601 ms MarkObjects: 13.289252 ms  DeleteObjects: 15.069665 ms)
