@@ -7,3 +7,24 @@
         <img src="{{cards[card]['imgurl']}}" style="float: down" height="20" width="200" border="1" padding-left="2cm"></div>
 {% endfor %}
 </ul>
+
+<ul id="sortable">
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 1</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 2</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 3</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 4</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 5</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 6</li>
+  <li class="ui-state-default"><span class="ui-icon ui-icon-arrowthick-2-n-s"></span>Item 7</li>
+</ul>
+
+<ul class=deckcolumn>
+{% for card in cards %}
+    <div style="position: absolute">{{cards[card]['name']}}</div>
+    <div>
+        <img src="{{cards[card]['imgurl']}}" style="float: down" height="20" width="200" border="1" padding-left="2cm"></div>
+{% endfor %}
+</ul>
+
+</body>
+</html>
