@@ -1,7 +1,10 @@
 import operator
-
+import logging
 
 from tabulate import tabulate
+
+logger = logging.getLogger()
+
 
 def params_to_dict(param_str):
     splits = param_str.split(" ")

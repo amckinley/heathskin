@@ -31,8 +31,8 @@ class GameState(object):
 
         data = {
             "entity_counts_by_zone": self.get_entity_counts_by_zone(),
-            "friendly_hand": self.get_friendly_hand(),
-            "opposing_hand": self.get_opposing_hand()
+            "friendly_hand": [ent.card_id for ent in self.get_friendly_hand()],
+            "opposing_hand": [ent.card_id for ent in self.get_opposing_hand()]
         }
 
         target_url = "http://127.0.0.1:3000/update_state"

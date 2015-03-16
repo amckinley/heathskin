@@ -48,7 +48,6 @@ class LogParser(object):
         if log_source not in self.parser_fns:
             raise Exception("got unknown log_source {}".format(log_source))
 
-
         parser = self.parser_fns[log_source]
         #self.logger.info("feeding line '%s' to parser %s", log_msg, getattr(parser, "__name__", None))
         if parser:
@@ -75,12 +74,18 @@ class LogParser(object):
 
     def match_show_entity_action(self, line):
         # SHOW_ENTITY - Updating Entity=[id=21 cardId= type=INVALID zone=DECK zonePos=0 player=1] CardID=EX1_539
-        pattern = "SHOW_ENTITY - Updating Entity=\[(?P<entity_data>.*)\] CardID=(?P<card_id>.+)"
+        # SHOW_ENTITY - Updating Entity=69 CardID=CS2_005o
+        pattern = "SHOW_ENTITY - Updating Entity=((?P<entity_id>\d+)|\[(?P<entity_data>.*)\]) CardID=(?P<card_id>.+)"
+
         results = re.match(pattern, line)
         if not results:
             raise Exception("failed to parse SHOW_ENTITY action for msg '{}'".format(line))
+
         results = results.groupdict()
-        results['entity_data'] = params_to_dict(results['entity_data'])
+        if results['entity_data'] is not None:
+            results['entity_data'] = params_to_dict(results['entity_data'])
+        else:
+            results['entity_data'] = {'id': results['entity_id']}
 
         return results
 
@@ -217,6 +222,9 @@ class LogParser(object):
                     # XXX: afaict, these are noops...
                     pass
 
+                elif  msg.startswith("META_DATA"):
+                    # XXX: this is not a noop, but i dont know what to do...
+                    pass
 
                 else:
                     self.logger.info("wtf lol %s", msg)
@@ -245,6 +253,9 @@ class LogParser(object):
             #print "debug power:", msg
 
     def parse_zone_change_list_process_changes(self, msg):
+        if not self.game_started:
+            return
+
         useless_starts = ["START waiting", "END waiting", "processing", "m_id=", "id="]
         for s in useless_starts:
             if msg.startswith(s):
