@@ -42,7 +42,12 @@ def update_state():
 @app.route("/balls")
 def balls():
     global app_state
-    return "friendly hand: {}".format(app_state['friendly_hand'])
+    sack = {}
+    for card in app_state['friendly_hand']:
+        sack[card] = {'imgurl': ('card_images/banners/' + card['id'] + '_banner.png')}
+    return render_template('jquerytest.html',
+                            cards=hand)
+    # return "friendly hand: {}".format(app_state['friendly_hand'])
 
 @app.route('/jque')
 def jquerytest():

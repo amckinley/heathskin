@@ -36,7 +36,7 @@ def run(args):
 
     logging.basicConfig(level=level, format=log_fmt)
 
-    # GOD, please SHUT UP
+    # LANA, please SHUT UP
     logging.getLogger("requests").setLevel(logging.WARNING)
     logger = logging.getLogger()
 
