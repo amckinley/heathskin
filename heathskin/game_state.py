@@ -28,11 +28,13 @@ class GameState(object):
         #     # self.logger.info("friendly hand: %s", self.get_friendly_hand())
         #     self.logger.info("entities in zones: %s", self.get_entities_by_zone("FRIENDLY HAND"))
 
-        ent_counts = self.get_entity_counts_by_zone()
 
-        data = {"entity_counts_by_zone": ent_counts,
-                "friendly_hand": self.get_entities_by_zone("FRIENDLY HAND"),
-                "opposing_hand": self.get_entities_by_zone("OPPOSING HAND")}
+        data = {
+            "entity_counts_by_zone": self.get_entity_counts_by_zone(),
+            "friendly_hand": self.get_friendly_hand(),
+            "opposing_hand": self.get_opposing_hand()
+        }
+
         target_url = "http://127.0.0.1:3000/update_state"
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         r = requests.post(target_url, data=json.dumps(data), headers=headers)
@@ -75,27 +77,17 @@ class GameState(object):
         return self.entities.get(result_id, default)
 
     def get_entities_by_zone(self, zone):
-        results = []
-        for ent in self.entities.values():
-            self.logger.info("from get_entities_by_zone: %s", ent.get_tag("ZONE"))
-            results.append(ent.card_id)
+        return [ent for ent in self.entities.values if ent.get_tag("ZONE") == zone]
 
-        return results
+    def get_friendly_hand(self):
+        return self.get_entities_by_zone("FRIENDLY HAND")
 
-    # def get_friendly_hand(self):
-    #     results = []
-    #     for ent in self.entities.values():
-    #         zone = ent.tags.get("ZONE", None)
-    #         if zone == "FRIENDLY HAND":
-    #             #self.logger.info(ent.tags)
-    #             results.append(ent.card_id)
-
-    #     return results
+    def get_opposing_hand(self):
+        return self.get_entities_by_zone("OPPOSING HAND")
 
     def get_entity_counts_by_zone(self):
         results = defaultdict(int)
         for ent in self.entities.values():
             zone = ent.tags.get("ZONE", None)
             results[zone] += 1
-        # {"zone": "entity id"}
         return results

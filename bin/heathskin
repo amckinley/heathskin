@@ -74,7 +74,7 @@ def run(args):
             try:
                 gs.feed_line(line.rstrip())
             except Exception, e:
-                logger.exception("crashed while feeding line")
+                logger.exception("crashed while feeding line: '%s", line.rstrip())
 
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
