@@ -42,6 +42,8 @@ class LogParser(object):
         self.in_action = False
         self.ent_in_progress = None
 
+        self.game_started = False
+
     def feed_line(self, logger_name, log_source, log_msg):
         if log_source not in self.parser_fns:
             raise Exception("got unknown log_source {}".format(log_source))
@@ -100,6 +102,7 @@ class LogParser(object):
             if not msg.startswith(" "):
                 self.logger.info("Finished initial game creation")
                 self.in_create_game = False
+                self.game_started = True
 
             # set tag on entity created during CREATE_GAME
             elif msg.lstrip().startswith("tag"):
@@ -137,6 +140,11 @@ class LogParser(object):
         if msg == "CREATE_GAME":
             self.logger.info("Found initial game creation")
             self.in_create_game = True
+            return
+
+        # dont proceed with parsing unless the game has started
+        if not self.game_started:
+            self.logger.info("game not started, skipping line '%s'", msg)
             return
 
         # leave/continue FULL_ENTITY

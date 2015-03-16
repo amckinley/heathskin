@@ -9,12 +9,11 @@ from entity import Entity
 
 class GameState(object):
     def __init__(self, friendly_user_name=None, friendly_deck=None):
-        self.entities = {}
         self.friendly_user_name = friendly_user_name
         self.friendly_deck = friendly_deck
         self.logger = logging.getLogger()
-        self.parser = LogParser(self)
 
+        self.start_new_game()
 
     def feed_line(self, line):
         pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"
@@ -38,6 +37,10 @@ class GameState(object):
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         r = requests.post(target_url, data=json.dumps(data), headers=headers)
 
+        if self.is_gameover():
+            self.logger.info("Detected gameover")
+            self.start_new_game()
+
     def convert_log_zone(self, log_zone):
         if not log_zone:
             return log_zone
@@ -46,8 +49,17 @@ class GameState(object):
         result = "_".join(log_zone.split(" "))
         return result
 
+    def is_gameover(self):
+        game_ent = self.get_entity_by_name("GameEntity", None)
+        return game_ent and game_ent.get_tag("STATE") == "COMPLETE"
+
+    def start_new_game(self):
+        self.logger.info("Starting new game")
+        self.entities = {}
+        self.parser = LogParser(self)
+
     # XXX: stupid hack. the logs refer to the player entities by username
-    def get_entity_by_name(self, ent_id):
+    def get_entity_by_name(self, ent_id, default=None):
         result_id = None
         try:
             int(ent_id)
@@ -60,7 +72,7 @@ class GameState(object):
             else:
                 result_id = "3"
 
-        return self.entities[result_id]
+        return self.entities.get(result_id, default)
 
     def get_entities_by_zone(self, zone):
         results = []
@@ -79,7 +91,6 @@ class GameState(object):
     #             results.append(ent.card_id)
 
     #     return results
-
 
     def get_entity_counts_by_zone(self):
         results = defaultdict(int)
