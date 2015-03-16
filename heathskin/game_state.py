@@ -77,7 +77,7 @@ class GameState(object):
         return self.entities.get(result_id, default)
 
     def get_entities_by_zone(self, zone):
-        return [ent for ent in self.entities.values if ent.get_tag("ZONE") == zone]
+        return [ent for ent in self.entities.values() if ent.get_tag("ZONE") == zone]
 
     def get_friendly_hand(self):
         return self.get_entities_by_zone("FRIENDLY HAND")
