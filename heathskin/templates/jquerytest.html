@@ -7,6 +7,7 @@
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
+  <meta http-equiv="Refresh" Content="1">
   <style>
   #sortable2 { list-style-type: none; margin: 0; padding: 0; width: 30%; }
   #sortable2 li { margin: 0 3px 5px 3px; padding: .43em; padding-left: 1.0em; font-size: 1.2em; height: 18px; }
@@ -26,15 +27,15 @@
 <ul id="sortable2" class="deck-class">
 {% for card in cards %}
   <li>
-<!--     <div style="background-color:blue">
-      <span class="card-cost" style="align:right">{{cards[card]['cost']}}</span>
-      <span class="card-name"align="middle">{{cards[card]['name']}}</span> -->
+    <div>
+      <!-- <span class="card-cost" style="align:right">{{cards[card]['cost']}}</span> -->
+      <!-- <span class="card-name"><p>{{cards[card]}}</p></span> -->
       <span align="right"><img src="{{cards[card]['imgurl']}}"></span>
     </div>
   </li>
 {% endfor %}
 </ul>
-
+<p>hand size: {{handsize}}</p>
 
 </body>
 </html>

@@ -50,7 +50,7 @@ class Entity(object):
         self.tags[tag_name] = self._cast_tag(tag_value)
 
     def get_tag(self, tag_name):
-        return self.tags[tag_name]
+        return self.tags.get(tag_name, None)
 
     def _cast_tag(self, tag_value):
         try:

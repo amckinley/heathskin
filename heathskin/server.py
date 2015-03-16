@@ -5,7 +5,7 @@ from flask import Flask, Response, request, url_for, render_template
 
 from heathskin import card_database, game_state, tail_thread
 
-app = Flask(__name__, static_url_path='', static_folder='public')
+app = Flask(__name__, static_url_path='', static_folder='../public')
 app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 
 # @app.route('/random_card.json')
@@ -42,11 +42,17 @@ def update_state():
 @app.route("/balls")
 def balls():
     global app_state
-    sack = {}
+    hand = {}
+    print "app_state: ", app_state
+    # return ""
     for card in app_state['friendly_hand']:
-        sack[card] = {'imgurl': ('card_images/banners/' + card['id'] + '_banner.png')}
+        hand[card] = {'name': card,
+                      'imgurl': ('card_images/banners/' + card + '_banner.png')}
+    print "hand dict: ", hand
+    print "dict len: ", len(hand)
     return render_template('jquerytest.html',
-                            cards=hand)
+                            cards=hand,
+                            handsize=len(hand))
     # return "friendly hand: {}".format(app_state['friendly_hand'])
 
 @app.route('/jque')
