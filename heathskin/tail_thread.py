@@ -18,7 +18,7 @@ class TailThread(threading.Thread):
     def run(self):
         self.logger.info("Starting log tailer at path %s", self.hs_log_path)
         self.process = subprocess.Popen(
-            ["tail", "-f", self.hs_log_path], stdout=subprocess.PIPE)
+            ["tail", "-f", "-c", "0", self.hs_log_path], stdout=subprocess.PIPE)
 
         try:
             while True:

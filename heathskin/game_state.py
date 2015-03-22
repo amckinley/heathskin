@@ -8,9 +8,8 @@ from log_parser import LogParser
 from entity import Entity
 
 class GameState(object):
-    def __init__(self, friendly_user_name=None, friendly_deck=None):
+    def __init__(self, friendly_user_name=None):
         self.friendly_user_name = friendly_user_name
-        self.friendly_deck = friendly_deck
         self.logger = logging.getLogger()
 
         self.start_new_game()
@@ -22,22 +21,6 @@ class GameState(object):
             return
 
         self.parser.feed_line(**results.groupdict())
-
-        # fr_hand = self.get_friendly_hand()
-        # if fr_hand:
-        #     # self.logger.info("friendly hand: %s", self.get_friendly_hand())
-        #     self.logger.info("entities in zones: %s", self.get_entities_by_zone("FRIENDLY HAND"))
-
-
-        data = {
-            "entity_counts_by_zone": self.get_entity_counts_by_zone(),
-            "friendly_hand": [ent.card_id for ent in self.get_friendly_hand()],
-            "opposing_hand": [ent.card_id for ent in self.get_opposing_hand()]
-        }
-
-        target_url = "http://127.0.0.1:3000/update_state"
-        headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-        r = requests.post(target_url, data=json.dumps(data), headers=headers)
 
         if self.is_gameover():
             self.logger.info("Detected gameover")
