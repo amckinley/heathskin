@@ -116,6 +116,9 @@ class CardDatabase(object):
 
         return collectible
 
+    def get_card_by_id(self, card_id):
+        return self.cards_by_id[card_id]
+
     def get_real_set_names(self):
         names = [
             "Basic",

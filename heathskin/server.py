@@ -23,17 +23,21 @@ def update_state():
 
     return ""
 
+
 @app.route("/tracker")
 def tacker():
+    card_db = card_database.CardDatabase.get_database()
     global app_state
     hand = {}
     print "app_state: ", app_state
-    # return ""
     for card in app_state['friendly_hand']:
-        hand[card] = {'name': card,
-                      'imgurl': ('card_images/banners/' + card + '_banner.png')}
-    print "hand dict: ", hand
-    print "dict len: ", len(hand)
+        hand[card] = card_db.get_card_by_id(card)
+    print "json hand: ", hand
+    # for card in app_state['friendly_hand']:
+    #     hand[card] = {'name': card,
+    #                   'imgurl': ('card_images/banners/' + card + '_banner.png')}
+    # print "hand dict: ", hand
+    # print "dict len: ", len(hand)
     return render_template('jquerytest.html',
                             cards=hand,
                             handsize=len(hand))

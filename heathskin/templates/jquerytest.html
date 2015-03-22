@@ -6,7 +6,6 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-  <link rel="stylesheet" href="/resources/demos/style.css">
   <meta http-equiv="Refresh" Content="1">
   <style>
   #sortable2 { list-style-type: none; margin: 0; padding: 0; width: 30%; }
@@ -28,9 +27,10 @@
 {% for card in cards %}
   <li>
     <div>
-      <!-- <span class="card-cost" style="align:right">{{cards[card]['cost']}}</span> -->
-      <!-- <span class="card-name"><p>{{cards[card]}}</p></span> -->
-      <span align="right"><img src="{{cards[card]['imgurl']}}"></span>
+      <!-- <span class="card-cost">{{cards[card]['cost']}}</span> -->
+      <span class="card-name"><p>{{cards[card]['cost']}} &nbsp&nbsp&nbsp {{cards[card]['name']}}</p></span>
+<!--       <span class="card-name"><p>{{cards[card]}}</p></span> -->
+      <span align="right"><img src="card_images/banners/{{cards[card]['id']}}_banner.png" ALIGN="middle" HEIGHT="40" WIDTH="250"></span>
     </div>
   </li>
 {% endfor %}
