@@ -6,6 +6,8 @@ import argparse
 import json
 import os
 from datetime import datetime
+import pickle
+import StringIO
 
 from heathskin.game_state import GameState
 
@@ -35,13 +37,13 @@ def main(args):
 
     logger = logging.getLogger()
 
+    #redis_conn = redis.StrictRedis(host='54.153.97.250', port=6379, db=0)
     redis_conn = redis.StrictRedis(host='localhost', port=6379, db=0)
     sessions = {}
 
     while True:
         key_name, line_data = redis_conn.blpop(REDIS_QUEUE_NAME)
         line_data = json.loads(line_data)
-        print line_data
         session_key = (line_data['user_id'], line_data['session_start'])
         if session_key not in sessions:
             logger.info("Starting new session: %s", session_key)
@@ -64,6 +66,9 @@ def main(args):
         session['game_state'].feed_line(line_data['log_line'].rstrip())
         session['last_seen_at'] = datetime.now()
         session['file_handle'].write(line_data['log_line'])
+
+        game_state_key = "game_state_{}_{}".format(*session_key)
+        redis_conn.set(game_state_key, pickle.dumps(session['game_state'].entities))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Track some skins')

@@ -21,9 +21,6 @@ class LogUploader(object):
             json={"log_line": line})
         res.raise_for_status()
 
-    def start_session(self):
-        pass
-
     def _create_authenticated_session(self):
         self.session = requests.Session()
 

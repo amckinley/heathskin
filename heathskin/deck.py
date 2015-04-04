@@ -29,6 +29,17 @@ class Deck(object):
             else:
                 raise Exception("couldnt find card with name {}".format(n))
 
+
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['logger']
+        return odict
+
+    def __setstate__(self, dict):
+        logger = logging.getLogger()
+        self.__dict__.update(dict)
+        self.logger = logger
+
         # print "no collectible", len(list(self.card_db.search(collectible=False)))
         # print "collectible", len(list(self.card_db.search()))
         # print "name match ortal", len(list(self.card_db.search(name='ortal')))

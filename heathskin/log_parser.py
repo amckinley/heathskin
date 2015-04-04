@@ -34,7 +34,15 @@ class LogParser(object):
             "GameState.SendChoices()": None,
             "ZoneMgr.CreateLocalChangeList()": None,
             "ZoneMgr.ProcessLocalChangeList()": None,
-            "FatalErrorScene.Awake()": None
+            "FatalErrorScene.Awake()": None,
+
+            "Card.ActivateActorSpells_PlayToHand()": None,
+            "Card.OnSpellFinished_PlayToHand_SummonIn()": None,
+            "ZoneHand.CanAnimateCard()": None,
+            "Card.OnSpellStateFinished_PlayToHand_OldActor_SummonOut()": None,
+            "PowerProcessor.PrepareHistoryForCurrentTaskList()": None,
+            "PowerSpellController1.InitPowerSpell()": None
+
         }
 
         self.in_create_game = False
@@ -43,6 +51,16 @@ class LogParser(object):
         self.ent_in_progress = None
 
         self.game_started = False
+
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['logger']
+        return odict
+
+    def __setstate__(self, dict):
+        logger = logging.getLogger()
+        self.__dict__.update(dict)
+        self.logger = logger
 
     def feed_line(self, logger_name, log_source, log_msg):
         if log_source not in self.parser_fns:

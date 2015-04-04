@@ -1,18 +1,33 @@
 import re
 import logging
 from collections import defaultdict
-import requests
 import json
 
 from log_parser import LogParser
 from entity import Entity
 
 class GameState(object):
+    @classmethod
+    def build_from_entities(cls, entities):
+        gs = GameState()
+        gs.entities = entities
+        return gs
+
     def __init__(self, friendly_user_name=None):
         self.friendly_user_name = friendly_user_name
         self.logger = logging.getLogger()
 
         self.start_new_game()
+
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['logger']
+        return odict
+
+    def __setstate__(self, dict):
+        logger = logging.getLogger()
+        self.__dict__.update(dict)
+        self.logger = logger
 
     def feed_line(self, line):
         pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"

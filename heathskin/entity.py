@@ -63,11 +63,21 @@ class Entity(object):
 
     def __repr__(self):
         try:
-            card_str = self.name
+            card_str = "name={}".format(self.name)
         except AttributeError:
-            card_str = self.id
+            card_str = "entity_id={}".format(self.entity_id)
 
-        return card_str
+        return "[Entity {}]".format(card_str)
+
+    def __getstate__(self):
+        odict = self.__dict__.copy()
+        del odict['logger']
+        return odict
+
+    def __setstate__(self, dict):
+        logger = logging.getLogger()
+        self.__dict__.update(dict)
+        self.logger = logger
 
 def parse_tag_change(l):
     pattern = "\w*TAG_CHANGE Entity=\[(?P<ent_data>.+?)\] tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
