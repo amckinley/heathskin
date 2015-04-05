@@ -1,9 +1,11 @@
 from os import path
+from urlparse import urlparse
 import argparse
 import shutil
 import logging
 
 import requests
+from requests.exceptions import ConnectionError
 
 from heathskin import card_database
 
@@ -22,14 +24,20 @@ def replacer(text):
     return text
 
 def fetch_file(src_url, dest_path, dry_run=False):
-    logger.info("fetching from: %s *** writing to: %s", src_url, dest_path)
+    short_src_name = urlparse(src_url).path
+    short_dest_name = path.basename(dest_path)
+    logger.debug("fetching from: %s *** writing to: %s", short_src_name, short_dest_name)
     if path.exists(dest_path):
-        logger.info("path already exists, not fetching")
+        logger.debug("path already exists, not fetching")
         return True
     if dry_run:
         logger.info("Not fetching %s for dry_run", src_url)
         return True
-    res = requests.get(src_url, stream=True)
+    try:
+        res = requests.get(src_url, stream=True)
+    except ConnectionError:
+        logger.exception("Error while fetching file %s", src_url)
+        return False
 
     if res.status_code == 200:
         logger.info("fetch successful: %s", dest_path)
@@ -50,7 +58,7 @@ def scraper(parent_folder="01", year="4", card_list=None, dry_run=False):
     log = []
 
     for card in card_list:
-        card_target_path = "data/card_images/banners/{}.png".format(card[1])
+        card_target_path = "data/card_images/{}.png".format(card[1])
         banner_target_path = "data/card_images/banners/{}_banner.png".format(card[1])
         card_url = card_url_base.format(year, parent_folder, card[0])
         banner_url = banner_url_base.format(year, parent_folder, card[0])
@@ -66,12 +74,8 @@ def scraper(parent_folder="01", year="4", card_list=None, dry_run=False):
         if not res:
             log.append(card)
 
-    with open("data/scraper_log.txt", "w") as f:
-        for item in log:
-            f.write(str(item))
-
     if len(log) > 0 and int(parent_folder) < 12:
-        logger.info("******* parent_folder %d Complete *******", parent_folder)
+        logger.info("******* parent_folder %s Complete *******", parent_folder)
         logger.info("Number of files remaining: %d", (len(log) / 2))
         scraper(parent_folder=str((int(parent_folder)+1)).zfill(2), card_list=log, dry_run=dry_run)
 
@@ -87,6 +91,9 @@ def main(args):
         logger.level = logging.DEBUG
     else:
         logger.level = logging.INFO
+
+    # stop spam from requests module
+    logging.getLogger("requests").setLevel(logging.WARNING)
 
     card_db = card_database.CardDatabase.get_database()
     collectible_card_names = card_db.search(collectible=True)

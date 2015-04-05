@@ -1,1 +1,0 @@
-[u'anduin-wrynn', u'HERO_09'][u'garrosh-hellscream', u'HERO_01'][u'guldan', u'HERO_07'][u'jaina-proudmoore', u'HERO_08'][u'malfurion-stormrage', u'HERO_06'][u'rexxar', u'HERO_05'][u'thrall', u'HERO_02'][u'uther-lightbringer', u'HERO_04'][u'valeera-sanguinar', u'HERO_03'][u'captains-parrot', u'NEW1_016']
