@@ -15,6 +15,7 @@ log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 logging.basicConfig(format=log_fmt)
 logger = logging.getLogger()
 
+# BRM_001 mistyped on server, is solemn-vigil1, should be solemn-vigil
 def replacer(text):
     rep = {" ": "-", "\'": "", ":": "", "!": "", ".": ""}
     if "Stranglethorn" in text: # misspelled on scraped server
@@ -63,15 +64,16 @@ def scraper(parent_folder="01", year="4", card_list=None, dry_run=False):
         card_url = card_url_base.format(year, parent_folder, card[0])
         banner_url = banner_url_base.format(year, parent_folder, card[0])
 
-        # if not path.exists(card_target_path):
         res = fetch_file(card_url, card_target_path, dry_run=dry_run)
+        not_found = False
         if not res:
-            log.append(card)
+            not_found = True
 
-
-        # if not path.exists(banner_target_path):
         res = fetch_file(banner_url, banner_target_path, dry_run=dry_run)
         if not res:
+            not_found = True
+
+        if not_found:
             log.append(card)
 
     if len(log) > 0 and int(parent_folder) < 12:
@@ -80,7 +82,7 @@ def scraper(parent_folder="01", year="4", card_list=None, dry_run=False):
         scraper(parent_folder=str((int(parent_folder)+1)).zfill(2), card_list=log, dry_run=dry_run)
 
     if len(log) > 0 and int(parent_folder) == 12 and year == "4":
-        logger.info("******* year 201%d Complete *******", year)
+        logger.info("******* year 201%s Complete *******", year)
         logger.info("Number of files remaining: %d", (len(log) / 2))
         scraper(year="5", card_list=log, dry_run=dry_run)
 
@@ -101,12 +103,16 @@ def main(args):
     for card_name in collectible_card_names:
         card_name['name'] = replacer(card_name['name'])
         get_scraped.append([card_name['name'], card_name['id']])
-    scraper("03", card_list=get_scraped, dry_run=args.dry_run)
+    try:
+        scraper("03", year=args.year, card_list=get_scraped, dry_run=args.dry_run)
+    except KeyboardInterrupt:
+        logger.error("Got SIGINT, shutting down")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='scrap some skins')
     parser.add_argument('--dry-run', default=False, action="store_true")
     parser.add_argument('--debug', default=False, action='store_true')
+    parser.add_argument('--year', default="4")
     args = parser.parse_args()
 
     main(args)
