@@ -41,7 +41,8 @@ class LogParser(object):
             "ZoneHand.CanAnimateCard()": None,
             "Card.OnSpellStateFinished_PlayToHand_OldActor_SummonOut()": None,
             "PowerProcessor.PrepareHistoryForCurrentTaskList()": None,
-            "PowerSpellController1.InitPowerSpell()": None
+            "PowerSpellController1.InitPowerSpell()": None,
+            "PowerSpellController1.InitPowerSounds()": None,
 
         }
 
