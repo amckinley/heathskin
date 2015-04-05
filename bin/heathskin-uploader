@@ -6,9 +6,10 @@ import argparse
 import logging
 
 from os.path import expanduser
-
+from requests.exceptions import ConnectionError
 from heathskin.tail_thread import TailThread
 from heathskin.log_uploader import LogUploader
+
 
 def run(args):
     log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
@@ -55,6 +56,14 @@ def run(args):
 
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
+        shutdown()
+
+    except ConnectionError as e:
+        logger.exception("frontend server crash")
+        shutdown()
+
+    except Exception as e:
+        logger.exception("Unexpected exception")
         shutdown()
 
 def main(args):
