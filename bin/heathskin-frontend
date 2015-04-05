@@ -13,9 +13,11 @@ from flask.ext.login import current_user
 
 import redis
 
-from heathskin import game_state
+from heathskin import game_state, card_database
+
 # Create app
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='../public', template_folder="../heathskin/templates")
+app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
@@ -81,6 +83,18 @@ def entity_dump():
     game_state = get_game_state(current_user.get_id())
     return str([e.card_id for e in game_state.entities.values()])
 
+@app.route("/tracker")
+@login_required
+def deck_tracker():
+    card_db = card_database.CardDatabase.get_database()
+    game_state = get_game_state(current_user.get_id())
+    hand = game_state.get_friendly_hand()
+    hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
+    return render_template('jquerytest.html',
+                            cards=hand_ids,
+                            handsize=len(hand_ids))
+
+
 @app.route('/upload_line', methods=['POST'])
 @auth_token_required
 def upload_line():
@@ -118,5 +132,7 @@ if __name__ == '__main__':
     app.debug = True
     db.create_all()
     app.run(port=3000, host="0.0.0.0")
+
+
 
 

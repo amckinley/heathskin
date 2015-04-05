@@ -27,10 +27,8 @@
 {% for card in cards %}
   <li>
     <div>
-      <!-- <span class="card-cost">{{cards[card]['cost']}}</span> -->
-      <span class="card-name"><p>{{cards[card]['cost']}} &nbsp&nbsp&nbsp {{cards[card]['name']}}</p></span>
-<!--       <span class="card-name"><p>{{cards[card]}}</p></span> -->
-      <span align="right"><img src="card_images/banners/{{cards[card]['id']}}_banner.png" ALIGN="middle" HEIGHT="40" WIDTH="250"></span>
+      <span align="right"><img src="card_images/banners/{{card['id']}}_banner.png" ALIGN="middle" style="width:350; height:40; background:#888888;text-align:left, border:1px"></span>
+      <span class="card-name"><p>{{card['cost']}} &nbsp&nbsp {{card['name']}}</p></span>
     </div>
   </li>
 {% endfor %}
