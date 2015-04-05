@@ -127,6 +127,7 @@ class CardDatabase(object):
             "Curse of Naxxramas",
             #"Debug",
             "Goblins vs Gnomes",
+            "Blackrock Mountain",
             #"Missions",
             "Promotion",
             "Reward"]
