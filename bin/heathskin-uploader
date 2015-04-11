@@ -4,6 +4,7 @@ import threading
 import Queue
 import argparse
 import logging
+import time
 
 from os.path import expanduser
 from requests.exceptions import ConnectionError
@@ -29,9 +30,21 @@ def run(args):
 
     stop_event = threading.Event()
 
+    def progress(stop_event):
+        while True:
+            if stop_event.wait(4):
+                logger.info("Progress thread exiting")
+                return
+
+            logger.info("Uploaded a total of %d lines", uploader.line_count)
+
+    progress_thread = threading.Thread(target=progress, args=(stop_event, ))
+    progress_thread.start()
+
     def shutdown():
         stop_event.set()
         t.join()
+        progress_thread.join()
 
     try:
         if args.use_replay_log:

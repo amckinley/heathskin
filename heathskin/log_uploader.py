@@ -13,13 +13,22 @@ class LogUploader(object):
         self.start_session_url = "http://{}/start_session".format(self.log_server)
 
         self._create_authenticated_session()
+        self._line_count = 0
 
     def upload_line(self, line):
         res = self.session.post(
             self.log_url,
             headers={'Authentication-Token': self.authentication_token},
             json={"log_line": line})
+
+        #self.logger.info("cookies are %s", res.cookies.keys())
         res.raise_for_status()
+
+        self._line_count += 1
+
+    @property
+    def line_count(self):
+        return self._line_count
 
     def _create_authenticated_session(self):
         self.session = requests.Session()
@@ -29,9 +38,12 @@ class LogUploader(object):
         self.authentication_token = res.json()["response"]["user"]["authentication_token"]
 
         # begin the logging session
-        self.session.post(
+        res = self.session.post(
             self.start_session_url,
             headers={'Authentication-Token': self.authentication_token})
+
+        res.raise_for_status()
+
 
 if __name__ == '__main__':
     l = LogUploader("127.0.0.1:3000", "bearontheroof@gmail.com", "wangwang")

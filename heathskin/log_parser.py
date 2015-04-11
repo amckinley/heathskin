@@ -246,8 +246,7 @@ class LogParser(object):
                     pass
 
                 else:
-                    self.logger.info("wtf lol %s", msg)
-                    sys.exit()
+                    raise Exception("unknown PRINT_POWER: '{}'".format(msg))
 
             return
 
@@ -269,7 +268,6 @@ class LogParser(object):
             return
 
         self.logger.info("debug power msg: %s", msg)
-            #print "debug power:", msg
 
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
@@ -284,7 +282,7 @@ class LogParser(object):
             pattern = "TRANSITIONING card \[(?P<entity_data>.+?)\] to( (?P<dest_zone>.+)|)"
             result = re.match(pattern, msg)
             if not result:
-                sys.exit()
+                raise Exception("failed parse on msg '{}'".format(msg))
 
             result = result.groupdict()
 
@@ -296,9 +294,6 @@ class LogParser(object):
                 self.logger.error("no zone, msg was %s", msg)
                 return
 
-
-
-
     def parse_ignore(self, msg):
         self.logger.debug("parser ignoring msg: '%s'", msg)
 
@@ -309,7 +304,7 @@ class LogParser(object):
         results = re.match(pattern, msg)
 
         if not results:
-            sys.exit()
+            raise Exception("parse failure on msg '{}'".format(msg))
         else:
             ent = Entity(**results.groupdict())
             if ent.entity_id in self.game_state.entities:
