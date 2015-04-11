@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Heathskin - Deck Tracker</title>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <meta http-equiv="Refresh" Content="1">
+    <style>
+    #tracker { list-style-type: none; margin: 0; padding: 0; width: 100%;}
+    #tracker li { margin: 0 3px 20px 3px; padding: .43; padding-left: 1.0em; font-size: 1.0em; height: 20px; }
+    #tracker li span { position: absolute; margin-left: -1.3em; }
+    </style>
+    <script>
+    $(function() {
+        $( "tracker" ).sortable({
+            distance:30
+            })
+        $( "tracker" ).disableSelection();
+    });
+    </script>
+</head>
+<body>
+<ul id="tracker" class="deck-class">
+{% for card in cards %}
+    <li>
+        <div>
+            <span align="right"><img src="card_images/banners/{{card['id']}}_banner.png" ALIGN="middle" style="width:350; height:40; padding-left: 100px; background:#000000;text-align:left, border:1px"></span>
+            <span align="left"><img src="ui_images/mana.png" ALIGN="middle" style="width: 20; height: 20"></span>
+            <span class="card-name" vertical-align="middle"; style="color: white; padding-left: 20px; padding-bottom: 0px"><p><b>{{card['cost']}} &nbsp&nbsp&nbsp {{card['name']}}</b></p></span>
+        </div>
+    </li>
+{% endfor %}
+</ul>
+<p><br>hand size: {{handsize}}</p>
+
+</body>
+</html>
