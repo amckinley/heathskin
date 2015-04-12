@@ -22,7 +22,7 @@ from heathskin import game_universe, card_database
 
 
 # Create app
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='../public', template_folder="../heathskin/templates")
 app.config['SECRET_KEY'] = 'super-secret'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 app.config['SECURITY_REGISTERABLE'] = True
@@ -104,6 +104,23 @@ def entity_dump():
     game_state = get_game_state(current_user.get_id())
     return str(set([e.card_id for e in game_state.entities.values()]))
 
+@app.route('/')
+def index():
+    return render_template('deck_upload.html')
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    file = request.files['file']
+    if file:
+        player_deck = deck.deck_from_file(file)
+    else:
+        abort(505)
+    print_deck = deck.Deck.get_card_names(player_deck)
+    card_names = []
+    for card in print_deck:
+        card_names.append(card['name'])
+    return str(card_names)
+
 @app.route("/tracker")
 @login_required
 def deck_tracker():
@@ -114,7 +131,9 @@ def deck_tracker():
 
     hand = game_state.get_friendly_hand()
     hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
-    return render_template('jquerytest.html',
+    for card in hand_ids:
+        print card
+    return render_template('tracker.html',
                             cards=hand_ids,
                             handsize=len(hand_ids))
 

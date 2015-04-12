@@ -66,7 +66,7 @@ class Deck(object):
 
     def get_card_names(self):
         cards = []
-        for id in blizz_ids:
+        for id in self.blizz_ids:
             cards.append(id)
         return cards
 

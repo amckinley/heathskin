@@ -7,12 +7,6 @@ import card_database
 
 app = Flask(__name__)
 
-# def deck_from_file(path):
-#     with open(path) as f:
-#         card_names = [n.rstrip() for n in f.readlines()]
-
-    # return Deck(card_names)
-
 @app.route('/')
 def index():
     return render_template('deck_upload.html')
@@ -25,19 +19,11 @@ def upload():
         player_deck = deck.deck_from_file(file)
     else:
         abort(505)
-    print_deck = []
-    for card in player_deck:
-        print_deck.append(card_database.get_card_by_id(card)['name'])
-    return str(print_deck)
-    return "whoops"
-    # return player_deck
-
-# def text_to_deck(text_deck):
-#     print text_deck
-#     player_deck = []
-#     # for card in text_deck:
-#     player_deck.append(deck.Deck(text_deck))
-#     return player_deck
+    print_deck = deck.Deck.get_card_names(player_deck)
+    card_names = []
+    for card in print_deck:
+        card_names.append(card['name'])
+    return str(card_names)
 
 
 if __name__ == '__main__':
