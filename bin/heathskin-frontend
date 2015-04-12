@@ -27,12 +27,18 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(description='Track some skins')
+    parser.add_argument('--debug', action="store_true")
     parser.add_argument('--port-offset')
     args = parser.parse_args()
 
     port = 3000
     if args.port_offset:
         port += int(args.port_offset)
+    if args.debug:
+        log_level = logging.DEBUG
+        app.debug = True
+    else:
+        log_level = logging.INFO
 
     # make flask app's logger behave reasonably and write to stdout
     handler = StreamHandler()
