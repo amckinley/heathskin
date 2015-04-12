@@ -1,15 +1,17 @@
+import os
+from datetime import datetime
 from collections import defaultdict
 
-#from flask.ext.sqlalchemy import SQLAlchemy
-
-from heathskin.frontend import db, Card, Deck, CardDeckAssociation, User
+from heathskin.frontend import db, Card, Deck, \
+    CardDeckAssociation, User
 from heathskin import card_database
 
 def create_deck(user, deck_path, card_db):
     with open(deck_path) as f:
         card_names = [n.rstrip() for n in f.readlines()]
 
-    d = Deck(user=user)
+    deck_name = os.path.basename(deck_path).split(".")[0]
+    d = Deck(user_id=user.id, name=deck_name)
     card_counts = defaultdict(int)
     ids_to_objs = {}
     for n in card_names:
@@ -27,14 +29,11 @@ def create_deck(user, deck_path, card_db):
         cda = CardDeckAssociation(card=card_obj, deck=d, count=cnt)
         db.session.add(cda)
 
-    # for thing in d.cards:
-    #     print thing.count, thing.card
-    # #
     db.session.add(d)
-    # print d.cards
 
 def deck_id_to_card_list(deck_id, card_db):
     d = Deck.query.filter_by(id=deck_id).first()
+    print "deck:", d.name, d.user.email
     for c in d.cards:
         card = card_db.get_card_by_id(c.card.blizz_id)
         print card['name'], c.count
@@ -48,26 +47,26 @@ def reset(card_db):
     db.drop_all()
     db.create_all()
     add_card_data(card_db)
+    make_default_user()
+
+def make_default_user():
+    u = User(email="bearontheroof@gmail.com", password="wangwang", active=True, confirmed_at=datetime.now())
+    db.session.add(u)
 
 
 def main():
     card_db = card_database.CardDatabase.get_database()
-    # reset(card_db)
-    # db.session.commit()
+    reset(card_db)
+    db.session.commit()
 
-    # me_user = User.query.filter_by(id=1).first()
-    # create_deck(me_user, "data/decks/handlock.deck", card_db)
-    # db.session.commit()
-
-
+    me_user = User.query.filter_by(id=1).first()
+    create_deck(me_user, "data/decks/cwarrior.deck", card_db)
+    create_deck(me_user, "data/decks/handlock.deck", card_db)
+    db.session.commit()
 
     deck_id_to_card_list(1, card_db)
-
     print "\n\n\n"
     deck_id_to_card_list(2, card_db)
-
-
-
 
 
 if __name__ == '__main__':

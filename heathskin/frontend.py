@@ -60,7 +60,7 @@ class CardDeckAssociation(db.Model):
     __tablename__ = 'cards_decks'
     card_id = db.Column(db.Integer, db.ForeignKey('card.id'), primary_key=True)
     deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'), primary_key=True)
-    count = db.Column(db.Integer)
+    count = db.Column(db.Integer, nullable=False)
 
     deck = db.relationship('Deck',
                 backref=db.backref("cards", cascade="all, delete-orphan"))
@@ -74,11 +74,13 @@ class CardDeckAssociation(db.Model):
 class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship('User')
+    name = db.Column(db.String(255), nullable=False)
+    user = db.relationship('User',
+                backref=db.backref("decks", cascade="all, delete-orphan"))
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    blizz_id = db.Column(db.String(32), unique=True)
+    blizz_id = db.Column(db.String(32), unique=True, nullable=False)
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
@@ -91,9 +93,7 @@ def get_server_for_user(user_id):
     return "web1"
     #username = request.cookies.get('username')
 
-
 def get_game_state(user_id):
-    #session_start = session['session_start_time']
     game_state = GAME_UNIVERSE.get_latest_game_state_for_user(user_id)
     return game_state
 
