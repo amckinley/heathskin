@@ -28,6 +28,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='Track some skins')
     parser.add_argument('--port-offset')
+    parser.add_argument('--debug', action='store_true')
     args = parser.parse_args()
 
     port = 3000

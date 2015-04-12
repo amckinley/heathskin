@@ -1,6 +1,5 @@
 import os
 from flask import Flask, request, redirect, url_for, render_template, abort
-from werkzeug import secure_filename
 
 import deck
 import card_database
@@ -15,7 +14,6 @@ def index():
 def upload():
     file = request.files['file']
     if file:
-        filename = secure_filename(file.filename)
         player_deck = deck.deck_from_file(file)
     else:
         abort(505)

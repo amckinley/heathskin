@@ -17,8 +17,7 @@ from flask.ext.security import Security, SQLAlchemyUserDatastore, \
 from flask.ext.login import current_user
 
 
-from heathskin import game_state
-from heathskin import game_universe, card_database
+from heathskin import game_state, game_universe, card_database, deck
 
 
 # Create app
@@ -104,10 +103,12 @@ def entity_dump():
     return str(set([e.card_id for e in game_state.entities.values()]))
 
 @app.route('/')
+@login_required
 def index():
     return render_template('deck_upload.html')
 
 @app.route('/upload', methods=['POST'])
+@login_required
 def upload():
     file = request.files['file']
     if file:
@@ -117,10 +118,25 @@ def upload():
     print_deck = deck.Deck.get_card_names(player_deck)
     card_names = []
     for card in print_deck:
-        card_names.append(card['name'])
-    return str(card_names)
+        card_names.append(card)
+    cur_game = GAME_UNIVERSE.get_latest_game_state_for_user(current_user.get_id())
+    if not cur_game:
+        return ""
+    played_cards = cur_game.get_played_cards("FRIENDLY")
+    card_db = card_database.CardDatabase.get_database()
+    played_card_ids = [card_db.get_card_by_id(e.card_id) for e in played_cards]
+    for card in played_card_ids:
+        if card in card_names:
+            card_names.remove(card)
+    for card in card_names:
+        print card['name']
 
-@app.route("/tracker")
+    return render_template('tracker.html',
+                            cards=card_names,
+                            handsize=len(card_names))
+
+
+@app.route("/current_hand")
 @login_required
 def deck_tracker():
     card_db = card_database.CardDatabase.get_database()
@@ -130,12 +146,10 @@ def deck_tracker():
 
     hand = game_state.get_friendly_hand()
     hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
-    for card in hand_ids:
-        print card
-    return render_template('tracker.html',
+
+    return render_template('cur_hand.html',
                             cards=hand_ids,
                             handsize=len(hand_ids))
-
 
 @app.route('/upload_line', methods=['POST'])
 @auth_token_required
@@ -173,8 +187,5 @@ def help():
         if rule.endpoint != 'static':
             func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
     return jsonify(func_list)
-
-
-
 
 
