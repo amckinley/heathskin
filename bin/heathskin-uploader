@@ -4,7 +4,6 @@ import threading
 import Queue
 import argparse
 import logging
-import time
 
 from os.path import expanduser
 from requests.exceptions import ConnectionError
@@ -39,8 +38,6 @@ def run(args):
 
             logger.info("Uploaded a total of %d lines", uploader.line_count)
 
-
-
     def shutdown(t_thread, p_thread):
         stop_event.set()
         if t_thread:
@@ -53,6 +50,11 @@ def run(args):
 
     try:
         uploader.start()
+
+        # start thread for tracking uploader progress
+        progress_thread = threading.Thread(target=progress, args=(stop_event,))
+        progress_thread.start()
+
         if args.use_replay_log:
             logger.info("Starting data reply from %s", args.use_replay_log)
             fake_lines = open(args.use_replay_log)
@@ -62,15 +64,11 @@ def run(args):
             logger.info("Finished with fake data")
             return
 
-        output_queue = Queue.Queue(maxsize=100) # buffer at most 100 lines
+        output_queue = Queue.Queue(maxsize=100)
 
         # start thread for tailing the log
         t = TailThread(args.log_file_path, stop_event, output_queue)
         t.start()
-
-        # start thread for tracking uploader progress
-        progress_thread = threading.Thread(target=progress, args=(stop_event, ))
-        progress_thread.start()
 
         while True:
             try:
@@ -94,6 +92,9 @@ def run(args):
     except Exception as e:
         logger.exception("Unexpected exception")
         shutdown(t, progress_thread)
+
+    shutdown(t, progress_thread)
+
 
 def main(args):
     run(args)
