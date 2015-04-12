@@ -50,7 +50,7 @@ if __name__ == '__main__':
     db.create_all()
     try:
         logger.info("Starting server...")
-        app.run(port=port, host="0.0.0.0")
+        app.run(port=port, host="127.0.0.1")
     except Exception as e:
         logger.error("lol crashing")
         sys.exit(-1)
