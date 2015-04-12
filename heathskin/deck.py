@@ -21,7 +21,7 @@ def deck_from_file(deck_file):
         card_name = n.rstrip()
         res = card_db.search(name=card_name)
         if len(res) == 1:
-            card_list.append(res[0])
+            card_list.append(res[0]['id'])
         else:
             raise Exception("couldnt find card with name '{}'. len(res) = {}".format(card_name, len(res)))
 
