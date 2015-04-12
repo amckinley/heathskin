@@ -51,6 +51,10 @@ class GameUniverse(object):
         return self.sessions[session_key]['game_state']
 
     def get_latest_game_state_for_user(self, user_id):
+        session_key = self.get_latest_session_for_user(user_id)
+        return self.sessions[session_key]['game_state']
+        
+    def get_latest_session_for_user(self, user_id):
         candidate_sessions = []
         candidate_reverse_map = {}
 
@@ -61,12 +65,11 @@ class GameUniverse(object):
                 candidate_reverse_map[date_obj] = s_start
         if not candidate_sessions:
             return None
-
+            
         cs = sorted(candidate_sessions)
         latest_session_start = candidate_reverse_map[cs[-1]]
         self.logger.info("Found a total of %d sessions for user %d, using %s",
             len(candidate_sessions), user_id, latest_session_start)
 
         session_key = (user_id, latest_session_start)
-        return self.sessions[session_key]['game_state']
-
+        return session_key
