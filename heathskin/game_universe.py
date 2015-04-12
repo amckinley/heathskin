@@ -3,6 +3,7 @@ import logging
 import json
 import dateutil.parser
 from datetime import datetime
+import codecs
 
 from heathskin import game_state
 
@@ -25,7 +26,7 @@ class GameUniverse(object):
             if not os.path.exists(session_log_dir):
                 os.makedirs(session_log_dir)
 
-            file_handle = open(session_log_path, 'a')
+            file_handle = codecs.open(session_log_path, encoding='utf-8', mode='a')
 
             self.sessions[session_key] = {
                 'last_seen_at': datetime.now(),
@@ -55,6 +56,8 @@ class GameUniverse(object):
                 date_obj = dateutil.parser.parse(s_start)
                 candidate_sessions.append(date_obj)
                 candidate_reverse_map[date_obj] = s_start
+        if not candidate_sessions:
+            return None
 
         cs = sorted(candidate_sessions)
         latest_session_start = candidate_reverse_map[cs[-1]]
