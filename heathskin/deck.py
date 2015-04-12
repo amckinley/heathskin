@@ -7,28 +7,34 @@ import logging
 from heathskin import utils
 from heathskin import card_database
 
-def deck_from_file(path):
+def deck_from_path(path):
     with open(path) as f:
-        card_names = [n.rstrip() for n in f.readlines()]
+        # card_names = [n.rstrip() for n in f.readlines()]
 
-    return Deck(card_names)
+        return deck_from_file(f)
+
+
+def deck_from_file(deck_file):
+    card_db = card_database.CardDatabase.get_database()
+    card_list = list()
+    for n in deck_file:
+        card_name = n.rstrip()
+        res = card_db.search(name=card_name)
+        if len(res) == 1:
+            card_list.append(res[0])
+        else:
+            raise Exception("couldnt find card with name '{}'. len(res) = {}".format(card_name, len(res)))
+
+    return Deck(card_list)
+
 
 class Deck(object):
-    def __init__(self, card_names):
+    def __init__(self, blizz_ids):
         self.logger = logging.getLogger()
-        if len(card_names) != 30:
-            raise Exception("you must have exactly 30 cards; found {}".format(len(card_names)))
-
+        if len(blizz_ids) != 30:
+            raise Exception("you must have exactly 30 cards; found {}".format(len(blizz_ids)))
+        self.blizz_ids = blizz_ids
         self.card_db = card_database.CardDatabase.get_database()
-
-        self.card_list = list()
-        for n in card_names:
-            res = self.card_db.search(name=n)
-            if len(res) == 1:
-                self.card_list.append(res[0])
-            else:
-                raise Exception("couldnt find card with name {}".format(n))
-
 
     def __getstate__(self):
         odict = self.__dict__.copy()
@@ -58,6 +64,11 @@ class Deck(object):
 
         # print "hunter secrets", [c['name'] for c in self.card_db.search(player_class="Hunter", mechanics=['Secret'])]
 
+    def get_card_names(self):
+        cards = []
+        for id in blizz_ids:
+            cards.append(id)
+        return cards
 
     def print_draw_probs(self, deck, hand, play, graveyard):
         deck_size = len(deck)
