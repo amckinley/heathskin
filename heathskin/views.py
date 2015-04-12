@@ -109,6 +109,14 @@ def deck_tracker():
         'cur_hand.html', cards=hand_ids, handsize=len(hand_ids))
 
 
+@app.route("/deck_maker", methods=['POST'])
+@login_required
+def deck_maker():
+    projectpath = request.form.projectFilePath
+    print projectpath
+    return ""
+
+
 @app.route("/universe_dump")
 def universe_dump():
     universe = GameUniverse.get_universe()
