@@ -36,7 +36,10 @@ class GameUniverse(object):
 
         session = self.sessions[session_key]
 
-        session['game_state'].feed_line(log_line.rstrip())
+        try:
+            session['game_state'].feed_line(log_line.rstrip())
+        except Exception as e:
+            self.logger.error("Failed to update GameState with line: '%s", log_line.rstrip())
         session['last_seen_at'] = datetime.now()
         session['file_handle'].write(log_line)
 
