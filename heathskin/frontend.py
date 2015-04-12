@@ -41,10 +41,6 @@ roles_users = db.Table('roles_users',
         db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),
         db.Column('role_id', db.Integer(), db.ForeignKey('role.id')))
 
-# cards_decks = db.Table('cards_decks',
-#         db.Column('card_id', db.Integer(), db.ForeignKey('card.id')),
-#         db.Column('deck_id', db.Integer(), db.ForeignKey('deck.id')))
-
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
@@ -65,21 +61,24 @@ class CardDeckAssociation(db.Model):
     card_id = db.Column(db.Integer, db.ForeignKey('card.id'), primary_key=True)
     deck_id = db.Column(db.Integer, db.ForeignKey('deck.id'), primary_key=True)
     count = db.Column(db.Integer)
-    deck = db.relationship("Deck", backref="deck")
 
+    deck = db.relationship('Deck',
+                backref=db.backref("cards", cascade="all, delete-orphan"))
+    card = db.relationship('Card')
 
-class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    blizz_id = db.Column(db.String(255), unique=True)
+    def __init__(self, card=None, deck=None, count=1):
+        self.deck = deck
+        self.card = card
+        self.count = count
 
 class Deck(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User')
 
-    #children = relationship("Association", backref="parent")
-    cards = db.relationship("CardDeckAssociation")
-    # cards  = db.relationship('Card', secondary=cards_decks,
-    #                         backref=db.backref('decks', lazy='dynamic'))
+class Card(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    blizz_id = db.Column(db.String(32), unique=True)
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

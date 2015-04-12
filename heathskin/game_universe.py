@@ -14,7 +14,7 @@ class GameUniverse(object):
         self.sessions = {}
 
     def get_session_log_path(self, user_id, session_start):
-        return os.path.join(self.session_log_path, user_id, session_start)
+        return os.path.join(self.session_log_path, user_id, session_start.replace(":", "_"))
 
     def feed_line(self, user_id, session_start, log_line):
         session_key = (user_id, session_start)
