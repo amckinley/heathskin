@@ -1,9 +1,7 @@
 import logging
 import requests
-from requests.adapters import HTTPAdapter
-import json
-
 from heathskin.exceptions import UploaderException
+
 
 class LogUploader(object):
     def __init__(self, log_server, username, password):
@@ -13,7 +11,8 @@ class LogUploader(object):
         self.password = password
         self.log_url = "http://{}/upload_line".format(self.log_server)
         self.login_url = "http://{}/login".format(self.log_server)
-        self.start_session_url = "http://{}/start_session".format(self.log_server)
+        self.start_session_url = "http://{}/start_session".format(
+            self.log_server)
         self.started = False
         self._line_count = 0
 
@@ -30,7 +29,6 @@ class LogUploader(object):
             headers={'Authentication-Token': self.authentication_token},
             json={"log_line": line})
 
-        #self.logger.info("cookies are %s", res.cookies.keys())
         res.raise_for_status()
 
         self._line_count += 1
@@ -43,7 +41,9 @@ class LogUploader(object):
         self.session = requests.Session()
 
         # authenticate ourselves and save the resulting auth token
-        res = self.session.post(self.login_url, json={"email": self.username, "password": self.password})
+        res = self.session.post(
+            self.login_url,
+            json={"email": self.username, "password": self.password})
         json_res = res.json()
 
         # first check the http status
@@ -52,11 +52,11 @@ class LogUploader(object):
         # then check the meta status
         meta_status_code = json_res["meta"]["code"]
         if meta_status_code != 200:
-            raise UploaderException("Failed to login: {}".format(json_res["response"]["errors"].values()[0][0]))
+            raise UploaderException("Failed to login: {}".format(
+                json_res["response"]["errors"].values()[0][0]))
 
 
         self.authentication_token = json_res["response"]["user"]["authentication_token"]
-
 
         # begin the logging session
         res = self.session.post(

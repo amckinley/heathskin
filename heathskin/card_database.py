@@ -1,7 +1,5 @@
 from collections import defaultdict
-import copy
 import json
-import operator
 import logging
 
 from heathskin import utils
@@ -9,6 +7,7 @@ from heathskin import utils
 CARD_DATABASE_JSON_PATH = "data/AllSets.json"
 
 logger = logging.getLogger()
+
 
 class CardDatabase(object):
     _db_cache = {}
@@ -27,14 +26,15 @@ class CardDatabase(object):
 
         self.read_card_data()
 
-
     def read_card_data(self):
         with open(self.database_path) as f:
             raw = json.load(f)
             self.card_data = {n: d for n, d in raw.items() if n in self.get_real_set_names()}
 
-    def search(self, initial_cards=None, collectible=True, name=None, cost=None, card_type=None,
-        rarity=None, faction=None, mechanics=None, attack=None, health=None, player_class=None):
+    def search(self, initial_cards=None, collectible=True, name=None,
+            cost=None, card_type=None,
+            rarity=None, faction=None, mechanics=None, attack=None, health=None,
+            player_class=None):
 
         def _filter(cs, key, value):
             return [c for c in cs if key in c and c[key] == value]
@@ -66,7 +66,8 @@ class CardDatabase(object):
             cards_remaining = _filter(cards_remaining, 'health', health)
 
         if player_class:
-            cards_remaining = _filter(cards_remaining, 'playerClass', player_class)
+            cards_remaining = _filter(
+                cards_remaining, 'playerClass', player_class)
 
         # substring match
         if name:
@@ -77,7 +78,6 @@ class CardDatabase(object):
             for m in mechanics:
                 cards_remaining = [c for c in cards_remaining if 'mechanics' in c and m in c['mechanics']]
 
-
         return list(cards_remaining)
 
     @property
@@ -85,7 +85,8 @@ class CardDatabase(object):
         ids = dict()
         for c in self.all_cards:
             if c['id'] in ids:
-                raise Exception("lol, same id for two cards: '{}'".format(c['id']))
+                raise Exception(
+                    "lol, same id for two cards: '{}'".format(c['id']))
 
             ids[c['id']] = c
 
@@ -140,7 +141,6 @@ class CardDatabase(object):
         for set_name, card_set in self.card_data.items():
             for c in card_set:
                 name_check[c['name']].append(c)
-
 
         for name, cards in name_check.items():
             if len(cards) == 1:

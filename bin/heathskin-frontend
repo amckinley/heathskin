@@ -1,28 +1,15 @@
 #!/usr/bin/env python
 
-import json
-from datetime import datetime
-import pickle
 import argparse
 import sys
 
 import logging
 from logging import StreamHandler, Formatter
 
-from flask import Flask, render_template, session, request, \
-    jsonify, abort, make_response
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import Security, SQLAlchemyUserDatastore, \
-    UserMixin, RoleMixin, login_required, auth_token_required
-from flask.ext.login import current_user
+from heathskin.frontend import app
 
 
-from heathskin import game_state, card_database
-from heathskin import game_universe
-
-from heathskin.frontend import db, app
-
-if __name__ == '__main__':
+def main():
     logger = app.logger
     logger.setLevel(logging.INFO)
 
@@ -38,7 +25,7 @@ if __name__ == '__main__':
     # make flask app's logger behave reasonably and write to stdout
     handler = StreamHandler()
     handler.setLevel(logging.INFO)
-    FORMAT_STRING = "{pid=%(process)d} %(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
+    FORMAT_STRING = "{pid=%(process)d} %(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"  # noqa
     fmtr = Formatter(fmt=FORMAT_STRING)
     handler.setFormatter(fmtr)
     app.logger.addHandler(handler)
@@ -47,10 +34,12 @@ if __name__ == '__main__':
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    db.create_all()
     try:
         logger.info("Starting server...")
         app.run(port=port, host="127.0.0.1")
-    except Exception as e:
+    except Exception:
         logger.error("lol crashing")
         sys.exit(-1)
+
+if __name__ == '__main__':
+    main()

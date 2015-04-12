@@ -2,9 +2,10 @@ import os
 from datetime import datetime
 from collections import defaultdict
 
-from heathskin.frontend import db, Card, Deck, \
-    CardDeckAssociation, User
+from heathskin.frontend import db
+from heathskin.models import Card, Deck, CardDeckAssociation, User
 from heathskin import card_database
+
 
 def create_deck(user, deck_path, card_db):
     with open(deck_path) as f:
@@ -31,6 +32,7 @@ def create_deck(user, deck_path, card_db):
 
     db.session.add(d)
 
+
 def deck_id_to_card_list(deck_id, card_db):
     d = Deck.query.filter_by(id=deck_id).first()
     print "deck:", d.name, d.user.email
@@ -38,10 +40,12 @@ def deck_id_to_card_list(deck_id, card_db):
         card = card_db.get_card_by_id(c.card.blizz_id)
         print card['name'], c.count
 
+
 def add_card_data(card_db):
     for ent in card_db.all_collectible_cards:
         c = Card(blizz_id=ent['id'])
         db.session.add(c)
+
 
 def reset(card_db):
     db.drop_all()
@@ -49,10 +53,18 @@ def reset(card_db):
     add_card_data(card_db)
     make_default_users()
 
+
 def make_default_users():
-    austin = User(email="bearontheroof@gmail.com", password="wangwang", active=True, confirmed_at=datetime.now())
-    andrew = User(email="andrewckoch@gmail.com", password="ninjacat", active=True, confirmed_at=datetime.now())
-    peter = User(email="p@p.com", password="password", active=True, confirmed_at=datetime.now())
+    austin = User(
+        email="bearontheroof@gmail.com",
+        password="wangwang", active=True, confirmed_at=datetime.now())
+    andrew = User(
+        email="andrewckoch@gmail.com",
+        password="ninjacat", active=True, confirmed_at=datetime.now())
+    peter = User(
+        email="p@p.com",
+        password="password", active=True, confirmed_at=datetime.now())
+
     db.session.add(austin)
     db.session.add(andrew)
     db.session.add(peter)

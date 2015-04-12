@@ -1,9 +1,17 @@
 import operator
 import logging
 
+from datetime import datetime
 from tabulate import tabulate
 
 logger = logging.getLogger()
+
+
+def get_datetime_as_iso8601(dt=None):
+    if not dt:
+        dt = datetime.now()
+
+    return dt.replace(microsecond=0).isoformat()
 
 
 def params_to_dict(param_str):
@@ -40,6 +48,7 @@ def params_to_dict(param_str):
     #     raise Exception("fucked param len. expected {}, got {}".format(expected_len, actual_len))
 
     return data
+
 
 class MultiDictDiffer(object):
     def __init__(self, dicts):
