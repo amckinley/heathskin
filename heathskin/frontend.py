@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
-import json
-from datetime import datetime
-import pickle
-import argparse
-import sys
+import os
 
-import logging
-from logging import StreamHandler, Formatter
+from datetime import datetime
+from collections import defaultdict
+
 
 from flask import Flask, render_template, session, request, \
-    jsonify, abort, make_response
+    jsonify, abort, make_response, redirect
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import Security, SQLAlchemyUserDatastore, \
     UserMixin, RoleMixin, login_required, auth_token_required
 from flask.ext.login import current_user
+from werkzeug import secure_filename
 
 
 from heathskin import game_state, game_universe, card_database, deck
@@ -105,35 +103,65 @@ def entity_dump():
 @app.route('/')
 @login_required
 def index():
+    decknames = [d.name for d in current_user.decks]
+    print decknames
+    return render_template('index.html',
+                            decknames=decknames)
+
+@app.route('/uploadform')
+@login_required
+def upload_form():
     return render_template('deck_upload.html')
 
 @app.route('/upload', methods=['POST'])
 @login_required
 def upload():
     file = request.files['file']
-    if file:
-        player_deck = deck.deck_from_file(file)
-    else:
+    if not file:
         abort(505)
-    print_deck = deck.Deck.get_card_names(player_deck)
-    card_names = []
-    for card in print_deck:
-        card_names.append(card)
-    cur_game = GAME_UNIVERSE.get_latest_game_state_for_user(current_user.get_id())
-    if not cur_game:
-        return ""
-    played_cards = cur_game.get_played_cards("FRIENDLY")
-    card_db = card_database.CardDatabase.get_database()
-    played_card_ids = [card_db.get_card_by_id(e.card_id) for e in played_cards]
-    for card in played_card_ids:
-        if card in card_names:
-            card_names.remove(card)
-    for card in card_names:
-        print card['name']
 
-    return render_template('tracker.html',
-                            cards=card_names,
-                            handsize=len(card_names))
+    # card_db = card_database.CardDatabase.get_database()
+    player_deck = deck.deck_from_file(file)
+    filename = secure_filename(file.filename)
+    deck_name = os.path.basename(filename).split(".")[0]
+    d = Deck(user_id=current_user.get_id(), name=deck_name)
+
+    card_counts = defaultdict(int)
+    ids_to_objs = {}
+    for b_id in player_deck.blizz_ids:
+        card_obj = Card.query.filter_by(blizz_id=b_id).first()
+        card_counts[card_obj.blizz_id] += 1
+        ids_to_objs[card_obj.blizz_id] = card_obj
+
+    for blizz_id, cnt in card_counts.items():
+        card_obj = ids_to_objs[blizz_id]
+        cda = CardDeckAssociation(card=card_obj, deck=d, count=cnt)
+        db.session.add(cda)
+
+    db.session.add(d)
+    db.session.commit()
+
+    return redirect("/")
+
+    # print_deck = deck.Deck.get_card_names(player_deck)
+    # card_names = []
+    # for card in print_deck:
+    #     card_names.append(card)
+    # cur_game = GAME_UNIVERSE.get_latest_game_state_for_user(current_user.get_id())
+    # if not cur_game:
+    #     return ""
+    # played_cards = cur_game.get_played_cards("FRIENDLY")
+    # card_db = card_database.CardDatabase.get_database()
+    # played_card_ids = [card_db.get_card_by_id(e.card_id) for e in played_cards]
+    # for card in played_card_ids:
+    #     if card in card_names:
+    #         card_names.remove(card)
+    # for card in card_names:
+    #     print card['name']
+
+    # return render_template('tracker.html',
+    #                         cards=card_names,
+    #                         handsize=len(card_names))
 
 
 @app.route("/current_hand")

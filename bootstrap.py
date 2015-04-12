@@ -47,11 +47,15 @@ def reset(card_db):
     db.drop_all()
     db.create_all()
     add_card_data(card_db)
-    make_default_user()
+    make_default_users()
 
-def make_default_user():
-    u = User(email="bearontheroof@gmail.com", password="wangwang", active=True, confirmed_at=datetime.now())
-    db.session.add(u)
+def make_default_users():
+    austin = User(email="bearontheroof@gmail.com", password="wangwang", active=True, confirmed_at=datetime.now())
+    andrew = User(email="andrewckoch@gmail.com", password="ninjacat", active=True, confirmed_at=datetime.now())
+    peter = User(email="p@p.com", password="password", active=True, confirmed_at=datetime.now())
+    db.session.add(austin)
+    db.session.add(andrew)
+    db.session.add(peter)
 
 
 def main():
