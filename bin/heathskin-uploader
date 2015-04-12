@@ -10,6 +10,7 @@ from os.path import expanduser
 from requests.exceptions import ConnectionError
 from heathskin.tail_thread import TailThread
 from heathskin.log_uploader import LogUploader
+from heathskin.exceptions import UploaderException
 
 
 def run(args):
@@ -38,15 +39,20 @@ def run(args):
 
             logger.info("Uploaded a total of %d lines", uploader.line_count)
 
-    progress_thread = threading.Thread(target=progress, args=(stop_event, ))
-    progress_thread.start()
 
-    def shutdown():
+
+    def shutdown(t_thread, p_thread):
         stop_event.set()
-        t.join()
-        progress_thread.join()
+        if t_thread:
+            t_thread.join()
+        if p_thread:
+            p_thread.join()
+
+    t = None
+    progress_thread = None
 
     try:
+        uploader.start()
         if args.use_replay_log:
             logger.info("Starting data reply from %s", args.use_replay_log)
             fake_lines = open(args.use_replay_log)
@@ -57,8 +63,14 @@ def run(args):
             return
 
         output_queue = Queue.Queue(maxsize=100) # buffer at most 100 lines
+
+        # start thread for tailing the log
         t = TailThread(args.log_file_path, stop_event, output_queue)
         t.start()
+
+        # start thread for tracking uploader progress
+        progress_thread = threading.Thread(target=progress, args=(stop_event, ))
+        progress_thread.start()
 
         while True:
             try:
@@ -69,15 +81,19 @@ def run(args):
 
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
-        shutdown()
+        shutdown(t, progress_thread)
 
-    except ConnectionError as e:
-        logger.exception("frontend server crash")
-        shutdown()
+    except ConnectionError:
+        logger.error("heathskin server at %s is unreachable", args.log_server)
+        shutdown(t, progress_thread)
+
+    except UploaderException as e:
+        logger.error(e)
+        shutdown(t, progress_thread)
 
     except Exception as e:
         logger.exception("Unexpected exception")
-        shutdown()
+        shutdown(t, progress_thread)
 
 def main(args):
     run(args)
