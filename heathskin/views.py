@@ -10,7 +10,7 @@ from werkzeug import secure_filename
 from heathskin.frontend import app, db
 from heathskin.models import Deck, Card, CardDeckAssociation
 from heathskin.game_universe import GameUniverse
-from heathskin import card_database, utils
+from heathskin import card_database, utils, deck
 
 
 logger = app.logger
@@ -109,13 +109,51 @@ def deck_tracker():
         'cur_hand.html', cards=hand_ids, handsize=len(hand_ids))
 
 
+@app.route("/deck_maker")
+@login_required
+def deck_maker_init():
+
+    card_db = card_database.CardDatabase.get_database()
+    possible_names = card_db.get_all_valid_names()
+    # possible_ids = card_db.cards_by_ids()
+
+    if "building_deck" not in session:
+        session['building_deck'] = []
+
+    selected_names = session['building_deck']
+    selected_ids = []
+    for card in selected_names:
+        search_list = (card_db.search(name=card))[0]
+        selected_ids.append(search_list['id'])
+    print "selected_ids: ", selected_ids
+
+
+    # return render_template("deck_maker.html", validcards=possible_names)
+    return render_template("deck_maker.html",
+                            validcards=possible_names,
+                            pickedcards=selected_ids)
+
 @app.route("/deck_maker", methods=['POST'])
 @login_required
 def deck_maker():
-    projectpath = request.form.projectFilePath
-    print projectpath
-    return ""
+    card = request.form['text']
+    print "text: ", card
 
+    card_db = card_database.CardDatabase.get_database()
+    possible_names = card_db.get_all_valid_names()
+
+    if "building_deck" not in session:
+        session['building_deck'] = []
+
+    building_deck = session['building_deck']
+
+    if card in possible_names and card not in building_deck and len(building_deck) < 30:
+        building_deck.append(card)
+        print "building_deck: ", building_deck
+        print "len(building_deck): ", len(building_deck)
+        return redirect("/deck_maker")
+    else:
+        return "Invalid State"
 
 @app.route("/universe_dump")
 def universe_dump():

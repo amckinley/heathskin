@@ -1,20 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
-          rel="stylesheet">
-    </head>
-    <body>
-        <div class="container">
-            <div class="header">
-                <h3 class="text-muted">Deck Constructor</h3>
-            </div>
-            <hr/>
-            <div>
+<head>
+    <meta charset="utf-8">
+    <title>Heathskin</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script>
+    $(function() {
+        var availableTags = [
+        {% for card in validcards %}
+            "{{ card|safe }}",
+        {% endfor %}
+        ];
+        $( "#tags" ).autocomplete({
+            source: availableTags
+        });
+    });
+    </script>
+</head>
+<body>
+    <div class="builder-input">
+        <h1>Deck Constructor</h1>
+        <form action="deck_maker" method="POST">
+            <label for="tags">Enter your card: </label>
+            <input id="tags" type="text" name="text">
+            <input type="submit" name="deck_file" value="Send">
+        </form>
+    </div>
 
-            <form>
-                Enter card:<br>
-                <input type="text" name="cardname" action="deck_maker" method="POST">
-                <br>
-                <input type="submit" value="Submit">
-            </form>
+{% for card in pickedcards %}
+<p>"{{ card }}"</p>
+{% endfor %}
+{% for card in pickedcards %}
+    <li>
+        <div>
+            <span align="right"><img src="card_images/banners/{{card}}_banner.png" ALIGN="middle" style="width:350; height:40; padding-left: 100px; background:#000000;text-align:left, border:1px"></span>
+            <span align="left"><img src="ui_images/mana.png" ALIGN="middle" style="width: 20; height: 20"></span>
+            <span class="card-name" vertical-align="middle"; style="color: white; padding-left: 20px; padding-bottom: 0px"><p><b>{{card['cost']}} &nbsp&nbsp&nbsp {{card['name']}}</b></p></span>
+        </div>
+    </li>
+{% endfor %}
+
+</body>
+</html>
