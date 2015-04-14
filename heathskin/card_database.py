@@ -31,7 +31,7 @@ class CardDatabase(object):
             raw = json.load(f)
             self.card_data = {n: d for n, d in raw.items() if n in self.get_real_set_names()}
 
-    def search(self, initial_cards=None, collectible=True, name=None,
+    def search(self, initial_cards=None, collectible=True, substring_name=None, exact_name=None,
             cost=None, card_type=None,
             rarity=None, faction=None, mechanics=None, attack=None, health=None,
             player_class=None):
@@ -70,8 +70,12 @@ class CardDatabase(object):
                 cards_remaining, 'playerClass', player_class)
 
         # substring match
-        if name:
-            cards_remaining = [c for c in cards_remaining if name in c['name']]
+        if substring_name:
+            cards_remaining = [c for c in cards_remaining if substring_name in c['name']]
+
+        # exact match
+        if exact_name:
+            cards_remaining = [c for c in cards_remaining if exact_name == c['name']]
 
         # logical AND
         if mechanics:
