@@ -16,6 +16,62 @@ from heathskin import card_database, utils, deck
 logger = app.logger
 
 
+@app.route('/deck_list')
+def deck_list_unfiltered():
+    return deck_list("")
+
+@app.route('/deck_list/<string:filter_string>')
+@login_required
+def deck_list(filter_string):
+    
+    card_db = card_database.CardDatabase.get_database()
+    universe = GameUniverse.get_universe()
+    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
+    
+    if not game_state:
+        return "no game states found for user id {}".format(
+            current_user.get_id())
+
+    # XXX hard coding deck number 1
+    d = Deck.query.filter_by(id=3).first()
+
+    to_return = "deck: " + d.name + " " + d.user.email
+
+    played_cards = game_state.get_played_cards_friendly()
+    
+    print (game_state.get_entity_counts_by_zone())
+
+    for c in d.cards:
+        card = card_db.get_card_by_id(c.card.blizz_id)
+        number_in_deck = c.count
+        
+        #print ("c.card.blizz_id: " + c.card.blizz_id)
+        #print ("c.card: " + str(c.card))
+        #print ("card_db.get_card_by_id(c.card.blizz_id): " + str(card_db.get_card_by_id(c.card.blizz_id)))
+        #print ("")
+        show_card = True
+        
+        if (len(filter_string) > 0):
+            show_card = False
+            if ('mechanics' in card):
+                for m in card['mechanics']:
+                    if m.lower() == filter_string.lower():
+                        show_card = True
+        
+        for entity in played_cards:
+
+            if entity.card_id == card['id']:
+                #print ("entity.card_id= " + entity.card_id + "  " + card['id'])
+                number_in_deck -= 1
+        
+        if show_card:
+            to_return += "<br>" + card['name'] + " (" + str(number_in_deck) + ")"
+            if 'mechanics' in card:
+                for m in card['mechanics']:
+                    to_return += " (" + m + ")"
+            to_return += "</br>"
+    return to_return  
+
 @app.route('/entity_dump')
 @login_required
 def entity_dump():
