@@ -52,21 +52,19 @@ def deck_list(filter_string):
         show_card = True
         
         if (len(filter_string) > 0):
-            show_card = False
+            show_card = False 
             if ('mechanics' in card):
                 for m in card['mechanics']:
                     if m.lower() == filter_string.lower():
                         show_card = True
         
         for entity in played_cards:
-
             if entity.card_id == card['id']:
                 #print ("entity.card_id= " + entity.card_id + "  " + card['id'])
                 number_in_deck -= 1
-        
-        if number_in_deck > 0:
-            show_card = True
-        
+                if number_in_deck < 1:
+                    show_card = False
+                    
         if show_card:
             to_return += "<br>" + card['name'] + " (" + str(number_in_deck) + ")"
             if 'mechanics' in card:
