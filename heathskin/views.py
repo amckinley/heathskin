@@ -37,9 +37,7 @@ def deck_list(filter_string):
     d = Deck.query.filter_by(id=3).first()
 
     to_return = "deck: " + d.name + " " + d.user.email
-
-    played_cards = game_state.get_played_cards_friendly()
-
+    played_cards = game_state.get_played_cards(player="FRIENDLY")
     print (game_state.get_entity_counts_by_zone())
 
     for c in d.cards:
@@ -65,7 +63,6 @@ def deck_list(filter_string):
                 number_in_deck -= 1
                 if number_in_deck < 1:
                     show_card = False
-
 
         if show_card:
             to_return += "<br>" + card['name'] + " (" + str(number_in_deck) + ")"
