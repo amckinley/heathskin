@@ -62,6 +62,7 @@ def run(args):
                 if l.rstrip() and not l.startswith('#'):
                     uploader.upload_line(l)
             logger.info("Finished with fake data")
+            shutdown(t, progress_thread)
             return
 
         output_queue = Queue.Queue(maxsize=100)
