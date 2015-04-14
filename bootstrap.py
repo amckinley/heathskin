@@ -16,7 +16,7 @@ def create_deck(user, deck_path, card_db):
     card_counts = defaultdict(int)
     ids_to_objs = {}
     for n in card_names:
-        res = card_db.search(name=n)
+        res = card_db.search(exact_name=n)
         if len(res) == 1:
             res = res[0]
             card_obj = Card.query.filter_by(blizz_id=res['id']).first()
@@ -76,13 +76,17 @@ def main():
     db.session.commit()
 
     me_user = User.query.filter_by(id=1).first()
+    print ("User: " + me_user.email)
     create_deck(me_user, "data/decks/cwarrior.deck", card_db)
     create_deck(me_user, "data/decks/handlock.deck", card_db)
+    create_deck(me_user, "data/decks/peter_drood.deck", card_db)
     db.session.commit()
 
     deck_id_to_card_list(1, card_db)
     print "\n\n\n"
     deck_id_to_card_list(2, card_db)
+    print "\n\n\n"    
+    deck_id_to_card_list(3, card_db)    
 
 
 if __name__ == '__main__':
