@@ -64,6 +64,9 @@ def deck_list(filter_string):
                 #print ("entity.card_id= " + entity.card_id + "  " + card['id'])
                 number_in_deck -= 1
         
+        if number_in_deck > 0:
+            show_card = True
+        
         if show_card:
             to_return += "<br>" + card['name'] + " (" + str(number_in_deck) + ")"
             if 'mechanics' in card:
