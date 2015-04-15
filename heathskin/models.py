@@ -1,8 +1,8 @@
 
 from flask.ext.security import UserMixin, RoleMixin
-
-
 from heathskin.frontend import db
+
+
 
 roles_users = db.Table(
     'roles_users',

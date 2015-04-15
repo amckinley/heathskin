@@ -23,16 +23,6 @@ class GameState(object):
 
         self.start_new_game()
 
-    def __getstate__(self):
-        odict = self.__dict__.copy()
-        del odict['logger']
-        return odict
-
-    def __setstate__(self, dict):
-        logger = logging.getLogger()
-        self.__dict__.update(dict)
-        self.logger = logger
-
     def _create_history(self, *args, **kwargs):
         player = self.entities.get('3')
         if not player.get_tag('CARDTYPE') == 'PLAYER':
@@ -129,15 +119,14 @@ class GameState(object):
             results[zone] += 1
         return results
 
+    def get_played_cards_friendly(self):
+        return self.get_played_cards("FRIENDLY")
+
     def get_played_cards(self, player):
         played_cards = []
-        # HAND
-        played_cards += self.get_entities_by_zone("{} HAND".format(player))
-        # PLAY
-        played_cards += self.get_entities_by_zone("{} PLAY".format(player))
-        # GRAVEYARD
-        played_cards + self.get_entities_by_zone("{} GRAVEYARD".format(player))
-
+        zones = ["HAND", "PLAY", "GRAVEYARD", "SECRET", "DECK"]
+        for zone in zones:
+            played_cards += self.get_entities_by_zone(player + " " + zone)
         return played_cards
 
     def get_all_zone_names():
