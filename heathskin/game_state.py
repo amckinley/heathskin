@@ -41,7 +41,9 @@ class GameState(object):
         self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
-            #print 'game over %s' % self.entities[4].name
+            our_hero = game_state.entities[4]
+            enemy_hero = game_state.entities[36]
+            print 'game over %s %s' % (our_hero, enemy_hero) 
             history = GameHistory()
             history.user_id = current_user.get_id()
             db.session.add(history)
