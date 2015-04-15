@@ -3,6 +3,7 @@ import logging
 from collections import defaultdict
 import json
 from heathskin.frontend import db
+from heathskin import card_database
 from models import GameHistory
 from flask.ext.login import current_user
 
@@ -32,6 +33,17 @@ class GameState(object):
         self.__dict__.update(dict)
         self.logger = logger
 
+    def _create_history(self, *args, **kwargs):
+        history = GameHistory()
+        history.won = self.entities.get('2').get_tag('PLAYSTATE') == "WON"
+        history.user_id = current_user.get_id()
+        history.hero = kwargs.get('hero')
+        history.opponent = kwargs.get('opponent')
+        history.enemy_health = kwargs.get('enemy_health')
+        history.hero_health = kwargs.get('hero_health')
+        db.session.add(history)
+        db.session.commit()
+
     def feed_line(self, line):
         pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"
         results = re.match(pattern, line)
@@ -41,13 +53,15 @@ class GameState(object):
         self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
-            our_hero = self.entities[4]
-            enemy_hero = self.entities[36]
-            print 'game over %s %s' % (our_hero, enemy_hero) 
-            history = GameHistory()
-            history.user_id = current_user.get_id()
-            db.session.add(history)
-            db.session.commit()
+            card_db = card_database.CardDatabase.get_database()
+            our_hero = self.entities.get('4')
+            enemy_hero = self.entities.get('60')
+            self._create_history(**{
+              'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
+              'hero_health': our_hero.get_tag('HEALTH'),
+              'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
+              'enemy_health': enemy_hero.get_tag('HEALTH'),
+            })
             self.logger.info("Detected gameover")
             self.start_new_game()
 

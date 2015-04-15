@@ -57,3 +57,8 @@ class Card(db.Model):
 class GameHistory(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    won = db.Column(db.Boolean())
+    hero = db.Column(db.String(255), nullable=False)
+    opponent = db.Column(db.String(255), nullable=False)
+    hero_health = db.Column(db.Integer)
+    enemy_health = db.Column(db.Integer)
