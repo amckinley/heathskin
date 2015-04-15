@@ -5,6 +5,7 @@ from datetime import datetime
 import codecs
 
 from heathskin import game_state
+from heathskin.frontend import db
 
 SESSION_LOG_ROOT = "session_logs"
 

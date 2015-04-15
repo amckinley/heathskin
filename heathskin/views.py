@@ -8,7 +8,7 @@ from flask.ext.login import current_user
 from werkzeug import secure_filename
 
 from heathskin.frontend import app, db
-from heathskin.models import Deck, Card, CardDeckAssociation
+from heathskin.models import Deck, Card, CardDeckAssociation, GameHistory
 from heathskin.game_universe import GameUniverse
 from heathskin import card_database, utils, deck
 
@@ -255,3 +255,19 @@ def help():
         if rule.endpoint != 'static':
             func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
     return jsonify(func_list)
+
+@auth_token_required
+@app.route('/history')
+def history():
+    universe = GameUniverse.get_universe()
+    return render_template( 'history.html', history=GameHistory.query)
+
+
+@auth_token_required
+@app.route('/add_history')
+def add_history():
+    game_history = GameHistory()
+    game_history.user_id = current_user.get_id()
+    db.session.add(game_history)
+    db.session.commit()
+    return render_template( 'history.html', history=GameHistory.query)
