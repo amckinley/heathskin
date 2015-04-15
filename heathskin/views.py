@@ -261,13 +261,3 @@ def help():
 def history():
     universe = GameUniverse.get_universe()
     return render_template( 'history.html', history=GameHistory.query)
-
-
-@auth_token_required
-@app.route('/add_history')
-def add_history():
-    game_history = GameHistory()
-    game_history.user_id = current_user.get_id()
-    db.session.add(game_history)
-    db.session.commit()
-    return render_template( 'history.html', history=GameHistory.query)
