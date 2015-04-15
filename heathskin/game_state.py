@@ -29,11 +29,14 @@ class GameState(object):
           player = self.entities.get('2')
         history = GameHistory()
         history.won = player.get_tag('PLAYSTATE') == "WON"
-        history.user_id = current_user.get_id()
+        if current_user:
+          history.user_id = current_user.get_id()
+        else:
+          history.user_id = 0
         history.hero = kwargs.get('hero')
         history.opponent = kwargs.get('opponent')
-        history.enemy_health = 30 - int(player.get_tag('DAMAGE'))
-        history.hero_health = kwargs.get('hero_health')
+        history.enemy_health = 30
+        history.hero_health = 30
         history.turns = kwargs.get('turns')
         db.session.add(history)
         db.session.commit()
@@ -47,19 +50,9 @@ class GameState(object):
         self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
-            import ipdb
-            ipdb.set_trace()
-            #print ' 2 : %s' % self.entities.get('1').tags
-            #print ' 2 : %s' % self.entities.get('3').tags
-            for entity_id in self.entities:
-              entity = self.entities[entity_id]
-              print entity.tags
             card_db = card_database.CardDatabase.get_database()
             our_hero = self.entities.get('4')
-            if not our_hero.get_tag('ZONE') == 'FRIENDLY PLAY (Hero)':
-              enemy_hero = our_hero
-            our_hero = self.entities.get('36')
-
+            enemy_hero = self.entities.get('36')
             self._create_history(**{
               'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
               'hero_health': our_hero.get_tag('HEALTH'),
