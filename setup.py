@@ -8,6 +8,6 @@ setup(name='Heathskin',
       author='Austin McKinley',
       author_email='bearontheroof@gmail.com',
       packages=['heathskin'],
-      scripts=['bin/heathskin-uploader', 'bin/heathskin-frontend'],
+      scripts=['bin/heathskin-uploader', 'bin/heathskin-frontend', 'bin/heathskin-replayer'],
       url='https://github.com/amckinley/heathskin',
      )

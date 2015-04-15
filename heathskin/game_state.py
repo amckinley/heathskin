@@ -23,16 +23,6 @@ class GameState(object):
 
         self.start_new_game()
 
-    def __getstate__(self):
-        odict = self.__dict__.copy()
-        del odict['logger']
-        return odict
-
-    def __setstate__(self, dict):
-        logger = logging.getLogger()
-        self.__dict__.update(dict)
-        self.logger = logger
-
     def _create_history(self, *args, **kwargs):
         history = GameHistory()
         history.won = self.entities.get('2').get_tag('PLAYSTATE') == "WON"
@@ -54,14 +44,14 @@ class GameState(object):
 
         if self.is_gameover():
             card_db = card_database.CardDatabase.get_database()
-            our_hero = self.entities.get('4')
-            enemy_hero = self.entities.get('60')
-            self._create_history(**{
-              'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
-              'hero_health': our_hero.get_tag('HEALTH'),
-              'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
-              'enemy_health': enemy_hero.get_tag('HEALTH'),
-            })
+            # our_hero = self.entities.get('4')
+            # enemy_hero = self.entities.get('60')
+            # self._create_history(**{
+            #   'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
+            #   'hero_health': our_hero.get_tag('HEALTH'),
+            #   'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
+            #   'enemy_health': enemy_hero.get_tag('HEALTH'),
+            # })
             self.logger.info("Detected gameover")
             self.start_new_game()
 
