@@ -2,6 +2,9 @@ import re
 import logging
 from collections import defaultdict
 import json
+from heathskin.frontend import db
+from models import GameHistory
+from flask.ext.login import current_user
 
 from log_parser import LogParser
 from entity import Entity
@@ -38,6 +41,13 @@ class GameState(object):
         self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
+            our_hero = self.entities[4]
+            enemy_hero = self.entities[36]
+            print 'game over %s %s' % (our_hero, enemy_hero) 
+            history = GameHistory()
+            history.user_id = current_user.get_id()
+            db.session.add(history)
+            db.session.commit()
             self.logger.info("Detected gameover")
             self.start_new_game()
 

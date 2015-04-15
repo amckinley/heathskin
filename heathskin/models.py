@@ -53,3 +53,7 @@ class Deck(db.Model):
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     blizz_id = db.Column(db.String(32), unique=True, nullable=False)
+
+class GameHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
