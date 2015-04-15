@@ -2,7 +2,7 @@ from game_state import GameState
 
 def main():
     gs = GameState()
-    f = open("trans_log.txt", "r")
+    f = open("/Users/rhigdon/Library/Logs/Unity/Player.log", "r")
     for line in f.readlines():
         gs.feed_line(line.rstrip())
         

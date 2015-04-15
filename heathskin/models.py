@@ -62,3 +62,4 @@ class GameHistory(db.Model):
     opponent = db.Column(db.String(255), nullable=False)
     hero_health = db.Column(db.Integer)
     enemy_health = db.Column(db.Integer)
+    turns = db.Column(db.Integer)

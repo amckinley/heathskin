@@ -58,3 +58,5 @@ target/
 game_log.txt
 
 session_logs/*
+
+*.swp
