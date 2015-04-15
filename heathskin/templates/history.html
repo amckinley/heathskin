@@ -3,6 +3,6 @@
 {{state}}
 <ul>
 {% for game in history %}
-  <li>{{game.id}}</li>
+  <li>{{game.hero}} VERSUS {{game.opponent}} {{game.hero_health}} - {{game.enemy_health}} {% if game.won %} Victory! {% else %} Defeat! {% endif %}</li>
 {% endfor %}
 </ul>

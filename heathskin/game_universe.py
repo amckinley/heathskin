@@ -62,9 +62,11 @@ class GameUniverse(object):
 
         try:
             session['game_state'].feed_line(log_line.rstrip())
-        except Exception:
-            self.logger.error(
-                "Failed to update GameState with line: '%s", log_line.rstrip())
+        except Exception as e:
+            print "Failed to update GameState with line: '%s" % log_line.rstrip()
+            print dir(e)
+            print e.__class__
+            print e.message
         session['last_seen_at'] = datetime.now()
         session['file_handle'].write(log_line)
         session['lines_seen'] += 1
