@@ -5,6 +5,7 @@
       <td></td>
       <td>Turns</td>
       <td>Outcome</td>
+      <td>First</td>
     </tr>
   </thead>
   <tbody>
@@ -13,6 +14,7 @@
       <td>{{game.hero}} VERSUS {{game.opponent}}</td>
       <td>{{game.turns}}</td>
       <td>{% if game.won %} W {% else %} L {% endif %}</td>
+      <td>{% if game.first %}T{% else %}F{% endif %}</td>
     </tr>
     {% endfor %}
   </tbody>

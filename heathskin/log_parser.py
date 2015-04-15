@@ -43,6 +43,8 @@ class LogParser(object):
             "PowerProcessor.PrepareHistoryForCurrentTaskList()": None,
             "PowerSpellController1.InitPowerSpell()": None,
             "PowerSpellController1.InitPowerSounds()": None,
+            "Entity.AddAttachment()": None,
+            "RewardUtils.GetViewableRewards()": None,
 
         }
 
