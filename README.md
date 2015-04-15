@@ -11,6 +11,11 @@ clone from github. inside the repo:
   pip install -e .
 ```
 
+# update your heathskin logging config
+mac: `cp config/log.config  ~/Library/Preferences/Blizzard/Hearthstone/log.config`
+
+windows: `¯\_(ツ)_/¯`
+
 # starting heathskin
 Start the webserver and the HAProxy server in front of it:
 
