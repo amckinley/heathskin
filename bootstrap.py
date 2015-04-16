@@ -64,10 +64,14 @@ def make_default_users():
     peter = User(
         email="p@p.com",
         password="password", active=True, confirmed_at=datetime.now())
+    ryan = User(
+        email="grizzlybear@grindr.com",
+        password="wang", active=True, confirmed_at=datetime.now())
 
     db.session.add(austin)
     db.session.add(andrew)
     db.session.add(peter)
+    db.session.add(ryan)
 
 
 def main():
@@ -75,18 +79,28 @@ def main():
     reset(card_db)
     db.session.commit()
 
-    me_user = User.query.filter_by(id=1).first()
-    print ("User: " + me_user.email)
-    create_deck(me_user, "data/decks/cwarrior.deck", card_db)
-    create_deck(me_user, "data/decks/handlock.deck", card_db)
-    create_deck(me_user, "data/decks/peter_drood.deck", card_db)
+    austin_user = User.query.filter_by(id=1).first()
+    andrew_user = User.query.filter_by(id=2).first()
+    peter_user = User.query.filter_by(id=3).first()
+    # ryan_user = User.query.filter_by(id=4).first()
+
+    # print ("User: " + me_user.email)
+    create_deck(andrew_user , "data/decks/cwarrior.deck", card_db)
+    create_deck(andrew_user, "data/decks/handlock.deck", card_db)
+    create_deck(austin_user, "data/decks/peter_drood.deck", card_db)
+    create_deck(andrew_user, "data/decks/yolo_face.deck", card_db)
+    create_deck(austin_user, "data/decks/rage_mage.deck", card_db)
     db.session.commit()
 
     deck_id_to_card_list(1, card_db)
     print "\n\n\n"
     deck_id_to_card_list(2, card_db)
-    print "\n\n\n"    
-    deck_id_to_card_list(3, card_db)    
+    print "\n\n\n"
+    deck_id_to_card_list(3, card_db)
+    print "\n\n\n"
+    deck_id_to_card_list(4, card_db)
+    print "\n\n\n"
+    deck_id_to_card_list(5, card_db)
 
 
 if __name__ == '__main__':
