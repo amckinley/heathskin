@@ -1,7 +1,7 @@
 import re
 import logging
 from collections import defaultdict
-
+from exceptions import PreventableException
 from heathskin.frontend import db
 from heathskin import card_database
 from models import GameHistory
@@ -18,11 +18,11 @@ class GameState(object):
         gs.entities = entities
         return gs
 
-    def __init__(self, friendly_user_name=None):
-        self.friendly_user_name = friendly_user_name
+    def __init__(self):
         self.logger = logging.getLogger()
-
         self.start_new_game()
+        self.player1 = None
+        self.player2 = None
 
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
@@ -38,7 +38,11 @@ class GameState(object):
         history.enemy_health = 30
         history.hero_health = 30
         history.turns = kwargs.get('turns')
-        history.first = self._is_player_first()
+        history.first = not self._is_player_first()
+        if self.player1:
+            history.player1 = self.player1
+        if self.player2:
+            history.player2 = self.player2
         db.session.add(history)
         db.session.commit()
 
@@ -46,15 +50,17 @@ class GameState(object):
         """ Find both heroes from the entities dictionary
           The Hero can randomly be in position 4 or 36
         """
+        entity2 = self.entities.get('2')
+        entity3 = self.entities.get('3')
         our_hero = self.entities.get('4')
         second_pos = self.entities.get('3').get_tag('HERO_ENTITY')
         enemy_hero = self.entities.get(str(second_pos))
         if our_hero.get_tag('ZONE') == 'OPPOSING PLAY (Hero)':
             enemy_hero = our_hero
             our_hero = self.entities.get(str(second_pos))
-            self.player = self.entities.get('3')
+            self.player = entity2 if self._is_player_first() else entity3
         else:
-            self.player = self.entities.get('2')
+            self.player = entity3 if self._is_player_first() else entity2
         return our_hero, enemy_hero
 
     def _is_player_first(self):
@@ -96,6 +102,8 @@ class GameState(object):
         self.logger.info("Starting new game")
         self.entities = {}
         self.parser = LogParser(self)
+        self.player1 = None
+        self.player2 = None
 
     # XXX: stupid hack. the logs refer to the player entities by username
     def get_entity_by_name(self, ent_id, default=None):
@@ -106,10 +114,12 @@ class GameState(object):
         except ValueError:
             if ent_id == "GameEntity":
                 result_id = "1"
-            elif ent_id == self.friendly_user_name:
-                result_id = "2"
+            elif ent_id == self.player1:
+                result_id = "2" if self._is_player_first() else "3"
+            elif ent_id == self.player2:
+                result_id = "3" if self._is_player_first() else "2"
             else:
-                result_id = "3"
+                raise PreventableException('failed to get entity by name : ' +  ent_id)
 
         return self.entities.get(result_id, default)
 

@@ -209,6 +209,7 @@ class LogParser(object):
                     self.logger.debug("starting sub-action TAG_CHANGE")
                     results = self.match_tag_action(msg)
                     entity_name = results.pop('entity_name')
+                    self._setup_players_from_entity_name(entity_name)
                     target_ent = self.game_state.get_entity_by_name(entity_name)
                     target_ent.update_tag(**results)
 
@@ -260,12 +261,23 @@ class LogParser(object):
             results = self.match_tag_action(msg)
             self.logger.debug("tag change msg: %s", results)
             entity_name = results.pop('entity_name')
+            self._setup_players_from_entity_name(entity_name)
             target_ent = self.game_state.get_entity_by_name(entity_name)
-
             target_ent.update_tag(**results)
             return
 
         self.logger.info("debug power msg: %s", msg)
+
+    def _setup_players_from_entity_name(self, entity_name):
+        """ The player's username that appears first is player1 (first to act)
+         check to see if we have seen a username yet.. if not set it to this first username
+         and otherwise check to see if it is a new username and if so set it to player2
+        """
+        state = self.game_state
+        if not state.player1:
+            state.player1 = entity_name
+        if state.player1 and state.player1 != entity_name and not state.player2:
+            state.player2 = entity_name
 
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
