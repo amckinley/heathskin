@@ -1,8 +1,21 @@
-
 <h1>Game History:</h2>
-{{state}}
-<ul>
-{% for game in history %}
-  <li>{{game.hero}} VERSUS {{game.opponent}} {{game.hero_health}} - {{game.enemy_health}} {% if game.won %} Victory! {% else %} Defeat! {% endif %}</li>
-{% endfor %}
-</ul>
+<table>
+  <thead>
+    <tr>
+      <td></td>
+      <td>Turns</td>
+      <td>Outcome</td>
+      <td>First</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for game in history %}
+    </tr>
+      <td>{{game.hero}} VERSUS {{game.opponent}}</td>
+      <td>{{game.turns}}</td>
+      <td>{% if game.won %} W {% else %} L {% endif %}</td>
+      <td>{% if game.first %}T{% else %}F{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
