@@ -26,9 +26,9 @@ class GameState(object):
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
-        player = self.entities.get('2')
+      
         history = GameHistory()
-        history.won = player.get_tag('PLAYSTATE') == "WON"
+        history.won = self.player.get_tag('PLAYSTATE') == "WON"
         if current_user:
           history.user_id = current_user.get_id()
         else:
@@ -47,11 +47,14 @@ class GameState(object):
           The Hero can randomly be in position 4 or 36
         """
         our_hero = self.entities.get('4')
+        second_pos = self.entities.get('3').get_tag('HERO_ENTITY')
+        enemy_hero = self.entities.get(str(second_pos))
         if our_hero.get_tag('ZONE') == 'OPPOSING PLAY (Hero)':
           enemy_hero = our_hero
-          our_hero = self.entities.get('36')
+          our_hero = self.entities.get(str(second_pos))
+          self.player = self.entities.get('3')
         else:
-          enemy_hero = self.entities.get('36')
+          self.player = self.entities.get('2')
         return our_hero, enemy_hero
 
     def _is_player_first(self):
