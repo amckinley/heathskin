@@ -9,37 +9,63 @@ from logging import StreamHandler, Formatter
 from heathskin.frontend import app
 
 
-def main():
-    logger = app.logger
-    logger.setLevel(logging.INFO)
+def main(args):
+    log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 
-    parser = argparse.ArgumentParser(description='Track some skins')
-    parser.add_argument('--port-offset')
-    parser.add_argument('--debug', action='store_true')
-    args = parser.parse_args()
+    if args.debug:
+        level = logging.DEBUG
 
+    else:
+        level = logging.INFO
+
+    logging.basicConfig(level=level, format=log_fmt)
+
+    # set flask log level
+    app_logger = app.logger
+    app_logger.setLevel(level)
+
+    # initial logger
+    logger = logging.getLogger()
+
+    # port configuration
     port = 3000
     if args.port_offset:
         port += int(args.port_offset)
 
-    # make flask app's logger behave reasonably and write to stdout
+    bind_addr = args.bind_addr
+
+    # make flask app's logger integrate with our logger, and stop its other
+    # logging
     handler = StreamHandler()
     handler.setLevel(logging.INFO)
     FORMAT_STRING = "{pid=%(process)d} %(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"  # noqa
     fmtr = Formatter(fmt=FORMAT_STRING)
     handler.setFormatter(fmtr)
+
+    # kill the other handlers and only use ours
+    app.logger.handlers = []
     app.logger.addHandler(handler)
 
     # SHUT THE FUCK UP
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    werkzeug_log = logging.getLogger('werkzeug')
+    werkzeug_log.setLevel(logging.ERROR)
 
     try:
-        logger.info("Starting server...")
-        app.run(port=port, host="127.0.0.1")
+        logger.info("Starting server on %s:%s...", bind_addr, port)
+        app.run(port=port, host=bind_addr)
+
     except Exception:
-        logger.error("lol crashing")
+        if args.debug:
+            logger.exception("lol crashing")
+        else:
+            logger.error(
+                "heathskin-server encountered an unexpected error; exiting")
         sys.exit(-1)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Frontend some skinz')
+    parser.add_argument('--port-offset')
+    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--bind-addr', default="127.0.0.1")
+    args = parser.parse_args()
+    main(args)

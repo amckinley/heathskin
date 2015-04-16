@@ -57,6 +57,5 @@ target/
 .DS_Store
 game_log.txt
 
-session_logs/*
-
 *.swp
+session_logs/

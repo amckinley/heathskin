@@ -20,14 +20,15 @@ logger = app.logger
 def deck_list_unfiltered():
     return deck_list("")
 
+
 @app.route('/deck_list/<string:filter_string>')
 @login_required
 def deck_list(filter_string):
-    
+
     card_db = card_database.CardDatabase.get_database()
     universe = GameUniverse.get_universe()
     game_state = universe.get_latest_game_state_for_user(current_user.get_id())
-    
+
     if not game_state:
         return "no game states found for user id {}".format(
             current_user.get_id())
@@ -38,40 +39,41 @@ def deck_list(filter_string):
     to_return = "deck: " + d.name + " " + d.user.email
 
     played_cards = game_state.get_played_cards_friendly()
-    
+
     print (game_state.get_entity_counts_by_zone())
 
     for c in d.cards:
         card = card_db.get_card_by_id(c.card.blizz_id)
         number_in_deck = c.count
-        
+
         #print ("c.card.blizz_id: " + c.card.blizz_id)
         #print ("c.card: " + str(c.card))
         #print ("card_db.get_card_by_id(c.card.blizz_id): " + str(card_db.get_card_by_id(c.card.blizz_id)))
         #print ("")
         show_card = True
-        
+
         if (len(filter_string) > 0):
-            show_card = False 
+            show_card = False
             if ('mechanics' in card):
                 for m in card['mechanics']:
                     if m.lower() == filter_string.lower():
                         show_card = True
-        
+
         for entity in played_cards:
             if entity.card_id == card['id']:
                 #print ("entity.card_id= " + entity.card_id + "  " + card['id'])
                 number_in_deck -= 1
                 if number_in_deck < 1:
                     show_card = False
-                    
+
+
         if show_card:
             to_return += "<br>" + card['name'] + " (" + str(number_in_deck) + ")"
             if 'mechanics' in card:
                 for m in card['mechanics']:
                     to_return += " (" + m + ")"
             to_return += "</br>"
-    return to_return  
+    return to_return
 
 @app.route('/entity_dump')
 @login_required
@@ -166,10 +168,28 @@ def deck_tracker():
         'cur_hand.html', cards=hand_ids, handsize=len(hand_ids))
 
 
+@app.route("/get_named_cards")
+@login_required
+def get_names():
+    card_db = card_database.CardDatabase.get_database()
+    universe = GameUniverse.get_universe()
+
+    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
+    if not game_state:
+        return "no game states found for user id {}".format(
+            current_user.get_id())
+
+    our_hero = game_state.entities[4]
+    enemy_hero = game_state.entities[36]
+
+    return str([our_hero.name, enemy_hero.name])
+
+    card_names = [card_db.get_card_by_id(e.card_id)['name'] for e in game_state.entities if e.card_id is not None]
+    return str(card_names)
+
 @app.route("/deck_maker")
 @login_required
 def deck_maker_init():
-
     card_db = card_database.CardDatabase.get_database()
     possible_names = card_db.get_all_valid_names()
     # possible_ids = card_db.cards_by_ids()
