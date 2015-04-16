@@ -211,8 +211,7 @@ class LogParser(object):
                     entity_name = results.pop('entity_name')
                     self._setup_players_from_entity_name(entity_name)
                     target_ent = self.game_state.get_entity_by_name(entity_name)
-                    if target_ent:
-                        target_ent.update_tag(**results)
+                    target_ent.update_tag(**results)
 
                 elif msg.startswith("SHOW_ENTITY"):
                     self.logger.debug("starting sub-action SHOW_ENTITY")
@@ -264,8 +263,7 @@ class LogParser(object):
             entity_name = results.pop('entity_name')
             self._setup_players_from_entity_name(entity_name)
             target_ent = self.game_state.get_entity_by_name(entity_name)
-            if target_ent:
-                target_ent.update_tag(**results)
+            target_ent.update_tag(**results)
             return
 
         self.logger.info("debug power msg: %s", msg)
@@ -276,10 +274,10 @@ class LogParser(object):
          and otherwise check to see if it is a new username and if so set it to player2
         """
         state = self.game_state
-        if not hasattr(state, 'player1'):
+        if not state.player1:
             state.player1 = entity_name
-        if hasattr(state, 'player1') and state.player1 != entity_name and not hasattr(state, 'player2'):
-            self.game_state.player2 = entity_name
+        if state.player1 and state.player1 != entity_name and not state.player2:
+            state.player2 = entity_name
 
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
