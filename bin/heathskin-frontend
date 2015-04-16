@@ -16,11 +16,14 @@ def main():
     parser = argparse.ArgumentParser(description='Track some skins')
     parser.add_argument('--port-offset')
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--bind-addr', default="127.0.0.1")
     args = parser.parse_args()
 
     port = 3000
     if args.port_offset:
         port += int(args.port_offset)
+
+    bind_addr = args.bind_addr
 
     # make flask app's logger behave reasonably and write to stdout
     handler = StreamHandler()
@@ -35,8 +38,8 @@ def main():
     log.setLevel(logging.ERROR)
 
     try:
-        logger.info("Starting server...")
-        app.run(port=port, host="127.0.0.1")
+        logger.info("Starting server on %s:%s...", bind_addr, port)
+        app.run(port=port, host=bind_addr)
     except Exception:
         logger.error("lol crashing")
         sys.exit(-1)

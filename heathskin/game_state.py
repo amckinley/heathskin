@@ -1,14 +1,15 @@
 import re
 import logging
 from collections import defaultdict
-import json
+
 from heathskin.frontend import db
 from heathskin import card_database
 from models import GameHistory
 from flask.ext.login import current_user
 
+
 from log_parser import LogParser
-from entity import Entity
+
 
 class GameState(object):
     @classmethod
@@ -35,7 +36,7 @@ class GameState(object):
         db.session.commit()
 
     def feed_line(self, line):
-        pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"
+        pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"  # noqa
         results = re.match(pattern, line)
         if not results:
             return
@@ -58,7 +59,8 @@ class GameState(object):
     def convert_log_zone(self, log_zone):
         if not log_zone:
             return log_zone
-        log_zone = "".join([c for c in log_zone.lower() if c not in ["(", ")"]])
+        log_zone = "".join(
+            [c for c in log_zone.lower() if c not in ["(", ")"]])
 
         result = "_".join(log_zone.split(" "))
         return result
@@ -89,7 +91,9 @@ class GameState(object):
         return self.entities.get(result_id, default)
 
     def get_entities_by_zone(self, zone):
-        return [ent for ent in self.entities.values() if ent.get_tag("ZONE") == zone]
+        return [
+            ent for ent
+            in self.entities.values() if ent.get_tag("ZONE") == zone]
 
     def get_friendly_hand(self):
         return self.get_entities_by_zone("FRIENDLY HAND")
