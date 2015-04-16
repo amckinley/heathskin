@@ -27,13 +27,12 @@ class GameState(object):
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
-      
         history = GameHistory()
         history.won = self.player.get_tag('PLAYSTATE') == "WON"
         if current_user:
-          history.user_id = current_user.get_id()
+            history.user_id = current_user.get_id()
         else:
-          history.user_id = 0
+            history.user_id = 0
         history.hero = kwargs.get('hero')
         history.opponent = kwargs.get('opponent')
         history.enemy_health = 30
@@ -51,11 +50,11 @@ class GameState(object):
         second_pos = self.entities.get('3').get_tag('HERO_ENTITY')
         enemy_hero = self.entities.get(str(second_pos))
         if our_hero.get_tag('ZONE') == 'OPPOSING PLAY (Hero)':
-          enemy_hero = our_hero
-          our_hero = self.entities.get(str(second_pos))
-          self.player = self.entities.get('3')
+            enemy_hero = our_hero
+            our_hero = self.entities.get(str(second_pos))
+            self.player = self.entities.get('3')
         else:
-          self.player = self.entities.get('2')
+            self.player = self.entities.get('2')
         return our_hero, enemy_hero
 
     def _is_player_first(self):
@@ -70,15 +69,15 @@ class GameState(object):
         self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
-          card_db = card_database.CardDatabase.get_database()
-          our_hero, enemy_hero = self._get_heroes_from_entities()
-          self._create_history(**{
-              'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
-              'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
-              'turns': self.entities.get('1').get_tag('TURN'),
-          })
-          self.logger.info("Detected gameover")
-          self.start_new_game()
+            card_db = card_database.CardDatabase.get_database()
+            our_hero, enemy_hero = self._get_heroes_from_entities()
+            self._create_history(**{
+                'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
+                'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
+                'turns': self.entities.get('1').get_tag('TURN'),
+            })
+            self.logger.info("Detected gameover")
+            self.start_new_game()
 
     def convert_log_zone(self, log_zone):
         if not log_zone:
