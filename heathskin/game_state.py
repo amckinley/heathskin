@@ -40,9 +40,9 @@ class GameState(object):
         history.turns = kwargs.get('turns')
         history.first = not self._is_player_first()
         if hasattr(self, 'player1'):
-          history.player1 = self.player1
+            history.player1 = self.player1
         if hasattr(self, 'player2'):
-          history.player2 = self.player2
+            history.player2 = self.player2
         db.session.add(history)
         db.session.commit()
 

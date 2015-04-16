@@ -212,7 +212,7 @@ class LogParser(object):
                     self._setup_players_from_entity_name(entity_name)
                     target_ent = self.game_state.get_entity_by_name(entity_name)
                     if target_ent:
-                      target_ent.update_tag(**results)
+                        target_ent.update_tag(**results)
 
                 elif msg.startswith("SHOW_ENTITY"):
                     self.logger.debug("starting sub-action SHOW_ENTITY")
@@ -265,7 +265,7 @@ class LogParser(object):
             self._setup_players_from_entity_name(entity_name)
             target_ent = self.game_state.get_entity_by_name(entity_name)
             if target_ent:
-              target_ent.update_tag(**results)
+                target_ent.update_tag(**results)
             return
 
         self.logger.info("debug power msg: %s", msg)
