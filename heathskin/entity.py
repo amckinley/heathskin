@@ -19,10 +19,10 @@ ACTION_START Entity=[name=Violet Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW
     TAG_CHANGE Entity=[name=Violet Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW1_026t player=2] tag=ATTACKING value=0
     TAG_CHANGE Entity=[name=Rexxar id=4 zone=PLAY zonePos=0 cardId=HERO_05 player=1] tag=DEFENDING value=0
 ACTION_END
-"""
+"""  # noqa
 
-import re
 import logging
+
 
 class Entity(object):
     def __init__(self, **kwargs):
@@ -43,10 +43,12 @@ class Entity(object):
 
     def update_tag(self, tag_name, tag_value):
         if tag_name in self.tags:
-            old_str = " (old={})".format(self.tags[tag_name])
+            old_str = self.tags[tag_name]
         else:
-            old_str = ""
-        self.logger.info("Updating entity %s: tag %s=%s %s", self.entity_id, tag_name, tag_value, old_str)
+            old_str = "None"
+        self.logger.info(
+            "Updating %s:%s [%s->%s]",
+            self.__repr__(), tag_name, old_str, tag_value)
         self.tags[tag_name] = self._cast_tag(tag_value)
 
     def get_tag(self, tag_name):
@@ -68,33 +70,3 @@ class Entity(object):
             card_str = "entity_id={}".format(self.entity_id)
 
         return "[Entity {}]".format(card_str)
-
-    def __getstate__(self):
-        odict = self.__dict__.copy()
-        del odict['logger']
-        return odict
-
-    def __setstate__(self, dict):
-        logger = logging.getLogger()
-        self.__dict__.update(dict)
-        self.logger = logger
-
-def parse_tag_change(l):
-    pattern = "\w*TAG_CHANGE Entity=\[(?P<ent_data>.+?)\] tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
-    parse_results = re.match(pattern, l).groupdict()
-    return {
-        "ent_id": params_to_dict(parse_results["ent_data"])["id"],
-        "tag_name": parse_results["tag_name"],
-        "tag_value": parse_results["tag_value"]}
-
-def parse_temp():
-    l = "[Power] GameState.DebugPrintPower() - ACTION_START Entity=[name=Violet Ballin Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW1_026t player=2] SubType=ATTACK Index=-1 Target=[name=Rexxar id=4 zone=PLAY zonePos=0 cardId=HERO_05 player=1]"
-    pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+) - (?P<action_type>\S+) Entity=\[(?P<entity_data>.+?)\]"
-
-    parse_results = re.match(pattern, l).groupdict()
-    data = params_to_dict(parse_results["entity_data"])
-    e = Entity(data["id"], data["name"])
-
-    change_tag_line = "TAG_CHANGE Entity=[name=Violet Apprentice id=71 zone=PLAY zonePos=3 cardId=NEW1_026t player=2] tag=ATTACKING value=1"
-
-

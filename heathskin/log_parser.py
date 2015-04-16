@@ -221,7 +221,7 @@ class LogParser(object):
 
                 # this happens after unstable portal, for example
                 elif msg.startswith("FULL_ENTITY"):
-                    self.logger.info("starting sub-action FULL_ENTITY")
+                    self.logger.debug("starting sub-action FULL_ENTITY")
                     self.parse_full_entity(msg)
 
                 elif msg.startswith("tag"):
