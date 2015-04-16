@@ -180,14 +180,16 @@ class LogParser(object):
                     results = self.match_tag_line(msg)
                     self.ent_in_progress.update_tag(**results)
                     return
-                except ParseException as e:
-                    # XXX: this is an ugly hack to get around the fact that FULL_ENTITY actions
-                    # inside ACTION_START blocks end without any delimiters. all that changes
-                    # is the indent level. this pass lets us drop into the in_action handler
-                    # below, which will correctly pick up whatever the next sub-action is
+                except ParseException:
+                    # XXX: this is an ugly hack to get around the fact that
+                    # FULL_ENTITY actions inside ACTION_START blocks end
+                    # without any delimiters. all that changes is the indent
+                    # level. this pass lets us drop into the in_action handler
+                    # below, which will correctly pick up whatever the next
+                    # sub-action is
                     self.in_full_entity = False
                     self.ent_in_progress = None
-                    self.logger.info("hit the parse exception")
+                    self.logger.debug("hit the expected parse exception")
                     pass
 
         # enter FULL_ENTITY

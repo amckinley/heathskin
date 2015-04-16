@@ -8,6 +8,11 @@ from logging import StreamHandler, Formatter
 
 from heathskin.frontend import app
 
+# XXX: might need to disable in prod, but this turns on HTTP keep-alive,
+# which is crucial for making the log streaming work
+from werkzeug.serving import WSGIRequestHandler
+WSGIRequestHandler.protocol_version = "HTTP/1.1"
+
 
 def main(args):
     log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
