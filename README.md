@@ -17,7 +17,11 @@ mac: `cp config/log.config  ~/Library/Preferences/Blizzard/Hearthstone/log.confi
 windows: `¯\_(ツ)_/¯`
 
 # starting heathskin
-Start the webserver and the HAProxy server in front of it:
+Just start a single webserver so you can play with it:
+
+`heathskin-frontend`
+
+Start 5 web servers with a HAProxy server in front of it:
 
 `circusd config/circus.ini`
 
