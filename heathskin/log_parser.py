@@ -3,7 +3,7 @@ import logging
 
 from entity import Entity
 from utils import params_to_dict
-from exceptions import *
+from exceptions import ParseException, PreventableException
 
 
 class LogParser(object):
@@ -13,7 +13,8 @@ class LogParser(object):
 
         self.parser_fns = {
             "GameState.DebugPrintPower()": self.parse_debug_print_power,
-            "ZoneChangeList.ProcessChanges()": self.parse_zone_change_list_process_changes,
+            "ZoneChangeList.ProcessChanges()":
+                self.parse_zone_change_list_process_changes,
             "ZoneChangeList.UpdateDirtyZones()": None,
             "PowerProcessor.BeginCurrentTaskList()": self.parse_ignore,
             "PowerProcessor.EndCurrentTaskList()": self.parse_ignore,
@@ -55,52 +56,44 @@ class LogParser(object):
 
         self.game_started = False
 
-    def __getstate__(self):
-        odict = self.__dict__.copy()
-        del odict['logger']
-        return odict
-
-    def __setstate__(self, dict):
-        logger = logging.getLogger()
-        self.__dict__.update(dict)
-        self.logger = logger
-
     def feed_line(self, logger_name, log_source, log_msg):
         if log_source not in self.parser_fns:
-            raise Exception("got unknown log_source {}".format(log_source))
+            raise PreventableException(
+                "got unknown log_source {}".format(log_source))
 
         parser = self.parser_fns[log_source]
-        #self.logger.info("feeding line '%s' to parser %s", log_msg, getattr(parser, "__name__", None))
         if parser:
             parser(log_msg)
-        # else:
-        #     self.logger.info("no parser for line %s", log_msg)
-
+        else:
+            self.logger.debug("no parser for line %s", log_msg)
 
     def match_tag_line(self, line):
         pattern = "\s*tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
         results = re.match(pattern, line)
         if not results:
-            raise ParseException("Failed to match_tag_line on msg '{}'".format(line))
+            raise ParseException(
+                "Failed to match_tag_line on msg '{}'".format(line))
         else:
             return results.groupdict()
 
     def match_tag_action(self, line):
-        pattern = "\s*TAG_CHANGE Entity=(?P<entity_name>.*) tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
+        pattern = "\s*TAG_CHANGE Entity=(?P<entity_name>.*) tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"  # noqa
         results = re.match(pattern, line)
         if not results:
-            raise Exception("failed to parse TAG_CHANGE action for msg '{}'".format(line))
+            raise ParseException(
+                "failed to parse TAG_CHANGE action for msg '{}'".format(line))
 
         return results.groupdict()
 
     def match_show_entity_action(self, line):
         # SHOW_ENTITY - Updating Entity=[id=21 cardId= type=INVALID zone=DECK zonePos=0 player=1] CardID=EX1_539
         # SHOW_ENTITY - Updating Entity=69 CardID=CS2_005o
-        pattern = "SHOW_ENTITY - Updating Entity=((?P<entity_id>\d+)|\[(?P<entity_data>.*)\]) CardID=(?P<card_id>.+)"
+        pattern = "SHOW_ENTITY - Updating Entity=((?P<entity_id>\d+)|\[(?P<entity_data>.*)\]) CardID=(?P<card_id>.+)"  # noqa
 
         results = re.match(pattern, line)
         if not results:
-            raise Exception("failed to parse SHOW_ENTITY action for msg '{}'".format(line))
+            raise ParseException(
+                "failed to parse SHOW_ENTITY action for msg '{}'".format(line))
 
         results = results.groupdict()
         if results['entity_data'] is not None:
@@ -112,10 +105,11 @@ class LogParser(object):
 
     def match_hide_entity_action(self, line):
         # HIDE_ENTITY - Entity=[name=Mechwarper id=54 zone=HAND zonePos=2 cardId=GVG_006 player=2] tag=ZONE value=DECK
-        pattern = "HIDE_ENTITY - Entity=\[(?P<entity_data>.*)\] tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
+        pattern = "HIDE_ENTITY - Entity=\[(?P<entity_data>.*)\] tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"  # noqa
         results = re.match(pattern, line)
         if not results:
-            raise Exception("failed to parse HIDE_ENTITY action for msg '{}'".format(line))
+            raise ParseException(
+                "failed to parse HIDE_ENTITY action for msg '{}'".format(line))
         results = results.groupdict()
         results['entity_data'] = params_to_dict(results['entity_data'])
 
@@ -133,7 +127,6 @@ class LogParser(object):
             # set tag on entity created during CREATE_GAME
             elif msg.lstrip().startswith("tag"):
                 results = self.match_tag_line(msg)
-                #self.logger.info("got a match from %s %s", msg, results.groupdict())
                 self.ent_in_progress.update_tag(**results)
                 return
 
@@ -143,7 +136,7 @@ class LogParser(object):
                 # GameEntity EntityID=1
                 # Player EntityID=2 PlayerID=1 GameAccountId=[hi=144115193835963207 lo=34493978]
                 # XXX: this does not parse out the game account id. maybe useless anyway?
-                pattern = "(?P<entity_type>GameEntity|Player) EntityID=(?P<entity_id>\d+)"
+                pattern = "(?P<entity_type>GameEntity|Player) EntityID=(?P<entity_id>\d+)"  # noqa
                 results = re.match(pattern, msg)
                 if not results:
                     raise Exception("nice try asshole '{}'".format(msg))
@@ -176,7 +169,9 @@ class LogParser(object):
         # leave/continue FULL_ENTITY
         if self.in_full_entity:
             if not msg.startswith(" "):
-                self.logger.debug("Finished entity creation for id %s", self.ent_in_progress.entity_id)
+                self.logger.debug(
+                    "Finished entity creation for id %s",
+                    self.ent_in_progress.entity_id)
                 self.in_full_entity = False
                 self.ent_in_progress = None
             else:
@@ -195,7 +190,6 @@ class LogParser(object):
                     self.logger.info("hit the parse exception")
                     pass
 
-
         # enter FULL_ENTITY
         if msg.startswith("FULL_ENTITY"):
             self.parse_full_entity(msg)
@@ -204,20 +198,20 @@ class LogParser(object):
         # handle in_action
         if self.in_action:
             if msg == "ACTION_END":
-                self.logger.info("Closed ACTION")
+                self.logger.debug("Closed ACTION")
                 self.in_action = False
                 self.ent_in_progress = False
             elif msg.startswith(' '):
                 msg = msg.lstrip()
                 if msg.startswith("TAG_CHANGE"):
-                    self.logger.info("starting sub-action TAG_CHANGE")
+                    self.logger.debug("starting sub-action TAG_CHANGE")
                     results = self.match_tag_action(msg)
                     entity_name = results.pop('entity_name')
                     target_ent = self.game_state.get_entity_by_name(entity_name)
                     target_ent.update_tag(**results)
 
                 elif msg.startswith("SHOW_ENTITY"):
-                    self.logger.info("starting sub-action SHOW_ENTITY")
+                    self.logger.debug("starting sub-action SHOW_ENTITY")
                     results = self.match_show_entity_action(msg)
                     entity_id = results['entity_data']['id']
                     target_ent = self.game_state.entities[entity_id]
@@ -237,13 +231,14 @@ class LogParser(object):
                     entity_id = results['entity_data']['id']
 
                     target_ent = self.game_state.entities[entity_id]
-                    target_ent.update_tag(results['tag_name'], results['tag_value'])
+                    target_ent.update_tag(
+                        results['tag_name'], results['tag_value'])
 
                 elif msg.startswith("ACTION_START") or msg.startswith("ACTION_END"):
                     # XXX: afaict, these are noops...
                     pass
 
-                elif  msg.startswith("META_DATA"):
+                elif msg.startswith("META_DATA"):
                     # XXX: this is not a noop, but i dont know what to do...
                     pass
 
@@ -252,10 +247,9 @@ class LogParser(object):
 
             return
 
-
         # enter ACTION_START
         if msg.startswith("ACTION_START"):
-            self.logger.info("Opened ACTION")
+            self.logger.debug("Opened ACTION")
             self.in_action = True
             return
 
@@ -275,13 +269,19 @@ class LogParser(object):
         if not self.game_started:
             return
 
-        useless_starts = ["START waiting", "END waiting", "processing", "m_id=", "id="]
+        useless_starts = [
+            "START waiting",
+            "END waiting",
+            "processing",
+            "m_id=",
+            "id="]
+
         for s in useless_starts:
             if msg.startswith(s):
                 return
         if msg.startswith("TRANSITIONING"):
             # TRANSITIONING card [name=Kill Command id=21 zone=HAND zonePos=0 cardId=EX1_539 player=1] to FRIENDLY HAND
-            pattern = "TRANSITIONING card \[(?P<entity_data>.+?)\] to( (?P<dest_zone>.+)|)"
+            pattern = "TRANSITIONING card \[(?P<entity_data>.+?)\] to( (?P<dest_zone>.+)|)"  # noqa
             result = re.match(pattern, msg)
             if not result:
                 raise Exception("failed parse on msg '{}'".format(msg))
@@ -292,7 +292,7 @@ class LogParser(object):
             target_ent = self.game_state.entities[ent_data['id']]
             target_ent.update_tag("ZONE", result['dest_zone'])
 
-            if result['dest_zone'] == None:
+            if result['dest_zone'] is None:
                 self.logger.error("no zone, msg was %s", msg)
                 return
 
@@ -302,7 +302,7 @@ class LogParser(object):
     def parse_full_entity(self, msg):
         self.logger.debug("Starting full entity %s", msg)
         self.in_full_entity = True
-        pattern = "FULL_ENTITY - Creating ID=(?P<entity_id>\d+) CardID=(?P<card_id>\S*)"
+        pattern = "FULL_ENTITY - Creating ID=(?P<entity_id>\d+) CardID=(?P<card_id>\S*)"  # noqa
         results = re.match(pattern, msg)
 
         if not results:
