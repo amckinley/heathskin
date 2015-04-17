@@ -85,3 +85,26 @@ class Deck(object):
         for card in cards:
             count_dict[card] += 1
         return count_dict
+
+
+    def get_remaining_cards(self, deck, game_state):
+        friendly_entities = game_state.get_played_cards_friendly()
+        unplayed_cards = deck.blizz_ids
+
+        for entity in friendly_entities:
+            if len(entity.card_id) == 0:
+                break
+            # doesn't work yet, still need to get the first zone set properly. filter to only cards played from deck
+            if entity.get_source_zone():
+                pass
+#            print ("candidate entity: " + str(entity) + " e.cid: " + entity.card_id + " zone: " + str(entity.get_tag("ZONE")) + " source_zone: " + str(entity.get_source_zone()))
+            for b in deck.blizz_ids:
+                card = card_db.get_card_by_id(b)
+#                print ("     candidate deck card: " + card['name'] + " " + card['id'])
+                if entity.card_id == card['id']:
+                    unplayed_cards.remove(b)
+#            print ("\n\n CARDS REMAINING IN DECK")
+            for b in unplayed_cards:
+                card = card_db.get_card_by_id(b)
+#                print (" - " + card['name'] + " " + card['id'])
+            return unplayed_cards
