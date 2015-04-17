@@ -267,7 +267,6 @@ class LogParser(object):
 
         # tag change
         if msg.startswith("TAG_CHANGE"):
-            self.logger.debug("tag change msg: %s", msg)
             self._tag_change(msg)
             return
 
@@ -277,6 +276,7 @@ class LogParser(object):
     def _tag_change(self, msg):
         """ applies a tag change to an entity
         """
+        self.logger.debug("tag change msg: %s", msg)
         results = self.match_tag_action(msg)
         self._setup_players_from_entity_name(results)
         entity_name = results.pop('entity_name')
@@ -290,8 +290,11 @@ class LogParser(object):
             target_ent = self.game_state.entities.get(player.get('entity_id'))
         elif not player:
             target_ent = self.game_state.get_entity_by_name(entity_name)
-        if target_ent:
-            target_ent.update_tag(**results)
+
+        if not target_ent:
+            raise PreventableException("failed to handle tag change for msg: '{}'".format(msg))
+
+        target_ent.update_tag(**results)
 
     def _setup_players_from_entity_name(self, results):
         """ The player's username that appears first is player1 (first to act)
@@ -308,7 +311,7 @@ class LogParser(object):
             if entity_name not in self.game_state.players.keys():
                 self.game_state.players[entity_name] = {
                     'username': entity_name,
-                } 
+                }
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
             return
