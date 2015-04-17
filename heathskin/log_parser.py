@@ -84,8 +84,6 @@ class LogParser(object):
         '''  # noqa
         pattern = "\s*TAG_CHANGE Entity=(\[(?P<entity_data>.*)\]|(?P<entity_name>.*)) tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"  # noqa
         results = re.match(pattern, line)
-        self.logger.info("line was '%s'", line)
-        self.logger.info("got this data %s", results.groupdict())
         if not results:
             raise ParseException(
                 "failed to parse TAG_CHANGE action for msg '{}'".format(line))
