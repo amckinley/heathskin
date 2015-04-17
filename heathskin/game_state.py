@@ -3,8 +3,9 @@ import logging
 from collections import defaultdict
 from exceptions import PreventableException
 from heathskin.frontend import db
+from heathskin.exceptions import PreventableException
 from heathskin import card_database
-from models import GameHistory
+from heathskin.models import GameHistory
 from flask.ext.login import current_user
 
 
@@ -105,7 +106,6 @@ class GameState(object):
         self.player1 = None
         self.player2 = None
 
-    # XXX: stupid hack. the logs refer to the player entities by username
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None
         try:
@@ -119,7 +119,8 @@ class GameState(object):
             elif ent_id == self.player2:
                 result_id = "3" if self._is_player_first() else "2"
             else:
-                raise PreventableException('failed to get entity by name : ' +  ent_id)
+                raise PreventableException(
+                    'failed to get entity by name : ' + ent_id)
 
         return self.entities.get(result_id, default)
 

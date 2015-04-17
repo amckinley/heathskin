@@ -77,17 +77,33 @@ class LogParser(object):
             return results.groupdict()
 
     def match_tag_action(self, line):
-        pattern = "\s*TAG_CHANGE Entity=(?P<entity_name>.*) tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"  # noqa
+        '''
+        two different ways for TAG_CHANGE events to come in:
+        # TAG_CHANGE Entity=[id=21 cardId= type=INVALID zone=DECK zonePos=0 player=1] tag=ZONE_POSITION value=1
+        # TAG_CHANGE Entity=austin tag=MULLIGAN_STATE value=DEALING
+        '''  # noqa
+        pattern = "\s*TAG_CHANGE Entity=(\[(?P<entity_data>.*)\]|(?P<entity_name>.*)) tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"  # noqa
         results = re.match(pattern, line)
+        self.logger.info("line was '%s'", line)
+        self.logger.info("got this data %s", results.groupdict())
         if not results:
             raise ParseException(
                 "failed to parse TAG_CHANGE action for msg '{}'".format(line))
 
-        return results.groupdict()
+        results = results.groupdict()
+        if results['entity_data'] is not None:
+            entity_id = params_to_dict(results['entity_data'])['id']
+            results['entity_name'] = entity_id
+
+        results.pop('entity_data')
+
+        return results
 
     def match_show_entity_action(self, line):
-        # SHOW_ENTITY - Updating Entity=[id=21 cardId= type=INVALID zone=DECK zonePos=0 player=1] CardID=EX1_539
-        # SHOW_ENTITY - Updating Entity=69 CardID=CS2_005o
+        '''
+        SHOW_ENTITY - Updating Entity=[id=21 cardId= type=INVALID zone=DECK zonePos=0 player=1] CardID=EX1_539
+        SHOW_ENTITY - Updating Entity=69 CardID=CS2_005o
+        '''  # noqa
         pattern = "SHOW_ENTITY - Updating Entity=((?P<entity_id>\d+)|\[(?P<entity_data>.*)\]) CardID=(?P<card_id>.+)"  # noqa
 
         results = re.match(pattern, line)
