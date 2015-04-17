@@ -59,8 +59,10 @@ def run(args):
             logger.info("Starting data reply from %s", args.use_replay_log)
             fake_lines = open(args.use_replay_log)
             for l in fake_lines.readlines():
-                if l.rstrip() and not l.startswith('#'):
+                # some log files are annotated
+                if not l.startswith('#'):
                     uploader.upload_line(l)
+
             logger.info("Finished with fake data")
             shutdown(t, progress_thread)
             return
@@ -76,6 +78,7 @@ def run(args):
                 line = output_queue.get_nowait()
             except Queue.Empty:
                 continue
+
             uploader.upload_line(line)
 
     except KeyboardInterrupt:

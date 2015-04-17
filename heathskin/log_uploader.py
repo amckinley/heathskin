@@ -24,6 +24,9 @@ class LogUploader(object):
         if not self.started:
             raise UploaderException("Must start uploader first")
 
+        if not self._check_line(line):
+            return
+
         res = self.session.post(
             self.log_url,
             headers={'Authentication-Token': self.authentication_token},
@@ -32,6 +35,17 @@ class LogUploader(object):
         res.raise_for_status()
 
         self._line_count += 1
+
+    def _check_line(self, line):
+        # discard the Unity log source lines
+        if line.startswith("(Filename:"):
+            return False
+
+        # discard lines with nothing but whitespace
+        if not line.rstrip():
+            return False
+
+        return True
 
     @property
     def line_count(self):
@@ -55,8 +69,8 @@ class LogUploader(object):
             raise UploaderException("Failed to login: {}".format(
                 json_res["response"]["errors"].values()[0][0]))
 
-
-        self.authentication_token = json_res["response"]["user"]["authentication_token"]
+        user = json_res["response"]["user"]
+        self.authentication_token = user["authentication_token"]
 
         # begin the logging session
         res = self.session.post(

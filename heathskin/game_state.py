@@ -127,7 +127,9 @@ class GameState(object):
                 raise PreventableException(
                     'failed to get entity by name : ' + ent_id)
 
-        return self.entities.get(result_id, default)
+        result = self.entities.get(result_id, default)
+        # self.logger.info("got a request for '%s', returning '%s'", ent_id, result)
+        return result
 
     def get_entities_by_zone(self, zone):
         return [

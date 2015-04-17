@@ -57,20 +57,43 @@ def main(args):
 
     try:
         logger.info("Starting server on %s:%s...", bind_addr, port)
+
+        if args.profile:
+            logger.info("Starting profiler run")
+
+            import cProfile
+            import pstats
+            pr = cProfile.Profile()
+            pr.enable()
+            logger.info("All done")
+
         app.run(port=port, host=bind_addr)
 
-    except Exception:
-        if args.debug:
-            logger.exception("lol crashing")
-        else:
-            logger.error(
-                "heathskin-server encountered an unexpected error; exiting")
-        sys.exit(-1)
+    except KeyboardInterrupt:
+        logger.error("Got SIGINT, shutting down")
+        if args.profile:
+            logger.info("Stopping profiler")
+            pr.disable()
+            profile_output = open('profile_results.txt', 'w')
+            sortby = 'cumulative'
+            ps = pstats.Stats(pr, stream=profile_output).sort_stats(sortby)
+            ps.print_stats()
+            logger.info("Profiler complete")
+            return 0
+
+    # except:
+    #     if args.debug:
+    #         logger.exception("lol crashing")
+    #     else:
+    #         logger.error(
+    #             "heathskin-server encountered an unexpected error; exiting")
+    #     return -1
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Frontend some skinz')
     parser.add_argument('--port-offset')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--bind-addr', default="127.0.0.1")
+    parser.add_argument('--profile', action='store_true')
     args = parser.parse_args()
-    main(args)
+    sys.exit(main(args))
