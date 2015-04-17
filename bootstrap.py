@@ -90,6 +90,7 @@ def main():
     create_deck(austin_user, "data/decks/peter_drood.deck", card_db)
     create_deck(andrew_user, "data/decks/yolo_face.deck", card_db)
     create_deck(austin_user, "data/decks/rage_mage.deck", card_db)
+    create_deck(austin_user, "data/decks/peter_priest_test.deck", card_db)
     db.session.commit()
 
     deck_id_to_card_list(1, card_db)
