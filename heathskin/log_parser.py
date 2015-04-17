@@ -223,12 +223,7 @@ class LogParser(object):
                 msg = msg.lstrip()
                 if msg.startswith("TAG_CHANGE"):
                     self.logger.debug("starting sub-action TAG_CHANGE")
-                    results = self.match_tag_action(msg)
-                    entity_name = results.pop('entity_name')
-                    self._setup_players_from_entity_name(entity_name)
-                    target_ent = self.game_state.get_entity_by_name(entity_name)
-                    target_ent.update_tag(**results)
-
+                    self._tag_change(msg)
                 elif msg.startswith("SHOW_ENTITY"):
                     self.logger.debug("starting sub-action SHOW_ENTITY")
                     results = self.match_show_entity_action(msg)
@@ -274,27 +269,48 @@ class LogParser(object):
 
         # tag change
         if msg.startswith("TAG_CHANGE"):
-            results = self.match_tag_action(msg)
-            self.logger.debug("tag change msg: %s", results)
-            entity_name = results.pop('entity_name')
-            self._setup_players_from_entity_name(entity_name)
-            target_ent = self.game_state.get_entity_by_name(entity_name)
-            target_ent.update_tag(**results)
+            self.logger.debug("tag change msg: %s", msg)
+            self._tag_change(msg)
             return
 
         self.logger.info("debug power msg: %s", msg)
 
-    def _setup_players_from_entity_name(self, entity_name):
+
+    def _tag_change(self, msg):
+        """ applies a tag change to an entity
+        """
+        results = self.match_tag_action(msg)
+        self._setup_players_from_entity_name(results)
+        entity_name = results.pop('entity_name')
+        if results.get('tag_name') == 'ENTITY_ID' and entity_name != "GameEntity":
+            self.game_state.players[entity_name].update({
+                'entity_id': results.get('tag_value')
+            })
+        player = self.game_state.players.get(entity_name)
+        target_ent = None
+        if player and player.get('entity_id'):
+            target_ent = self.game_state.entities.get(player.get('entity_id'))
+        elif not player:
+            target_ent = self.game_state.get_entity_by_name(entity_name)
+        if target_ent:
+            target_ent.update_tag(**results)
+
+    def _setup_players_from_entity_name(self, results):
         """ The player's username that appears first is player1 (first to act)
          check to see if we have seen a username yet.. if not set it to this first username
          and otherwise check to see if it is a new username and if so set it to player2
         """
-        state = self.game_state
-        if not state.player1:
-            state.player1 = entity_name
-        if state.player1 and state.player1 != entity_name and not state.player2:
-            state.player2 = entity_name
-
+        entity_name = results.get('entity_name')
+        if len(self.game_state.players) == 0:
+            self.game_state.players[entity_name] = {
+                'username': entity_name,
+                'first': True,
+            }
+        elif len(self.game_state.players) == 1:
+            if entity_name not in self.game_state.players.keys():
+                self.game_state.players[entity_name] = {
+                    'username': entity_name,
+                } 
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
             return

@@ -22,14 +22,13 @@ class GameState(object):
     def __init__(self):
         self.logger = logging.getLogger()
         self.start_new_game()
-        self.player1 = None
-        self.player2 = None
+        self.players = {}
 
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
         history = GameHistory()
-        history.won = self.player.get_tag('PLAYSTATE') == "WON"
+        history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
         if current_user:
             history.user_id = current_user.get_id()
         else:
@@ -40,29 +39,40 @@ class GameState(object):
         history.hero_health = 30
         history.turns = kwargs.get('turns')
         history.first = not self._is_player_first()
-        if self.player1:
-            history.player1 = self.player1
-        if self.player2:
-            history.player2 = self.player2
+        for player in self.players.values():
+          if player.get('first'):
+            history.player1 = player.get('username')
+          else:
+            history.player2 = player.get('username')
         db.session.add(history)
         db.session.commit()
+
+    def _get_entity_id_of_first_player(self):
+        for player in self.players.values():
+          if player.get('first'):
+            return player.get('entity_id')
+
+    def _get_first_player_entity(self):
+        return self.entities.get(self._get_entity_id_of_first_player())
+
+    def _get_first_hero_entity(self):
+        first_player = self._get_first_player_entity()
+        return self.entities.get(str(first_player.get_tag('HERO_ENTITY')))
+
+    def _get_entity_id_of_second_player(self):
+        for player in self.players.values():
+          if not player.get('first'):
+            return player.get('entity_id')
+
+    def _get_second_hero_entity(self):
+        second_player = self.entities.get(self._get_entity_id_of_second_player())
+        return self.entities.get(str(second_player.get_tag('HERO_ENTITY')))
 
     def _get_heroes_from_entities(self):
         """ Find both heroes from the entities dictionary
           The Hero can randomly be in position 4 or 36
         """
-        entity2 = self.entities.get('2')
-        entity3 = self.entities.get('3')
-        our_hero = self.entities.get('4')
-        second_pos = self.entities.get('3').get_tag('HERO_ENTITY')
-        enemy_hero = self.entities.get(str(second_pos))
-        if our_hero.get_tag('ZONE') == 'OPPOSING PLAY (Hero)':
-            enemy_hero = our_hero
-            our_hero = self.entities.get(str(second_pos))
-            self.player = entity2 if self._is_player_first() else entity3
-        else:
-            self.player = entity3 if self._is_player_first() else entity2
-        return our_hero, enemy_hero
+        return self._get_first_hero_entity(), self._get_second_hero_entity()
 
     def _is_player_first(self):
         return self.entities.get('36').get_tag('ZONE') == 'OPPOSING PLAY (Hero)'
@@ -103,8 +113,7 @@ class GameState(object):
         self.logger.info("Starting new game")
         self.entities = {}
         self.parser = LogParser(self)
-        self.player1 = None
-        self.player2 = None
+        self.players = {}
 
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None
@@ -114,10 +123,6 @@ class GameState(object):
         except ValueError:
             if ent_id == "GameEntity":
                 result_id = "1"
-            elif ent_id == self.player1:
-                result_id = "2" if self._is_player_first() else "3"
-            elif ent_id == self.player2:
-                result_id = "3" if self._is_player_first() else "2"
             else:
                 raise PreventableException(
                     'failed to get entity by name : ' + ent_id)
