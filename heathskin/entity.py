@@ -35,6 +35,8 @@ class Entity(object):
         self.entity_id = None
         self.card_id = None
 
+        self._tag_history = []
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -46,6 +48,13 @@ class Entity(object):
             old_str = self.tags[tag_name]
         else:
             old_str = "None"
+
+         # using integer sequence for ordering until timestamp available from parser
+        event_sequence = len(self._tag_history)
+        #                   def __init__(self, index, tag_name, old_value, new_value):
+        new_event = EntityChangeEvent(tag_name, old_str, tag_value)
+        self._tag_history.append(new_event)
+
         self.logger.info(
             "Updating %s:%s [%s->%s]",
             self.__repr__(), tag_name, old_str, tag_value)
@@ -53,6 +62,17 @@ class Entity(object):
 
     def get_tag(self, tag_name):
         return self.tags.get(tag_name, None)
+
+    def get_source_zone(self):
+        print ("tag hist: " + str(self._tag_history))
+        for event in self._tag_history:
+            print ("tag hist: " + str(self._tag_history))
+            for event in self._tag_history:
+                if event.tag_name == "ZONE":
+                    print ("SourceZone=" + event.tag_name + " - " + str(self))
+                    return event.old_value
+                    print ("ERROR no source zone on " + str(self))
+        return None
 
     def _cast_tag(self, tag_value):
         try:
@@ -70,3 +90,12 @@ class Entity(object):
             card_str = "entity_id={}".format(self.entity_id)
 
         return "[Entity {}]".format(card_str)
+
+class EntityChangeEvent(object):
+    def __init__(self, tag_name, old_value, new_value):
+        self.tag_name = tag_name
+        self.old_value = old_value
+        self.new_value = new_value
+
+    def __repr__(self):
+        return "EntityChangeEvent tag_name=" + str(self.tag_name) + " old:" + str(self.old_value) + " new:" + str(self.new_value)
