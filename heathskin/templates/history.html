@@ -1,5 +1,5 @@
 <h1>Game History:</h2>
-<table>
+<table border=0>
   <thead>
     <tr>
       <td></td>
@@ -9,17 +9,71 @@
   <tbody>
     {% for game in history %}
     </tr>
-      <td>{{game.hero}}
-          {{game.player1}}
-          {% if game.won %} W {% else %} L {% endif %}
-          VERSUS
-          {{game.opponent}}
-          {{game.player2}}
-          {% if game.won %} L {% else %} W {% endif %}
+        <td>
+          <span style="display:inline-block">
+            <div>
+                  {% if game.hero == 'Malfurion Stormrage' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Malfurion_Stormrage.png">
+                  {% elif game.hero == 'Rexxar' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Rexxar.png">
+                  {% elif game.hero == 'Uther Lightbringer' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Uther_Lightbringer.png">
+                  {% elif game.hero == 'Thrall' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Thrall.png">
+                  {% elif game.hero == 'Garrosh Hellscream' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Garrosh_Hellscream.png">
+                  {% elif game.hero == 'Jaina Proudmoore' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Jaina_Proudmoore.png">
+                  {% elif game.hero == 'Anduin Wrynn' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Anduin_Wrynn.png">
+                  {% elif game.hero == "Gul'dan" %}
+                        <img style="width:150px; height:auto;"src="ui_images/Guldan.png">
+                  {% endif %}
+                  </div>
+                  <div>
+                    {{game.player1}}
+                    <div>{% if not game.won %}
+                        <span style="margin-left:30px; font-size:32px; color:red;">L</span>
+                    {% else %}
+                        <span style="margin-left:30px; font-size:36px;color:green;">W</span>
+                    {% endif %}
+                    </div>
+                  </div>
+          </span>
+          <span style="display:inline-block">
+            <div>
+                  <img style="width:70px; height:auto;" src="ui_images/versus.png">
+                  {% if game.opponent == 'Malfurion Stormrage' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Malfurion_Stormrage.png">
+                  {% elif game.opponent == 'Rexxar' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Rexxar.png">
+                  {% elif game.opponent == 'Uther Lightbringer' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Uther_Lightbringer.png">
+                  {% elif game.opponent == 'Thrall' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Thrall.png">
+                  {% elif game.opponent == 'Garrosh Hellscream' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Garrosh_Hellscream.png">
+                  {% elif game.opponent == 'Jaina Proudmoore' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Jaina_Proudmoore.png">
+                  {% elif game.opponent == 'Anduin Wrynn' %}
+                        <img style="width:150px; height:auto;"src="ui_images/Anduin_Wrynn.png">
+                  {% elif game.opponent == "Gul'dan" %}
+                        <img style="width:150px; height:auto;"src="ui_images/Guldan.png">
+                  {% endif %}
+            </div>
+            <div style="margin-left:80px">
+                  {{game.player2}}
+                  <div>{% if game.won %}
+                    <span style="font-size:32px; margin-left:30px;color:red;">L</span>
+                  {% else %}
+                  <span style="margin-left:30px; font-size:36px;color:green;">W</span>
+                  {% endif %}
+                  </div>
+            </div>
+            </span>
 
       </td>
-      <td>{{game.turns}}</td>
-      <td>
+      <td style="padding:13px"><span style="font-size:36px;">{{game.turns}}</span></td>
     </tr>
     {% endfor %}
   </tbody>
