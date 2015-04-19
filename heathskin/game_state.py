@@ -80,16 +80,17 @@ class GameState(object):
 
     def set_game_type(self, new_game_type):
         self.game_type = new_game_type
+        self.logger.info("New game type detected: %s", self.game_type)
+
 
     def feed_line(self, line):
 
-        bob_pattern = "\[Bob\] ---(?P<log_msg>.*)---"  # noqa
+        bob_pattern = "\[Bob\] ---(?P<log_msg>.*)---"
         bob_results = re.match(bob_pattern, line)
 
         if bob_results:
             results = bob_results.groupdict()
             self.parser.feed_line("Bob", "BobLog", results["log_msg"])
-            # self.logger.info("bob_results: %s", results)
 
         else:
             pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"  # noqa
