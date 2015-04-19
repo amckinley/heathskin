@@ -47,6 +47,8 @@ class LogParser(object):
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
 
+            "BobLog": self.match_bob_line
+
         }
 
         self.in_create_game = False
@@ -57,6 +59,7 @@ class LogParser(object):
         self.game_started = False
 
     def feed_line(self, logger_name, log_source, log_msg):
+        # print logger_name
         if log_source not in self.parser_fns:
             raise PreventableException(
                 "got unknown log_source {}".format(log_source))
@@ -66,6 +69,27 @@ class LogParser(object):
             parser(log_msg)
         else:
             self.logger.debug("no parser for line %s", log_msg)
+
+    def match_bob_line(self, line):
+
+        # if "Start Spectator Game" in line:
+        #     print "\n********** Starting Spectator Game in line **********\n"
+
+        # [Power] ================== Begin Spectating 1st player ==================
+
+        screen_to_game_type = {
+            "RegisterScreenTourneys": "play",
+            "RegisterScreenForge": "arena",
+            "RegisterScreenPractice": "practice",
+            "RegisterScreenEndOfGame": None,
+            "RegisterScreenBox": None,
+            "RegisterFriendChallenge": None
+            }
+        game_type = screen_to_game_type.get(line, None)
+        if not game_type:
+            return
+        self.game_state.set_game_type(game_type)
+        self.logger.info("Bob change: %s", game_type)
 
     def match_tag_line(self, line):
         pattern = "\s*tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
@@ -339,8 +363,9 @@ class LogParser(object):
             target_ent = self.game_state.entities[ent_data['id']]
             target_ent.update_tag("ZONE", result['dest_zone'])
 
+            # Spells being cast transition to nothing, manually set here
             if result['dest_zone'] is None:
-                self.logger.error("no zone, msg was %s", msg)
+                target_ent.update_tag("ZONE", 'CASTING SPELL')
                 return
 
     def parse_ignore(self, msg):
