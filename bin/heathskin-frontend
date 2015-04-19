@@ -67,7 +67,7 @@ def main(args):
             pr.enable()
             logger.info("All done")
 
-        app.run(port=port, host=bind_addr)
+        app.run(port=port, host=bind_addr, threaded=True)
 
     finally:
         logger.error("Shutting down")

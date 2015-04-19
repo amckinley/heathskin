@@ -5,7 +5,6 @@
     <title>Heathskin - Deck Tracker</title>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <meta http-equiv="Refresh" Content="1">
     <style>
     #tracker { list-style-type: none; margin: 0; padding: 0; width: 100%;}
     #tracker li { margin: 0 3px 20px 3px; padding: .43; padding-left: 1.0em; font-size: 1.0em; height: 20px; }
@@ -19,6 +18,7 @@
         $( "tracker" ).disableSelection();
     });
     </script>
+    <script src="scripts/current_hand.js"></script>
 </head>
 <body>
 <ul id="tracker" class="deck-class">
@@ -32,7 +32,7 @@
     </li>
 {% endfor %}
 </ul>
-<p><br>hand size: {{handsize}}</p>
+<p><br>hand size: {{cards.length}}</p>
 
 </body>
 </html>
