@@ -23,6 +23,8 @@ class GameState(object):
         self.start_new_game()
         self.players = {}
 
+        self.game_type = None
+
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
@@ -76,13 +78,28 @@ class GameState(object):
     def _is_player_first(self):
         return self.entities.get('36').get_tag('ZONE') == 'OPPOSING PLAY (Hero)'
 
-    def feed_line(self, line):
-        pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"  # noqa
-        results = re.match(pattern, line)
-        if not results:
-            return
+    def set_game_type(self, new_game_type):
+        self.game_type = new_game_type
+        self.logger.info("New game type detected: %s", self.game_type)
 
-        self.parser.feed_line(**results.groupdict())
+
+    def feed_line(self, line):
+
+        bob_pattern = "\[Bob\] ---(?P<log_msg>.*)---"
+        bob_results = re.match(bob_pattern, line)
+
+        if bob_results:
+            results = bob_results.groupdict()
+            self.parser.feed_line("Bob", "BobLog", results["log_msg"])
+
+        else:
+            pattern = "\[(?P<logger_name>\S+)\] (?P<log_source>\S+\(\)) - (?P<log_msg>.*)"  # noqa
+            results = re.match(pattern, line)
+
+            if not results:
+                return
+
+            self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover():
             card_db = card_database.CardDatabase.get_database()
@@ -157,6 +174,3 @@ class GameState(object):
         for zone in zones:
             played_cards += self.get_entities_by_zone(player + " " + zone)
         return played_cards
-
-    def get_all_zone_names():
-        pass

@@ -47,6 +47,8 @@ class LogParser(object):
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
 
+            "BobLog": self.match_bob_line
+
         }
 
         self.in_create_game = False
@@ -66,6 +68,26 @@ class LogParser(object):
             parser(log_msg)
         else:
             self.logger.debug("no parser for line %s", log_msg)
+
+    def match_bob_line(self, line):
+        screen_to_game_type = {
+            "RegisterScreenTourneys": "play",
+            "RegisterScreenForge": "arena",
+            "RegisterScreenPractice": "practice",
+            "RegisterScreenEndOfGame": None,
+            "RegisterScreenBox": None,
+            "RegisterFriendChallenge": None
+            }
+
+        if line not in screen_to_game_type:
+            raise PreventableException(
+                "got unknown bob source {}".format(line))
+
+        game_type = screen_to_game_type[line]
+        if game_type is None:
+            return
+
+        self.game_state.set_game_type(game_type)
 
     def match_tag_line(self, line):
         pattern = "\s*tag=(?P<tag_name>\S+) value=(?P<tag_value>\S+)"
@@ -339,8 +361,9 @@ class LogParser(object):
             target_ent = self.game_state.entities[ent_data['id']]
             target_ent.update_tag("ZONE", result['dest_zone'])
 
+            # Spells being cast transition to nothing, manually set here
             if result['dest_zone'] is None:
-                self.logger.error("no zone, msg was %s", msg)
+                target_ent.update_tag("ZONE", 'CASTING SPELL')
                 return
 
     def parse_ignore(self, msg):
