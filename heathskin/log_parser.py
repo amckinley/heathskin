@@ -84,6 +84,9 @@ class LogParser(object):
                 "got unknown bob source {}".format(line))
 
         game_type = screen_to_game_type[line]
+        if game_type is None:
+            return
+
         self.game_state.set_game_type(game_type)
 
     def match_tag_line(self, line):
