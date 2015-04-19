@@ -69,8 +69,8 @@ def main(args):
 
         app.run(port=port, host=bind_addr)
 
-    except KeyboardInterrupt:
-        logger.error("Got SIGINT, shutting down")
+    finally:
+        logger.error("Shutting down")
         if args.profile:
             logger.info("Stopping profiler")
             pr.disable()

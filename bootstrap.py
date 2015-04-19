@@ -57,7 +57,11 @@ def reset(card_db):
 def make_default_users():
     austin = User(
         email="bearontheroof@gmail.com",
-        password="wangwang", active=True, confirmed_at=datetime.now())
+        password="wangwang",
+        active=True,
+        confirmed_at=datetime.now(),
+        battletag="austin#1795",
+        battlenet_id=1587542)
     andrew = User(
         email="andrewckoch@gmail.com",
         password="ninjacat", active=True, confirmed_at=datetime.now())

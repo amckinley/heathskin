@@ -184,6 +184,7 @@ def get_names():
     card_names = [card_db.get_card_by_id(e.card_id)['name'] for e in game_state.entities if e.card_id is not None]
     return str(card_names)
 
+
 @app.route("/deck_maker")
 @login_required
 def deck_maker_init():
@@ -203,9 +204,11 @@ def deck_maker_init():
 
 
     # return render_template("deck_maker.html", validcards=possible_names)
-    return render_template("deck_maker.html",
-                            validcards=possible_names,
-                            pickedcards=selected_ids)
+    return render_template(
+        "deck_maker.html",
+        validcards=possible_names,
+        pickedcards=selected_ids)
+
 
 @app.route("/deck_maker", methods=['POST'])
 @login_required
@@ -228,6 +231,7 @@ def deck_maker():
         return redirect("/deck_maker")
     else:
         return "Invalid State"
+
 
 @app.route("/universe_dump")
 def universe_dump():
@@ -273,8 +277,10 @@ def help():
             func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
     return jsonify(func_list)
 
+
 @auth_token_required
 @app.route('/history')
 def history():
     universe = GameUniverse.get_universe()
-    return render_template( 'history.html', history=GameHistory.query)
+    return render_template(
+        'history.html', history=GameHistory.query)

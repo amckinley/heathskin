@@ -1,8 +1,6 @@
-import os
-from flask import Flask, request, redirect, url_for, render_template, abort
+from flask import Flask, request, render_template, abort
 
 import deck
-import card_database
 
 app = Flask(__name__)
 

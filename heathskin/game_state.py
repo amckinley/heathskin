@@ -1,7 +1,6 @@
 import re
 import logging
 from collections import defaultdict
-from exceptions import PreventableException
 from heathskin.frontend import db
 from heathskin.exceptions import PreventableException
 from heathskin import card_database
