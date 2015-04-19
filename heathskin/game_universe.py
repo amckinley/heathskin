@@ -4,7 +4,7 @@ import dateutil.parser
 from datetime import datetime
 import codecs
 
-from heathskin import game_state
+from heathskin import game_state, exceptions
 
 SESSION_LOG_ROOT = "session_logs"
 
@@ -68,8 +68,18 @@ class GameUniverse(object):
             print e.__class__
             print e.message
         session['last_seen_at'] = datetime.now()
-        session['file_handle'].write(log_line)
+        self.append_line_to_log(log_line, session['file_handle'])
         session['lines_seen'] += 1
+
+    def append_line_to_log(self, line, file_handle):
+        if "\t" in line:
+            raise exceptions.PreventableException(
+                "Tab literal in line.", line)
+
+        iso_time = datetime.isoformat(datetime.utcnow())
+        log_line = "{}\t{}".format(iso_time, line)
+
+        file_handle.write(log_line)
 
     def get_game_state(self, user_id, session_start):
         session_key = (user_id, session_start)
