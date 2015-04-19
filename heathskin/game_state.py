@@ -126,9 +126,6 @@ class GameState(object):
         return game_ent and game_ent.get_tag("STATE") == "COMPLETE"
 
     def start_new_game(self):
-        # We're calling this function w/ a new session, not just a new game
-        # ie: 2015-04-16 23:47:10,604 INFO [game_universe.py:43] \
-        # Starting new session: (2, '2015-04-16T23:47:00')
         self.logger.info("Starting new game")
         self.entities = {}
         self.parser = LogParser(self)
