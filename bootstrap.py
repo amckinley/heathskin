@@ -69,8 +69,11 @@ def make_default_users():
         email="p@p.com",
         password="password", active=True, confirmed_at=datetime.now())
     ryan = User(
-        email="grizzlybear@grindr.com",
-        password="wang", active=True, confirmed_at=datetime.now())
+        email="ryan.higdon@gmail.com",
+        password="wang",
+        active=True,
+        confirmed_at=datetime.now(),
+        battletag="ryan#1184")
 
     db.session.add(austin)
     db.session.add(andrew)
