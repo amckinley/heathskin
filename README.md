@@ -14,7 +14,7 @@ clone from github. inside the repo:
 # update your heathskin logging config
 mac: `cp config/log.config  ~/Library/Preferences/Blizzard/Hearthstone/log.config`
 
-windows: `¯\_(ツ)_/¯`
+windows: `copy config\log.config %LOCALAPPDATA%\Blizzard\Hearthstone\log.config`
 
 # starting heathskin
 Just start a single webserver so you can play with it:
