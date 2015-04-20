@@ -1,33 +1,131 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 import logging
+from sys import exit
+from datetime import datetime, timedelta
+from time import sleep
+
+
+from iso8601 import iso8601
 
 
 from heathskin.frontend import app, db  # noqa
-
 from heathskin.game_state import GameState
+
+
+class TimeKeeper(object):
+    def __init__(self, start_time):
+        self.logger = logging.getLogger()
+        self.start_time = start_time
+        self.cur_time = self.start_time
+        self.truncated_time = timedelta()
+        self.real_time_start = self.get_now_with_timezone()
+        self.log_to_real_time = self.get_delta_seconds(
+                self.real_time_start, self.start_time)
+
+    def _wait_length(self):
+        real_elapsed_time = self.get_delta_seconds(
+                self.real_time_start - self.truncated_time,
+                self.get_now_with_timezone())
+
+        replay_speed = args.speed
+        log_elapsed_time = (self.get_delta_seconds(self.start_time, self.cur_time) / replay_speed)
+
+        dx_time = log_elapsed_time - real_elapsed_time
+        # self.logger.debug("real time behind log time: %s", dx_time)
+
+        if dx_time < 0:
+            self.logger.debug("Ahead of log, doing nothing")
+            return
+
+        sleep(dx_time)
+
+        if dx_time > 10:
+            exit(0)
+
+    def get_now_with_timezone(self):
+        cur_tztime = iso8601.parse_date(datetime.isoformat(datetime.now()))
+        return cur_tztime
+
+    def truncate(self, dx_time, max_wait):
+        if dx_time > max_wait:
+            self.logger.debug("Time was %s, truncated to %s", dx_time, max_wait)
+            self.truncated_time += timedelta(seconds=(dx_time))
+
+    def wait_length(self, time_stamp):
+        raw_dx = self.get_delta_seconds(self.cur_time, time_stamp)
+        self.cur_time = time_stamp
+
+        replay_speed = args.speed
+        dx_time = raw_dx / replay_speed
+
+        max_wait = float(args.max_wait)
+        self.truncate(dx_time, max_wait)
+        self._wait_length()
+
+    def get_delta_seconds(self, dt1, dt2):
+        d_time = dt2 - dt1
+        return d_time.total_seconds()
 
 
 def main(args):
     log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 
-    if args.debug:
+    if args.app_debug:
+        app.debug = True
+
+    if args.log_debug:
         level = logging.DEBUG
     else:
         level = logging.INFO
 
     logging.basicConfig(level=level, format=log_fmt)
+    logger = logging.getLogger()
+
+    # SHUT THE FUCK UP
+    iso_log = logging.getLogger('iso8601')
+    iso_log.setLevel(logging.ERROR)
+
+    try:
+        replayer(args)
+    except KeyboardInterrupt:
+        logger.info("Received Ctrl+C. Shutting Down.")
+        exit(0)
+    except Exception:
+        logger.exception("Replayer crashed.")
+        exit(-1)
+
+
+def replayer(args):
     gs = GameState()
     f = open(args.LOG_FILE, "r")
+
+    tk = None
+
     for line in f.readlines():
-        gs.feed_line(line.rstrip())
+        time_stamp, log_msg = line.split("\t", 1)
+        if tk is None:
+            first_iso_time = iso_str_to_datetime(time_stamp)
+            tk = TimeKeeper(first_iso_time)
+            gs.feed_line(log_msg)
+            continue
+        cur_time = iso_str_to_datetime(time_stamp)
+        tk.wait_length(cur_time)
+        gs.feed_line(log_msg)
+
+
+def iso_str_to_datetime(iso_str):
+    return iso8601.parse_date(iso_str)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Replay a log file')
     parser.add_argument('LOG_FILE', help='path to the log file to replay')
-    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--app-debug', action='store_true')
+    parser.add_argument('--log-debug', action='store_true')
+    parser.add_argument('--speed', default=1, type=int)  # 1, 2, 5, etc
+    parser.add_argument('--max-wait', default=10, type=int)
 
     args = parser.parse_args()
 

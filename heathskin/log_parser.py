@@ -314,7 +314,9 @@ class LogParser(object):
             target_ent = self.game_state.get_entity_by_name(entity_name)
 
         if not target_ent:
-            raise PreventableException("failed to handle tag change for msg: '{}'".format(msg))
+            return
+            # XXX
+            # raise PreventableException("failed to handle tag change for msg: '{}'".format(msg))
 
         target_ent.update_tag(**results)
 

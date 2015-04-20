@@ -64,10 +64,16 @@ def make_default_users():
         battlenet_id=1587542)
     andrew = User(
         email="andrewckoch@gmail.com",
-        password="ninjacat", active=True, confirmed_at=datetime.now())
+        password="ninjacat",
+        active=True,
+        confirmed_at=datetime.now(),
+        battletag="And0r#1810",
+        battlenet_id=1234567)
     peter = User(
         email="p@p.com",
-        password="password", active=True, confirmed_at=datetime.now())
+        password="password",
+        active=True,
+        confirmed_at=datetime.now())
     ryan = User(
         email="ryan.higdon@gmail.com",
         password="wang",
