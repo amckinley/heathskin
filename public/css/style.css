@@ -1,4 +1,18 @@
-.hand-item-img {
+.hand-list {
+    list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.coin-placeholder {
+    display:block;
+    background:black;
+    width:300px;
+    height:30px;
+    border: 1px solid black
+}
+
+.banner-image {
     padding-left: 100px;
     background:#000000;
     text-align:left;
@@ -7,19 +21,19 @@
     height: 40px;
 }
 
-.coin-placeholder {
-    background:black;
-    width:300px;
-    height:100px;
+.banner-container {
+    position: relative;
 }
 
-.hand-card-name {
+.banner-text {
     color: white;
-    padding-left: 20px;
-    padding-bottom: 0px
+    margin-left: -270px;
+    margin-top: 15px;
+    font-weight: bold;
+    position: absolute;
 }
 
 .mana-gem {
-    width: 20;
-    height: 20;
+    margin-left: -290px;
+    position: absolute;
 }
