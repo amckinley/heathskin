@@ -49,10 +49,8 @@ class TimeKeeper(object):
         return cur_tztime
 
     def truncate(self, dx_time, max_wait):
-        # time_cut = max_wait
         if dx_time > max_wait:
-            self.logger.info("Time was %s, truncating to %s.", dx_time, max_wait)
-            # time_cut = dx_time - max_wait
+            self.logger.debug("Time was %s, truncated to %s", dx_time, max_wait)
             self.truncated_time += timedelta(seconds=(dx_time))
 
     def wait_length(self, time_stamp):
@@ -74,10 +72,13 @@ class TimeKeeper(object):
 def main(args):
     log_fmt = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(message)s"
 
-    if args.debug:
+    if args.app_debug:
         app.debug = True
 
-    level = logging.INFO
+    if args.log_debug:
+        level = logging.DEBUG
+    else:
+        level = logging.INFO
 
     logging.basicConfig(level=level, format=log_fmt)
     logger = logging.getLogger()
@@ -121,8 +122,9 @@ def iso_str_to_datetime(iso_str):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Replay a log file')
     parser.add_argument('LOG_FILE', help='path to the log file to replay')
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--speed', default=1, type=int) # 1x, 2x, 5x, etc
+    parser.add_argument('--app-debug', action='store_true')
+    parser.add_argument('--log-debug', action='store_true')
+    parser.add_argument('--speed', default=1, type=int)  # 1, 2, 5, etc
     parser.add_argument('--max-wait', default=10, type=int)
 
     args = parser.parse_args()
