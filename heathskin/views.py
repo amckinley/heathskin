@@ -148,8 +148,7 @@ def upload():
 
 @app.route("/api/current_hand")
 def get_current_hand():
-    print _get_hand()
-    return jsonify(_get_hand())
+    return jsonify({"cards": _get_hand()})
 
 def _get_hand():
     GameUniverse.lock_universe()
@@ -163,7 +162,7 @@ def _get_hand():
         hand = []
 
     hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
-    GameUniverse.release_universe()
+    GameUniverse.unlock_universe()
 
     return hand_ids
 @app.route("/current_hand")
@@ -261,7 +260,7 @@ def upload_line():
         session_start=session['session_start_time'],
         log_line=request.get_json()["log_line"])
 
-    GameUniverse.release_universe()
+    GameUniverse.unlock_universe()
 
     logger.debug("got a log line from user %s", current_user.get_id())
     return ''

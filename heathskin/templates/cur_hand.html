@@ -18,17 +18,30 @@
         $( "tracker" ).disableSelection();
     });
     </script>
-    <script src="scripts/current_hand.js"></script>
+    <script src="https://fb.me/react-0.13.2.js"></script>
+    <script src="https://fb.me/JSXTransformer-0.13.2.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 <body>
-<ul id="tracker" class="deck-class">
+<div id="content"></div>
+<script type="text/jsx" src="scripts/current_hand.js"></script>
+<ul id="tracker" class="hand">
 {% for card in cards %}
     <li>
-        <div>
-            <span align="right"><img src="card_images/banners/{{card['id']}}_banner.png" ALIGN="middle" style="width:350; height:40; padding-left: 100px; background:#000000;text-align:left, border:1px"></span>
-            <span align="left"><img src="ui_images/mana.png" ALIGN="middle" style="width: 20; height: 20"></span>
-            <span class="card-name" vertical-align="middle"; style="color: white; padding-left: 20px; padding-bottom: 0px"><p><b>{{card['cost']}} &nbsp&nbsp&nbsp {{card['name']}}</b></p></span>
-        </div>
+            {% if not card['id'] == "GAME_005" %}
+            <span>
+                <img src="card_images/banners/{{card['id']}}_banner.png"
+                 class="hand-item-img">
+            </span>
+            {% else %}
+                <span class="coin-placeholder"></span>
+            {% endif %}
+            </span>
+            <span> <img src="ui_images/mana.png" class=".mana-gem"> </span>
+            <span class="hand-card-name">
+                <p><b>
+                {%if not card['cost']%}0{%endif%}{{card['cost']}} &nbsp&nbsp&nbsp {{card['name']}}</b></p>
+            </span>
     </li>
 {% endfor %}
 </ul>
