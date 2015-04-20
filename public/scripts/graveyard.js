@@ -1,15 +1,16 @@
+
 /**
-* Handles all the functions for the current hand page
+* Handles all the functions for the graveyard
 */
 (function(React, $){
-    var CardList = React.createClass({
+    var GraveyardList = React.createClass({
         getInitialState: function() {
           return {data: []};
         },
         loadCardsFromServer: function(){
             var that = this;
-            $.get('api/current_hand', function(http){
-                that.setState({"data": http.cards});
+            $.get('api/zone/FRIENDLY_GRAVEYARD/', function(http){
+                that.setState({"data": http.entities});
             });
         },
         render: function() {
@@ -36,12 +37,9 @@
               );
             });
             return (
-              <div><h2>Hand ({this.state.data.length})</h2>
               <ul id="" className="hand-list" data={this.state.data}>
                 {cardNodes}
               </ul>
-              </div>
-
             );
         },
         componentDidMount: function() {
@@ -50,7 +48,7 @@
         },
     });
     React.render(
-        <CardList />,
-        document.getElementById('content')
+        <GraveyardList />,
+        document.getElementById('graveyard')
     );
 })(React, jQuery);

@@ -44,10 +44,6 @@ def deck_list(filter_string):
         card = card_db.get_card_by_id(c.card.blizz_id)
         number_in_deck = c.count
 
-        #print ("c.card.blizz_id: " + c.card.blizz_id)
-        #print ("c.card: " + str(c.card))
-        #print ("card_db.get_card_by_id(c.card.blizz_id): " + str(card_db.get_card_by_id(c.card.blizz_id)))
-        #print ("")
         show_card = True
 
         if (len(filter_string) > 0):
@@ -126,25 +122,24 @@ def upload():
 
     return redirect("/")
 
-    # print_deck = deck.Deck.get_card_names(player_deck)
-    # card_names = []
-    # for card in print_deck:
-    #     card_names.append(card)
-    # cur_game = GAME_UNIVERSE.get_latest_game_state_for_user(current_user.get_id())
-    # if not cur_game:
-    #     return ""
-    # played_cards = cur_game.get_played_cards("FRIENDLY")
-    # card_db = card_database.CardDatabase.get_database()
-    # played_card_ids = [card_db.get_card_by_id(e.card_id) for e in played_cards]
-    # for card in played_card_ids:
-    #     if card in card_names:
-    #         card_names.remove(card)
-    # for card in card_names:
-    #     print card['name']
+@app.route("/api/probabilities/")
+def get_probabilities():
+    pass
 
-    # return render_template('tracker.html',
-    #                         cards=card_names,
-    #                         handsize=len(card_names))
+@app.route("/api/zone/<string:zone>/")
+def get_entities_by_zone(zone):
+    zone = zone.replace("_", " ")
+    GameUniverse.lock_universe()
+    universe = GameUniverse.get_universe()
+    card_db = card_database.CardDatabase.get_database()
+    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
+    if game_state:
+        entities = game_state.entities
+    else:
+        entities = {}
+    GameUniverse.unlock_universe()
+    return jsonify ({"entities": [card_db.get_card_by_id(e.card_id) for e in entities.values() if e.get_tag('ZONE') == zone and e.card_id]})
+
 
 @app.route("/api/current_hand")
 def get_current_hand():
