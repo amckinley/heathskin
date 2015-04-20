@@ -5,19 +5,6 @@
     <title>Heathskin - Deck Tracker</title>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-    <style>
-    #tracker { list-style-type: none; margin: 0; padding: 0; width: 100%;}
-    #tracker li { margin: 0 3px 20px 3px; padding: .43; padding-left: 1.0em; font-size: 1.0em; height: 20px; }
-    #tracker li span { position: absolute; margin-left: -1.3em; }
-    </style>
-    <script>
-    $(function() {
-        $( "tracker" ).sortable({
-            distance:30
-            })
-        $( "tracker" ).disableSelection();
-    });
-    </script>
     <script src="https://fb.me/react-0.13.2.js"></script>
     <script src="https://fb.me/JSXTransformer-0.13.2.js"></script>
     <link rel="stylesheet" type="text/css" href="css/style.css" />
@@ -25,27 +12,6 @@
 <body>
 <div id="content"></div>
 <script type="text/jsx" src="scripts/current_hand.js"></script>
-<ul id="tracker" class="hand">
-{% for card in cards %}
-    <li>
-            {% if not card['id'] == "GAME_005" %}
-            <span>
-                <img src="card_images/banners/{{card['id']}}_banner.png"
-                 class="hand-item-img">
-            </span>
-            {% else %}
-                <span class="coin-placeholder"></span>
-            {% endif %}
-            </span>
-            <span> <img src="ui_images/mana.png" class=".mana-gem"> </span>
-            <span class="hand-card-name">
-                <p><b>
-                {%if not card['cost']%}0{%endif%}{{card['cost']}} &nbsp&nbsp&nbsp {{card['name']}}</b></p>
-            </span>
-    </li>
-{% endfor %}
-</ul>
-<p><br>hand size: {{cards.length}}</p>
 
 </body>
 </html>

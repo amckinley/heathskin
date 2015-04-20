@@ -1,22 +1,7 @@
 /**
 * Handles all the functions for the current hand page
 */
-(function($){
-
-    var handItemTemplate = " " +
-        "<li>"+
-        "</li>"+
-    " ";
-
-    $.get('api/current_hand', function(http){
-        $.each(http.cards, function(idx, card){
-            $('.hand').append('<li class="">' + ' ' + card.name + '</li>');
-        });
-        console.log(http);
-    });
-})(jQuery);
-
-(function(React){
+(function(React, $){
     var CardList = React.createClass({
         getInitialState: function() {
           return {data: []};
@@ -29,12 +14,29 @@
         },
         render: function() {
             var cardNodes = this.state.data.map(function (card) {
+              var src = "card_images/banners/" + card.id + "_banner.png",
+                  img = card.id !== "GAME_005" ?  (
+                            <span className="banner-container">
+                                <img className="banner-image" src={src}></img>
+                            </span>
+                        ) : (
+                            <span className="banner-container">
+                                <img className="banner-image"
+                                    src="http://placehold.it/200x40/000000/000000/"></img>
+                            </span>
+                        );
+              var cost = card.cost > 0 ? card.cost : "0";
               return (
-                <li>{card.name}</li>
+                <li className="hand-item">{img}
+                    <img src="ui_images/mana.png" className="mana-gem"></img>
+                    <span className="banner-text">
+                        {cost}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{card.name}
+                    </span>
+                </li>
               );
             });
             return (
-              <ul className="card-list" data={this.state.data}>
+              <ul id="" className="hand-list" data={this.state.data}>
                 {cardNodes}
               </ul>
             );
@@ -48,4 +50,4 @@
         <CardList />,
         document.getElementById('content')
     );
-})(React);
+})(React, jQuery);
