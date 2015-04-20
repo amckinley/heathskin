@@ -1,13 +1,45 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 import logging
+from sys import exit
+from datetime import datetime
+from time import sleep
+
+
+from iso8601 import iso8601
 
 
 from heathskin.frontend import app, db  # noqa
-
 from heathskin.game_state import GameState
+
+
+class TimeKeeper(object):
+    def __init__(self, start_time):
+        self.logger = logging.getLogger()
+        self.start_time = start_time
+        self.cur_time = self.start_time
+
+    def wait_length(self, time_stamp):
+        raw_dx = self.get_secs_delta(self.cur_time, time_stamp)
+        self.cur_time = time_stamp
+
+        replay_speed = args.speed
+        dx_time = raw_dx / replay_speed
+
+        max_wait = float(args.max_wait)
+
+        if dx_time > max_wait:
+            self.logger.debug("Time was %s, truncating to %s.", dx_time, max_wait)
+            dx_time = max_wait
+
+        self.logger.debug("Going to sleep for %s seconds.", dx_time)
+        sleep(dx_time)
+        self.logger.debug("Waking up.")
+
+    def get_secs_delta(self, dt1, dt2):
+        d_time = dt2 - dt1
+        return d_time.total_seconds()
 
 
 def main(args):
@@ -19,15 +51,56 @@ def main(args):
         level = logging.INFO
 
     logging.basicConfig(level=level, format=log_fmt)
+    logger = logging.getLogger()
+
+    # SHUT THE FUCK UP
+    iso_log = logging.getLogger('iso8601')
+    iso_log.setLevel(logging.ERROR)
+
+    try:
+        replayer(args)
+    except KeyboardInterrupt:
+        logger.info("Received Ctrl+C. Shutting Down.")
+        exit(0)
+    except Exception:
+        logger.exception("Replayer crashed.")
+        exit(-1)
+
+
+def replayer(args):
     gs = GameState()
     f = open(args.LOG_FILE, "r")
+
+    tk = None
+
     for line in f.readlines():
-        gs.feed_line(line.rstrip())
+        time_stamp, log_msg = line.split("\t", 1)
+        if tk is None:
+            first_iso_time = iso_str_to_datetime(time_stamp)
+            tk = TimeKeeper(first_iso_time)
+            gs.feed_line(log_msg)
+            continue
+        cur_time = iso_str_to_datetime(time_stamp)
+        tk.wait_length(cur_time)
+        gs.feed_line(log_msg)
+
+
+# def get_now_with_timezone():
+#     cur_tztime = iso8601.parse_date(datetime.isoformat(datetime.now()))
+#     return cur_tztime
+
+
+def iso_str_to_datetime(iso_str):
+    return iso8601.parse_date(iso_str)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Replay a log file')
     parser.add_argument('LOG_FILE', help='path to the log file to replay')
     parser.add_argument('--debug', action='store_true')
+    # parser.add_argument('--style', default="2")
+    parser.add_argument('--speed', default=1, type=int) # 1x, 2x, 5x, etc
+    parser.add_argument('--max-wait', default=10, type=int)
 
     args = parser.parse_args()
 
