@@ -1,0 +1,25 @@
+.hand-item-img {
+    padding-left: 100px;
+    background:#000000;
+    text-align:left;
+    border:1px
+    width:300px;
+    height: 40px;
+}
+
+.coin-placeholder {
+    background:black;
+    width:300px;
+    height:100px;
+}
+
+.hand-card-name {
+    color: white;
+    padding-left: 20px;
+    padding-bottom: 0px
+}
+
+.mana-gem {
+    width: 20;
+    height: 20;
+}

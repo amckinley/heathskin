@@ -3,6 +3,7 @@ import logging
 import dateutil.parser
 from datetime import datetime
 import codecs
+import threading
 
 from heathskin import game_state
 
@@ -11,13 +12,23 @@ SESSION_LOG_ROOT = "session_logs"
 
 class GameUniverse(object):
     _instance = None
+    _instance_lock = None
 
     @classmethod
     def get_universe(cls, session_log_path=None):
         if not cls._instance:
             cls._instance = GameUniverse(session_log_path)
-
         return cls._instance
+
+    @classmethod
+    def lock_universe(cls):
+        if not cls._instance_lock:
+            cls._instance_lock = threading.Lock()
+        cls._instance_lock.acquire()
+
+    @classmethod
+    def unlock_universe(cls):
+        cls._instance_lock.release()
 
     def __init__(self, session_log_path=None):
         self.logger = logging.getLogger()

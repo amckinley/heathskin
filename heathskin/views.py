@@ -146,23 +146,30 @@ def upload():
     #                         cards=card_names,
     #                         handsize=len(card_names))
 
+@app.route("/api/current_hand")
+def get_current_hand():
+    return jsonify({"cards": _get_hand()})
 
+def _get_hand():
+    GameUniverse.lock_universe()
+    universe = GameUniverse.get_universe()
+    card_db = card_database.CardDatabase.get_database()
+
+    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
+    if game_state:
+        hand = game_state.get_friendly_hand()
+    else:
+        hand = []
+
+    hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
+    GameUniverse.unlock_universe()
+
+    return hand_ids
 @app.route("/current_hand")
 @login_required
 def deck_tracker():
-    card_db = card_database.CardDatabase.get_database()
-    universe = GameUniverse.get_universe()
-
-    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
-    if not game_state:
-        return "no game states found for user id {}".format(
-            current_user.get_id())
-
-    hand = game_state.get_friendly_hand()
-    hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
-
-    return render_template(
-        'cur_hand.html', cards=hand_ids, handsize=len(hand_ids))
+    hand = _get_hand()
+    return render_template( 'cur_hand.html', cards=hand)
 
 
 @app.route("/get_named_cards")
@@ -245,12 +252,15 @@ def upload_line():
     if 'session_start_time' not in session:
         abort(400)
 
+    GameUniverse.lock_universe()
     # this is where we actually update the game with the incoming log line
     universe = GameUniverse.get_universe()
     universe.feed_line(
         user_id=current_user.get_id(),
         session_start=session['session_start_time'],
         log_line=request.get_json()["log_line"])
+
+    GameUniverse.unlock_universe()
 
     logger.debug("got a log line from user %s", current_user.get_id())
     return ''
