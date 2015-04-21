@@ -93,7 +93,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Frontend some skinz')
     parser.add_argument('--port-offset')
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--bind-addr', default="127.0.0.1")
+    parser.add_argument('--bind-addr', default="127.0.0.1",
+        help="IP address to bind the server to")
     parser.add_argument('--profile', action='store_true')
     args = parser.parse_args()
     sys.exit(main(args))
