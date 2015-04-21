@@ -1,4 +1,10 @@
 {{current_user.email}}
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+<div id="history"></div>
+<script type="text/jsx" src="scripts/game_history.js"></script>
+{#
 <h1>Game History:</h2>
 <table border=0>
   <thead>
@@ -80,3 +86,5 @@
     {% endfor %}
   </tbody>
 </table>
+#}
+{% endblock %}

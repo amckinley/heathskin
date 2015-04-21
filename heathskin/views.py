@@ -122,50 +122,11 @@ def upload():
 
     return redirect("/")
 
-@app.route("/api/probabilities/")
-def get_probabilities():
-    pass
 
-@app.route("/api/zone/<string:zone>/")
-def get_entities_by_zone(zone):
-    zone = zone.replace("_", " ")
-    GameUniverse.lock_universe()
-    universe = GameUniverse.get_universe()
-    card_db = card_database.CardDatabase.get_database()
-    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
-    if game_state:
-        entities = game_state.entities
-    else:
-        entities = {}
-    GameUniverse.unlock_universe()
-    return jsonify ({"entities": [card_db.get_card_by_id(e.card_id) for e in entities.values() if e.get_tag('ZONE') == zone and e.card_id]})
-
-
-@app.route("/api/current_hand")
-def get_current_hand():
-    return jsonify({"cards": _get_hand()})
-
-def _get_hand():
-    GameUniverse.lock_universe()
-    universe = GameUniverse.get_universe()
-    card_db = card_database.CardDatabase.get_database()
-
-    game_state = universe.get_latest_game_state_for_user(current_user.get_id())
-    if game_state:
-        hand = game_state.get_friendly_hand()
-    else:
-        hand = []
-
-    hand_ids = [card_db.get_card_by_id(e.card_id) for e in hand]
-    GameUniverse.unlock_universe()
-
-    return hand_ids
 @app.route("/current_hand")
 @login_required
 def deck_tracker():
-    hand = _get_hand()
-    return render_template( 'cur_hand.html', cards=hand)
-
+    return render_template( 'cur_hand.html')
 
 @app.route("/get_named_cards")
 @login_required
@@ -183,7 +144,9 @@ def get_names():
 
     return str([our_hero.name, enemy_hero.name])
 
-    card_names = [card_db.get_card_by_id(e.card_id)['name'] for e in game_state.entities if e.card_id is not None]
+    card_names = [card_db.get_card_by_id(e.card_id)['name']
+        for e in game_state.entities if e.card_id]
+
     return str(card_names)
 
 
@@ -287,5 +250,4 @@ def help():
 @app.route('/history')
 def history():
     universe = GameUniverse.get_universe()
-    return render_template(
-        'history.html', history=GameHistory.query)
+    return render_template('history.html', history=GameHistory.query)
