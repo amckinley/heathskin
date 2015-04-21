@@ -29,6 +29,7 @@ logger = app.logger
 # of views module is required to actually add all the urls
 from heathskin.models import User, Role
 from heathskin import views  # noqa
+from heathskin.api import views
 
 # Setup Flask-Security
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)

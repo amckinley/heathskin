@@ -37,3 +37,23 @@
     margin-left: -290px;
     position: absolute;
 }
+
+.history-table td{
+  padding: 10px;
+}
+
+.Jaina-Proudmoore {
+  color: blue;
+}
+
+.Uther-Lightbringer{
+  color: #EDDA74;
+}
+
+.Malfurion-Stormrage{
+  color: brown;
+}
+
+.Rexxar {
+  color: green;
+}

@@ -51,6 +51,6 @@
     });
     React.render(
         <CardList />,
-        document.getElementById('content')
+        document.getElementById('current-hand')
     );
 })(React, jQuery);

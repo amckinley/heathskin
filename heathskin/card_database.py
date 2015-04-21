@@ -1,6 +1,7 @@
 from collections import defaultdict
 import json
 import logging
+import os.path
 
 from heathskin import utils
 
@@ -122,7 +123,12 @@ class CardDatabase(object):
         return collectible
 
     def get_card_by_id(self, card_id):
-        return self.cards_by_id[card_id]
+        path = 'card_images/banners/%s_banner.png' % card_id
+        if not os.path.exists(path):
+          path = "http://placehold.it/200x40/000000/000000/" 
+        card = self.cards_by_id[card_id]
+        card.update({"bannerSrc": path })
+        return card
 
     def get_real_set_names(self):
         names = [
