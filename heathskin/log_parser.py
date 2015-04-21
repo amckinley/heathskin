@@ -74,9 +74,11 @@ class LogParser(object):
             "RegisterScreenTourneys": "play",
             "RegisterScreenForge": "arena",
             "RegisterScreenPractice": "practice",
+            "RegisterScreenFriendly": "friendly",
             "RegisterScreenEndOfGame": None,
             "RegisterScreenBox": None,
-            "RegisterFriendChallenge": None
+            "RegisterFriendChallenge": None,
+            "RegisterProfileNotices": None
             }
 
         if line not in screen_to_game_type:

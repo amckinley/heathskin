@@ -98,21 +98,33 @@ def main(args):
 
 
 def replayer(args):
+    logger = logging.getLogger()
     gs = GameState()
     f = open(args.LOG_FILE, "r")
 
     tk = None
 
     for line in f.readlines():
-        time_stamp, log_msg = line.split("\t", 1)
-        if tk is None:
-            first_iso_time = iso_str_to_datetime(time_stamp)
-            tk = TimeKeeper(first_iso_time)
+        if args.log_style == "v2":
+            try:
+                time_stamp, log_msg = line.split("\t", 1)
+            except ValueError:
+                logger.error("failed to find timestamp in log file. did you mean to use a v1 log file?")
+                exit(-1)
+            if tk is None:
+                first_iso_time = iso_str_to_datetime(time_stamp)
+                tk = TimeKeeper(first_iso_time)
+                gs.feed_line(log_msg.rstrip())
+                continue
+            cur_time = iso_str_to_datetime(time_stamp)
+            tk.wait_length(cur_time)
             gs.feed_line(log_msg)
-            continue
-        cur_time = iso_str_to_datetime(time_stamp)
-        tk.wait_length(cur_time)
-        gs.feed_line(log_msg)
+
+        elif args.log_style == "v1":
+            gs.feed_line(line.rstrip())
+        else:
+            logger.error("attempted to use bogus log-file version of %s", args.log_style)
+            exit(-1)
 
 
 def iso_str_to_datetime(iso_str):
@@ -126,6 +138,7 @@ if __name__ == "__main__":
     parser.add_argument('--log-debug', action='store_true')
     parser.add_argument('--speed', default=1, type=int)  # 1, 2, 5, etc
     parser.add_argument('--max-wait', default=10, type=int)
+    parser.add_argument('--log-style', default='v2')
 
     args = parser.parse_args()
 
