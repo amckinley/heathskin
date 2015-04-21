@@ -35,7 +35,7 @@ class Entity(object):
         self.entity_id = None
         self.card_id = None
 
-        self._tag_history = []
+        self.tag_history = []
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -50,7 +50,7 @@ class Entity(object):
             old_str = "None"
 
         new_event = EntityChangeEvent(tag_name, old_str, tag_value)
-        self._tag_history.append(new_event)
+        self.tag_history.append(new_event)
 
         self.logger.info(
             "Updating %s %s",
@@ -61,10 +61,9 @@ class Entity(object):
         return self.tags.get(tag_name, None)
 
     def get_source_zone(self):
-        for event in self._tag_history:
-            for event in self._tag_history:
-                if event.tag_name == "ZONE":
-                    return event.old_value
+        for event in self.tag_history:
+            if event.tag_name == "ZONE":
+                return event.old_value
         self.logger.debug("No source zone: {}, event: {}".format(
             str(self), event.tag_name))
         return None
