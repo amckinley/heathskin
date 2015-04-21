@@ -35,7 +35,7 @@ class Entity(object):
         self.entity_id = None
         self.card_id = None
 
-        self._tag_history = []
+        self.tag_history = []
 
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -49,29 +49,23 @@ class Entity(object):
         else:
             old_str = "None"
 
-         # using integer sequence for ordering until timestamp available from parser
-        event_sequence = len(self._tag_history)
-        #                   def __init__(self, index, tag_name, old_value, new_value):
         new_event = EntityChangeEvent(tag_name, old_str, tag_value)
-        self._tag_history.append(new_event)
+        self.tag_history.append(new_event)
 
         self.logger.info(
-            "Updating %s:%s [%s->%s]",
-            self.__repr__(), tag_name, old_str, tag_value)
+            "Updating %s %s",
+            self.__repr__(), new_event.__str__())
         self.tags[tag_name] = self._cast_tag(tag_value)
 
     def get_tag(self, tag_name):
         return self.tags.get(tag_name, None)
 
     def get_source_zone(self):
-        print ("tag hist: " + str(self._tag_history))
-        for event in self._tag_history:
-            print ("tag hist: " + str(self._tag_history))
-            for event in self._tag_history:
-                if event.tag_name == "ZONE":
-                    print ("SourceZone=" + event.tag_name + " - " + str(self))
-                    return event.old_value
-                    print ("ERROR no source zone on " + str(self))
+        for event in self.tag_history:
+            if event.tag_name == "ZONE":
+                return event.old_value
+        self.logger.debug("No source zone: {}, event: {}".format(
+            str(self), event.tag_name))
         return None
 
     def _cast_tag(self, tag_value):
@@ -97,5 +91,6 @@ class EntityChangeEvent(object):
         self.old_value = old_value
         self.new_value = new_value
 
-    def __repr__(self):
-        return "EntityChangeEvent tag_name=" + str(self.tag_name) + " old:" + str(self.old_value) + " new:" + str(self.new_value)
+    def __str__(self):
+        return "{} [{} -> {}]".format(
+            self.tag_name, self.old_value, self.new_value)
