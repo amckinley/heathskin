@@ -125,9 +125,9 @@ class CardDatabase(object):
     def get_card_by_id(self, card_id):
         path = 'card_images/banners/%s_banner.png' % card_id
         if not os.path.exists(path):
-          path = "" 
+          path = "http://placehold.it/200x40/000000/000000/" 
         card = self.cards_by_id[card_id]
-        card.uodate({"bannerSrc": path })
+        card.update({"bannerSrc": path })
         return card
 
     def get_real_set_names(self):
