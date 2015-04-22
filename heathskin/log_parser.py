@@ -47,7 +47,7 @@ class LogParser(object):
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
 
-            "BobLog": None
+            "BobLog": self.match_bob_line
 
         }
 
@@ -79,7 +79,11 @@ class LogParser(object):
             "RegisterScreenBox": None,
             "RegisterFriendChallenge": None,
             "RegisterProfileNotices": None,
-            "RegisterCollectionManager": None
+            "RegisterCollectionManager": None,
+            "RegisterFeatures": None,
+            "RegisterScreenOptimizedLogin": None,
+            "RegisterScreenLogin": None,
+            "RegisterScreenCollectionManager": None
             }
 
         if line not in screen_to_game_type:
