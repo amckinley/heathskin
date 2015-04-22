@@ -78,7 +78,8 @@ class LogParser(object):
             "RegisterScreenEndOfGame": None,
             "RegisterScreenBox": None,
             "RegisterFriendChallenge": None,
-            "RegisterProfileNotices": None
+            "RegisterProfileNotices": None,
+            "RegisterCollectionManager": None
             }
 
         if line not in screen_to_game_type:
