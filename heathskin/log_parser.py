@@ -47,7 +47,7 @@ class LogParser(object):
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
 
-            "BobLog": self.match_bob_line
+            "BobLog": None
 
         }
 
