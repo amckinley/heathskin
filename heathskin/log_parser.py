@@ -47,7 +47,7 @@ class LogParser(object):
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
 
-            "BobLog": self.match_bob_line
+            #"BobLog": self.match_bob_line
 
         }
 
@@ -60,8 +60,10 @@ class LogParser(object):
 
     def feed_line(self, logger_name, log_source, log_msg):
         if log_source not in self.parser_fns:
-            raise PreventableException(
-                "got unknown log_source {}".format(log_source))
+            self.logger.debug("no parser for line %s", log_msg)
+            return
+            # raise PreventableException(
+            #     "got unknown log_source {}".format(log_source))
 
         parser = self.parser_fns[log_source]
         if parser:
