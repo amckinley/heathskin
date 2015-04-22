@@ -2,6 +2,8 @@ import copy
 from collections import defaultdict
 import operator
 
+from datetime import datetime
+
 from flask.ext.security import UserMixin, RoleMixin
 from heathskin.frontend import db
 
@@ -127,3 +129,6 @@ class GameHistory(db.Model):
     turns = db.Column(db.Integer)
     player1 = db.Column(db.String(255))
     player2 = db.Column(db.String(255))
+
+    start_time = db.Column(db.DateTime)
+    end_time = db.Column(db.DateTime)

@@ -1,13 +1,16 @@
 import re
 import logging
 from collections import defaultdict
+from datetime import datetime
+
+
+
+from flask.ext.login import current_user
+
 from heathskin.frontend import db
 from heathskin.exceptions import PreventableException
 from heathskin import card_database
 from heathskin.models import GameHistory
-from flask.ext.login import current_user
-
-
 from log_parser import LogParser
 
 
@@ -18,34 +21,40 @@ class GameState(object):
         gs.entities = entities
         return gs
 
-    def __init__(self):
+    def __init__(self, replay_from_log=False):
         self.logger = logging.getLogger()
-        self.start_new_game()
         self.players = {}
+
+        self.history = GameHistory()
+        self.replay_from_log = replay_from_log
+
+        self.start_new_game()
 
         self.game_type = None
 
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
-        history = GameHistory()
-        history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
+        self.history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
+        ####
+        self.history.end_time = datetime.isoformat(datetime.now())
+        ####
         if current_user:
-            history.user_id = current_user.get_id()
+            self.history.user_id = current_user.get_id()
         else:
-            history.user_id = 0
-        history.hero = kwargs.get('hero')
-        history.opponent = kwargs.get('opponent')
-        history.enemy_health = 30
-        history.hero_health = 30
-        history.turns = kwargs.get('turns')
-        history.first = not self._is_player_first()
+            self.history.user_id = 0
+        self.history.hero = kwargs.get('hero')
+        self.history.opponent = kwargs.get('opponent')
+        self.history.enemy_health = 30
+        self.history.hero_health = 30
+        self.history.turns = kwargs.get('turns')
+        self.history.first = not self._is_player_first()
         for player in self.players.values():
           if player.get('first'):
-            history.player1 = player.get('username')
+            self.history.player1 = player.get('username')
           else:
-            history.player2 = player.get('username')
-        db.session.add(history)
+            self.history.player2 = player.get('username')
+        db.session.add(self.history)
         db.session.commit()
 
     def _get_entity_id_of_first_player(self):
@@ -99,9 +108,10 @@ class GameState(object):
 
             self.parser.feed_line(**results.groupdict())
 
-        if self.is_gameover():
+        if self.is_gameover() and not self.replay_from_log:
             card_db = card_database.CardDatabase.get_database()
             our_hero, enemy_hero = self._get_heroes_from_entities()
+
             self._create_history(**{
                 'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
                 'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
@@ -128,6 +138,12 @@ class GameState(object):
         self.entities = {}
         self.parser = LogParser(self)
         self.players = {}
+
+        if self.replay_from_log:
+            return
+
+        self.history = GameHistory()
+        self.history.start_time = datetime.isoformat(datetime.now())
 
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None
