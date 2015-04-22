@@ -11186,7 +11186,7 @@ Total: 50.595886 ms (FindLiveObjects: 3.662335 ms CreateObjectMapping: 3.564671 
 [Zone] ZoneChangeList.ProcessChanges() - END waiting for [name=Antique Healbot id=32 zone=HAND zonePos=0 cardId=GVG_069 player=1] to load (zoneChanged=True controllerChanged=False powerTask=(not null))
 
 
-[Zone] `() - id=13 local=False [name=Antique Healbot id=32 zone=HAND zonePos=0 cardId=GVG_069 player=1] zone from FRIENDLY DECK -> FRIENDLY HAND
+[Zone] ZoneChangeList.ProcessChanges() - id=13 local=False [name=Antique Healbot id=32 zone=HAND zonePos=0 cardId=GVG_069 player=1] zone from FRIENDLY DECK -> FRIENDLY HAND
 
 
 [Zone] ZoneChangeList.ProcessChanges() - processing index=1 change=powerTask=[power=[type=TAG_CHANGE entity=[id=32 cardId=GVG_069 name=Antique Healbot] tag=ZONE_POSITION value=7] complete=False] entity=[name=Antique Healbot id=32 zone=HAND zonePos=0 cardId=GVG_069 player=1] srcZoneTag=INVALID srcPos= dstZoneTag=INVALID dstPos=7
