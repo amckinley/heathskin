@@ -80,6 +80,7 @@ class LogParser(object):
             "RegisterFriendChallenge": None,
             "RegisterProfileNotices": None,
             "RegisterCollectionManager": None,
+
             "RegisterFeatures": None,
             "RegisterScreenOptimizedLogin": None,
             "RegisterScreenLogin": None,

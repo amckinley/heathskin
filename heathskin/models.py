@@ -130,5 +130,5 @@ class GameHistory(db.Model):
     player1 = db.Column(db.String(255))
     player2 = db.Column(db.String(255))
 
-    start_time = db.Column(db.DateTime)
-    end_time = db.Column(db.DateTime)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)

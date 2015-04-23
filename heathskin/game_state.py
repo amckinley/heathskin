@@ -25,7 +25,7 @@ class GameState(object):
         self.logger = logging.getLogger()
         self.players = {}
 
-        self.history = GameHistory()
+        self.history = None
         self.replay_from_log = replay_from_log
 
         self.start_new_game()
@@ -36,9 +36,9 @@ class GameState(object):
         """ Create Game History after game Ends
         """
         self.history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
-        ####
-        self.history.end_time = datetime.isoformat(datetime.now())
-        ####
+
+        self.history.end_time = datetime.now()
+
         if current_user:
             self.history.user_id = current_user.get_id()
         else:
@@ -143,7 +143,7 @@ class GameState(object):
             return
 
         self.history = GameHistory()
-        self.history.start_time = datetime.isoformat(datetime.now())
+        self.history.start_time = datetime.now()
 
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None
