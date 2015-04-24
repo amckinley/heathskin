@@ -214,14 +214,25 @@ def upload_line():
     GameUniverse.lock_universe()
     # this is where we actually update the game with the incoming log line
     universe = GameUniverse.get_universe()
-    universe.feed_line(
-        user_id=current_user.get_id(),
-        session_start=session['session_start_time'],
-        log_line=request.get_json()["log_line"])
+
+    results = request.get_json()
+    if "log_line" in results:
+        log_lines = [results['log_line']]
+    elif "log_lines" in results:
+        log_lines = results["log_lines"]
+    else:
+        logger.error("tried to upload without the right json")
+        abort(400)
+
+    for l in log_lines:
+        universe.feed_line(
+            user_id=current_user.get_id(),
+            session_start=session['session_start_time'],
+            log_line=l)
 
     GameUniverse.unlock_universe()
 
-    logger.debug("got a log line from user %s", current_user.get_id())
+    logger.debug("got %d log lines from user %s", len(log_lines), current_user.get_id())
     return ''
 
 
