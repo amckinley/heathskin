@@ -208,6 +208,7 @@ def universe_dump():
 @auth_token_required
 def upload_line():
     if 'session_start_time' not in session:
+        logger.error("user tried to upload line without session")
         abort(400)
 
     GameUniverse.lock_universe()

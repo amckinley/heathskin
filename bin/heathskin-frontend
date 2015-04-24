@@ -25,13 +25,6 @@ def main(args):
 
     logging.basicConfig(level=level, format=log_fmt)
 
-    # set flask log level
-    app_logger = app.logger
-    app_logger.setLevel(level)
-
-    # initial logger
-    logger = logging.getLogger()
-
     # port configuration
     port = 3000
     if args.port_offset:
@@ -54,6 +47,9 @@ def main(args):
     # SHUT THE FUCK UP
     werkzeug_log = logging.getLogger('werkzeug')
     werkzeug_log.setLevel(logging.ERROR)
+
+    # initial logger
+    logger = logging.getLogger()
 
     try:
         logger.info("Starting server on %s:%s...", bind_addr, port)
