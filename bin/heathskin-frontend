@@ -77,14 +77,6 @@ def main(args):
             logger.info("Profiler complete")
             return 0
 
-    # except:
-    #     if args.debug:
-    #         logger.exception("lol crashing")
-    #     else:
-    #         logger.error(
-    #             "heathskin-server encountered an unexpected error; exiting")
-    #     return -1
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Frontend some skinz')
     parser.add_argument('--port-offset')

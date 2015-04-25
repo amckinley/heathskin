@@ -98,7 +98,7 @@ def main():
     # ryan_user = User.query.filter_by(id=4).first()
 
     # print ("User: " + me_user.email)
-    create_deck(andrew_user , "data/decks/cwarrior.deck", card_db)
+    create_deck(andrew_user, "data/decks/cwarrior.deck", card_db)
     create_deck(andrew_user, "data/decks/handlock.deck", card_db)
     create_deck(austin_user, "data/decks/peter_drood.deck", card_db)
     create_deck(andrew_user, "data/decks/yolo_face.deck", card_db)

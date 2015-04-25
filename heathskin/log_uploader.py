@@ -9,32 +9,33 @@ class LogUploader(object):
         self.log_server = log_server
         self.username = username
         self.password = password
-        self.log_url = "http://{}/upload_line".format(self.log_server)
+        self.log_url = "http://{}/upload_lines".format(self.log_server)
         self.login_url = "http://{}/login".format(self.log_server)
         self.start_session_url = "http://{}/start_session".format(
             self.log_server)
         self.started = False
-        self._line_count = 0
+        self._uploaded_count = 0
+        self._skipped_count = 0
 
     def start(self):
         self._create_authenticated_session()
         self.started = True
 
-    def upload_line(self, line):
+    def upload_lines(self, lines):
         if not self.started:
             raise UploaderException("Must start uploader first")
 
-        if not self._check_line(line):
-            return
+        clean_lines = [l for l in lines if self._check_line(l)]
 
         res = self.session.post(
             self.log_url,
             headers={'Authentication-Token': self.authentication_token},
-            json={"log_line": line})
+            json={"log_lines": clean_lines})
 
         res.raise_for_status()
 
-        self._line_count += 1
+        self._uploaded_count += len(clean_lines)
+        self._skipped_count += len(lines) - len(clean_lines)
 
     def _check_line(self, line):
         # discard the Unity log source lines
@@ -48,8 +49,12 @@ class LogUploader(object):
         return True
 
     @property
-    def line_count(self):
-        return self._line_count
+    def uploaded_count(self):
+        return self._uploaded_count
+
+    @property
+    def skipped_count(self):
+        return self._skipped_count
 
     def _create_authenticated_session(self):
         self.session = requests.Session()

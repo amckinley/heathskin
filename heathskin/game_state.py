@@ -82,9 +82,7 @@ class GameState(object):
         self.game_type = new_game_type
         self.logger.info("New game type detected: %s", self.game_type)
 
-
     def feed_line(self, line):
-
         bob_pattern = "\[Bob\] ---(?P<log_msg>.*)---"
         bob_results = re.match(bob_pattern, line)
 

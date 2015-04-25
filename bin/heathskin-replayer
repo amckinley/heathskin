@@ -138,7 +138,7 @@ if __name__ == "__main__":
     parser.add_argument('--log-debug', action='store_true')
     parser.add_argument('--speed', default=1, type=int)  # 1, 2, 5, etc
     parser.add_argument('--max-wait', default=10, type=int)
-    parser.add_argument('--log-style', default='v2')
+    parser.add_argument('--log-style', default='v2', choices=['v1', 'v2'])
 
     args = parser.parse_args()
 

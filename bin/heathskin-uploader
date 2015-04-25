@@ -4,12 +4,27 @@ import threading
 import Queue
 import argparse
 import logging
+from itertools import islice
+import time
 
 from os.path import expanduser
 from requests.exceptions import ConnectionError
 from heathskin.tail_thread import TailThread
 from heathskin.log_uploader import LogUploader
 from heathskin.exceptions import UploaderException
+
+
+def read_from_queue_until_empty(q, max_read=1000):
+    logger = logging.getLogger()
+    results = []
+    while True:
+        if len(results) >= max_read:
+            logger.warn("fetched more than %d lines; pushing anyway", max_read)
+            return results
+        try:
+            results.append(q.get_nowait())
+        except Queue.Empty:
+            return results
 
 
 def run(args):
@@ -36,7 +51,9 @@ def run(args):
                 logger.info("Progress thread exiting")
                 return
 
-            logger.info("Uploaded a total of %d lines", uploader.line_count)
+            logger.info(
+                "Uploaded a total of %d lines, skipped %d",
+                uploader.uploaded_count, uploader.skipped_count)
 
     def shutdown(t_thread, p_thread):
         stop_event.set()
@@ -56,12 +73,20 @@ def run(args):
         progress_thread.start()
 
         if args.use_replay_log:
+            max_read = 1000
             logger.info("Starting data reply from %s", args.use_replay_log)
-            fake_lines = open(args.use_replay_log)
-            for l in fake_lines.readlines():
-                # some log files are annotated
-                if not l.startswith('#'):
-                    uploader.upload_line(l)
+
+            with open(args.use_replay_log) as f:
+                while True:
+                    lines_chunk = list(islice(f, max_read))
+                    if not lines_chunk:
+                        break
+
+                    uncommented_lines = [
+                        l.rstrip()
+                        for l in lines_chunk
+                        if not l.startswith('#')]
+                    uploader.upload_lines(uncommented_lines)
 
             logger.info("Finished with fake data")
             shutdown(t, progress_thread)
@@ -74,12 +99,13 @@ def run(args):
         t.start()
 
         while True:
-            try:
-                line = output_queue.get_nowait()
-            except Queue.Empty:
+            lines = read_from_queue_until_empty(output_queue)
+            if not lines:
+                time.sleep(0.1)
                 continue
 
-            uploader.upload_line(line)
+            logger.debug("fetched lines %d; pushing", len(lines))
+            uploader.upload_lines(lines)
 
     except KeyboardInterrupt:
         logger.error("Got SIGINT, shutting down")
@@ -105,11 +131,11 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Track some skins')
-    parser.add_argument('--use_replay_log', default=False)
+    parser.add_argument('--use-replay-log', default=False)
     default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
-    parser.add_argument('--log_file_path', default=default_log_location)
+    parser.add_argument('--log-file-path', default=default_log_location)
     parser.add_argument('--debug', default=False, action='store_true')
-    parser.add_argument('--log_server', default='127.0.0.1:3000')
+    parser.add_argument('--log-server', default='127.0.0.1:3000')
     parser.add_argument('--username', required=True)
     parser.add_argument('--password', required=True)
 

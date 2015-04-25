@@ -204,9 +204,9 @@ def universe_dump():
     return str(universe.get_session_dump())
 
 
-@app.route('/upload_line', methods=['POST'])
+@app.route('/upload_lines', methods=['POST'])
 @auth_token_required
-def upload_line():
+def upload_lines():
     if 'session_start_time' not in session:
         logger.error("user tried to upload line without session")
         abort(400)
@@ -216,9 +216,7 @@ def upload_line():
     universe = GameUniverse.get_universe()
 
     results = request.get_json()
-    if "log_line" in results:
-        log_lines = [results['log_line']]
-    elif "log_lines" in results:
+    if "log_lines" in results:
         log_lines = results["log_lines"]
     else:
         logger.error("tried to upload without the right json")
@@ -232,7 +230,9 @@ def upload_line():
 
     GameUniverse.unlock_universe()
 
-    logger.debug("got %d log lines from user %s", len(log_lines), current_user.get_id())
+    logger.debug(
+        "got %d log lines from user %s",
+        len(log_lines), current_user.get_id())
     return ''
 
 
