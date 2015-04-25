@@ -160,7 +160,6 @@ class GameState(object):
                     'failed to get entity by name : ' + ent_id)
 
         result = self.entities.get(result_id, default)
-        # self.logger.info("got a request for '%s', returning '%s'", ent_id, result)
         return result
 
     def get_entities_by_zone(self, zone):

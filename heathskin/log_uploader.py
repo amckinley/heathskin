@@ -63,7 +63,11 @@ class LogUploader(object):
         res = self.session.post(
             self.login_url,
             json={"email": self.username, "password": self.password})
-        json_res = res.json()
+
+        try:
+            json_res = res.json()
+        except ValueError:
+            raise UploaderException("No JSON in response: {}".format(res.text))
 
         # first check the http status
         res.raise_for_status()
