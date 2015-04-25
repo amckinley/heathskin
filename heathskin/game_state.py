@@ -23,19 +23,17 @@ class GameState(object):
 
     def __init__(self, replay_from_log=False):
         self.logger = logging.getLogger()
-        self.players = {}
-
         self.replay_from_log = replay_from_log
 
-        self.start_new_game()
+        self.players = {}
 
+        self.start_new_game()
         self.game_type = None
 
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
         history = GameHistory()
-        history.start_time = datetime.now()
         history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
 
         history.end_time = datetime.now()
@@ -49,15 +47,15 @@ class GameState(object):
         history.enemy_health, history.hero_health = self._get_player_healths()
         history.turns = kwargs.get('turns')
         history.first = not self._is_player_first()
+        history.start_time = self.start_time
         for player in self.players.values():
             if player.get('first'):
                 history.player1 = player.get('username')
             else:
                 history.player2 = player.get('username')
 
-        if not self.replay_from_log:
-            db.session.add(history)
-            db.session.commit()
+        db.session.add(history)
+        db.session.commit()
 
     def _get_entity_id_of_first_player(self):
         for player in self.players.values():
@@ -147,9 +145,7 @@ class GameState(object):
         self.entities = {}
         self.parser = LogParser(self)
         self.players = {}
-
-        if self.replay_from_log:
-            return
+        self.start_time = datetime.now()
 
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None
