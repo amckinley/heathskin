@@ -36,6 +36,7 @@ class LogParser(object):
             "ZoneMgr.CreateLocalChangeList()": None,
             "ZoneMgr.ProcessLocalChangeList()": None,
             "FatalErrorScene.Awake()": None,
+            "PowerSpellController2.InitPowerSpell()": None,
 
             "Card.ActivateActorSpells_PlayToHand()": None,
             "Card.OnSpellFinished_PlayToHand_SummonIn()": None,
@@ -46,6 +47,9 @@ class LogParser(object):
             "PowerSpellController1.InitPowerSounds()": None,
             "Entity.AddAttachment()": None,
             "RewardUtils.GetViewableRewards()": None,
+
+            "BnetFriendMgr.OnBnetError()": None,
+            "BnetWhisperMgr.OnBnetError()": None,
 
             "BobLog": self.match_bob_line
 
@@ -64,10 +68,8 @@ class LogParser(object):
                 "got unknown log_source {}".format(log_source))
 
         parser = self.parser_fns[log_source]
-        if parser:
+        if parser is not None:
             parser(log_msg)
-        else:
-            self.logger.debug("no parser for line %s", log_msg)
 
     def match_bob_line(self, line):
         screen_to_game_type = {
@@ -75,6 +77,8 @@ class LogParser(object):
             "RegisterScreenForge": "arena",
             "RegisterScreenPractice": "practice",
             "RegisterScreenFriendly": "friendly",
+            "RegisterFeatures": None,
+            "RegisterScreenOptimizedLogin": None,
             "RegisterScreenEndOfGame": None,
             "RegisterScreenBox": None,
             "RegisterFriendChallenge": None,
@@ -327,6 +331,13 @@ class LogParser(object):
             # raise PreventableException("failed to handle tag change for msg: '{}'".format(msg))
 
         target_ent.update_tag(**results)
+        if results.get('tag_name') == 'DAMAGE':
+            self.logger.debug(
+                "DAMAGE tag change entity: %s, player 1 health: %s, player 2 health: %s",
+                target_ent,
+                self.game_state._get_player_healths()[0],
+                self.game_state._get_player_healths()[1]
+                )
 
     def _setup_players_from_entity_name(self, results):
         """ The player's username that appears first is player1 (first to act)

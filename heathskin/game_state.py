@@ -45,8 +45,7 @@ class GameState(object):
             self.history.user_id = 0
         self.history.hero = kwargs.get('hero')
         self.history.opponent = kwargs.get('opponent')
-        self.history.enemy_health = 30
-        self.history.hero_health = 30
+        self.history.enemy_health, self.history.hero_health = self._get_player_healths()
         self.history.turns = kwargs.get('turns')
         self.history.first = not self._is_player_first()
         for player in self.players.values():
@@ -87,6 +86,13 @@ class GameState(object):
     def _is_player_first(self):
         return self.entities.get('36').get_tag('ZONE') == 'OPPOSING PLAY (Hero)'
 
+    def _get_player_healths(self):
+        player1_hero, player2_hero = self._get_heroes_from_entities()
+        player1_health = (30 - player1_hero.get_tag('DAMAGE', 0))
+        player2_health = (30 - player2_hero.get_tag('DAMAGE', 0))
+
+        return player1_health, player2_health
+
     def set_game_type(self, new_game_type):
         self.game_type = new_game_type
         self.logger.info("New game type detected: %s", self.game_type)
@@ -111,11 +117,14 @@ class GameState(object):
         if self.is_gameover() and not self.replay_from_log:
             card_db = card_database.CardDatabase.get_database()
             our_hero, enemy_hero = self._get_heroes_from_entities()
+            our_health, enemy_health = self._get_player_healths()
 
             self._create_history(**{
                 'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
                 'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
                 'turns': self.entities.get('1').get_tag('TURN'),
+                'hero_heath': our_health,
+                'enemy_health': enemy_health
             })
             self.logger.info("Detected gameover")
             self.start_new_game()

@@ -57,8 +57,8 @@ class Entity(object):
             self.__repr__(), new_event.__str__())
         self.tags[tag_name] = self._cast_tag(tag_value)
 
-    def get_tag(self, tag_name):
-        return self.tags.get(tag_name, None)
+    def get_tag(self, tag_name, default=None):
+        return self.tags.get(tag_name, default)
 
     def get_source_zone(self):
         for event in self.tag_history:
