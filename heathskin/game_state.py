@@ -4,8 +4,8 @@ from collections import defaultdict
 from datetime import datetime
 
 
-
 from flask.ext.login import current_user
+
 
 from heathskin.frontend import db
 from heathskin.exceptions import PreventableException
@@ -25,7 +25,6 @@ class GameState(object):
         self.logger = logging.getLogger()
         self.players = {}
 
-        self.history = None
         self.replay_from_log = replay_from_log
 
         self.start_new_game()
@@ -35,31 +34,35 @@ class GameState(object):
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
-        self.history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
+        history = GameHistory()
+        history.start_time = datetime.now()
+        history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
 
-        self.history.end_time = datetime.now()
+        history.end_time = datetime.now()
 
         if current_user:
-            self.history.user_id = current_user.get_id()
+            history.user_id = current_user.get_id()
         else:
-            self.history.user_id = 0
-        self.history.hero = kwargs.get('hero')
-        self.history.opponent = kwargs.get('opponent')
-        self.history.enemy_health, self.history.hero_health = self._get_player_healths()
-        self.history.turns = kwargs.get('turns')
-        self.history.first = not self._is_player_first()
+            history.user_id = 0
+        history.hero = kwargs.get('hero')
+        history.opponent = kwargs.get('opponent')
+        history.enemy_health, history.hero_health = self._get_player_healths()
+        history.turns = kwargs.get('turns')
+        history.first = not self._is_player_first()
         for player in self.players.values():
-          if player.get('first'):
-            self.history.player1 = player.get('username')
-          else:
-            self.history.player2 = player.get('username')
-        db.session.add(self.history)
-        db.session.commit()
+            if player.get('first'):
+                history.player1 = player.get('username')
+            else:
+                history.player2 = player.get('username')
+
+        if not self.replay_from_log:
+            db.session.add(history)
+            db.session.commit()
 
     def _get_entity_id_of_first_player(self):
         for player in self.players.values():
-          if player.get('first'):
-            return player.get('entity_id')
+            if player.get('first'):
+                return player.get('entity_id')
 
     def _get_first_player_entity(self):
         return self.entities.get(self._get_entity_id_of_first_player())
@@ -70,8 +73,8 @@ class GameState(object):
 
     def _get_entity_id_of_second_player(self):
         for player in self.players.values():
-          if not player.get('first'):
-            return player.get('entity_id')
+            if not player.get('first'):
+                return player.get('entity_id')
 
     def _get_second_hero_entity(self):
         second_player = self.entities.get(self._get_entity_id_of_second_player())
@@ -117,14 +120,11 @@ class GameState(object):
         if self.is_gameover() and not self.replay_from_log:
             card_db = card_database.CardDatabase.get_database()
             our_hero, enemy_hero = self._get_heroes_from_entities()
-            our_health, enemy_health = self._get_player_healths()
 
             self._create_history(**{
                 'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
                 'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
                 'turns': self.entities.get('1').get_tag('TURN'),
-                'hero_heath': our_health,
-                'enemy_health': enemy_health
             })
             self.logger.info("Detected gameover")
             self.start_new_game()
@@ -150,9 +150,6 @@ class GameState(object):
 
         if self.replay_from_log:
             return
-
-        self.history = GameHistory()
-        self.history.start_time = datetime.now()
 
     def get_entity_by_name(self, ent_id, default=None):
         result_id = None

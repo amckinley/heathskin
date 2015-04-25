@@ -99,7 +99,7 @@ def main(args):
 
 def replayer(args):
     logger = logging.getLogger()
-    gs = GameState()
+    gs = GameState(replay_from_log=True)
     f = open(args.LOG_FILE, "r")
 
     tk = None
