@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
 import argparse
+
+# XXX: stupid hack to make piping of utf-8 stdout work correctly.
+# this might break everything: http://stackoverflow.com/a/17628350
 import sys
+reload(sys)
+sys.setdefaultencoding('UTF8')
 
 import logging
 from logging import StreamHandler, Formatter
