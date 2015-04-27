@@ -15,11 +15,6 @@ from log_parser import LogParser
 
 
 class GameState(object):
-    @classmethod
-    def build_from_entities(cls, entities):
-        gs = GameState()
-        gs.entities = entities
-        return gs
 
     def __init__(self, friendy_player_name, replay_from_log=False):
         self.logger = logging.getLogger()
@@ -160,6 +155,7 @@ class GameState(object):
             self._create_history()
             self.logger.info("Detected gameover")
             self.start_new_game()
+            self.logger.info("Detected gameover")
 
     def convert_log_zone(self, log_zone):
         if not log_zone:

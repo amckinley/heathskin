@@ -34,7 +34,7 @@ def deck_list(filter_string):
             current_user.get_id())
 
     # XXX hard coding deck number 1
-    d = Deck.query.filter_by(id=3).first()
+    d = Deck.query.filter_by(id=current_user.get_id()).first()
 
     to_return = "deck: " + d.name + " " + d.user.email
     played_cards = game_state.get_played_cards(player="FRIENDLY")
@@ -77,13 +77,18 @@ def entity_dump():
         return "no game state found for user {}".format(current_user.get_id())
     return str(set([e.card_id for e in game_state.entities.values()]))
 
-
 @app.route('/')
-@login_required
 def index():
-    decknames = [d.name for d in current_user.decks]
-    print decknames
-    return render_template('index.html', decknames=decknames)
+
+    return render_template('temphome.html')
+
+
+# @app.route('/')
+# @login_required
+# def index():
+#     decknames = [d.name for d in current_user.decks]
+#     print decknames
+#     return render_template('index.html', decknames=decknames)
 
 
 @app.route('/uploadform')

@@ -73,7 +73,8 @@ def make_default_users():
         email="p@p.com",
         password="password",
         active=True,
-        confirmed_at=datetime.now())
+        confirmed_at=datetime.now(),
+        battletag="p-meister")
     ryan = User(
         email="ryan.higdon@gmail.com",
         password="wang",

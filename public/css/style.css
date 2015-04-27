@@ -1,3 +1,27 @@
+#temphome-h1 {
+    padding-left: 10px;
+}
+
+#temphome-h2 {
+    padding-left: 10px;
+}
+
+#temphome-subh1 {
+    padding-left: 5px;
+}
+
+.temphome-links {
+    list-style-type: lower-greek;
+    font-size: 20px;
+    padding-top: 20px;
+    padding-left: 30px;
+}
+
+#temphome-foot-link {
+    padding-top: 30px;
+    padding-left: 5px;
+}
+
 .hand-list {
     list-style-type: none;
     padding: 0px;
