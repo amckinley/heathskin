@@ -139,3 +139,9 @@ class GameHistory(db.Model):
 
     start_time = db.Column(db.DateTime, nullable=False)
     end_time = db.Column(db.DateTime, nullable=False)
+
+
+class HeroGreetings(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hero = db.Column(db.String(255), nullable=False)
+    greeting = db.Column(db.String(255), nullable=False)

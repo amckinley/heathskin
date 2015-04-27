@@ -3,30 +3,64 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="icon"
+      type="image/png"
+      href="ui_images/space_jam/favico.jpeg">
     <title>Heathskin</title>
+    <style>
+        ul {
+            list-style-image: url('sqpurple.gif');
+        }
+    </style>
 </head>
-<body>
-    <h1 id="temphome-h1">Heh, Greetings {{ current_user.battletag }}!</h1>
+<body bgcolor="#000000" background="ui_images/bg_stars.gif" text="#ff0000" link="#ff4c4c" vlink="#ff4c4c" alink="#ff4c4c">
+    <h1 id="temphome-h1">{{ greeting.greeting.format(current_user.battletag) }}</h1>
     <h2 id="temphome-h2">Welcome to Heathskin</h2>
     <p id="temphome-subh1">A web application capable of providing useful game-tracking<br>in real-time, and statisticaly, over many games.</p>
     <nav class="temphome-links">
-        <li><a href="/register">register</a></li>
-        <li><a href="/login">login</a></li>
-        <li><a href="/entity_dump">entity_dump</a></li>
-        <li><a href="/universe_dump">universe_dump</a></li>
-        <li><a href="/upload_lines">upload_lines</a></li>
-        <li><a href="/history">history</a></li>
-        <li><a href="/deck_list">deck_list</a></li>
-        <li><a href="/current_hand">current_hand</a></li>
-        <li><a href="/get_named_cards">get_named_cards</a></li>
-        <li><a href="/upload_form">upload_form</a></li>
-        <li><a href="/deck_maker">deck_maker</a></li>
-        <li><a href="/start_session">start_session</a></li>
-        <li><a href="/api/help">api/help</a></li>
+        <li><a href="/register">
+                <img src="ui_images/space_jam/p-bball.gif">register
+        </a></li>
+        <li><a href="/login">
+                <img src="ui_images/space_jam/p-behind.gif">login
+        </a></li>
+        <li><a href="/entity_dump">
+            <img src="ui_images/space_jam/p-jamcentral.gif">entity_dump
+        </a></li>
+        <li><a href="/universe_dump">
+            <img src="ui_images/space_jam/p-jump.gif">universe_dump
+        </a></li>
+        <li><a href="/upload_lines">
+            <img src="ui_images/space_jam/p-junior.gif">upload_lines
+        </a></li>
+        <li><a href="/history">
+            <img src="ui_images/space_jam/p-lineup.gif">history
+        </a></li>
+        <li><a href="/deck_list">
+            <img src="ui_images/space_jam/p-lunartunes.gif">deck_list
+        </a></li>
+        <li><a href="/current_hand">
+            <img src="ui_images/space_jam/p-pressbox.gif">current_hand
+        </a></li>
+        <li><a href="/get_named_cards">
+            <img src="ui_images/space_jam/p-sitemap.gif">get_named_cards
+        </a></li>
+        <li><a href="/upload_form">
+            <img src="ui_images/space_jam/p-souvenirs.gif">upload_form
+        </a></li>
+        <li><a href="/deck_maker">
+            <img src="ui_images/space_jam/p-studiostore.gif">deck_maker
+        </a></li>
+        <li><a href="/start_session">
+            <img src="ui_images/space_jam/jordan.jpg">start_session
+        </a></li>
+        <li><a href="/api/help">
+            <img src="ui_images/space_jam/cp-barkley.jpg">api/help
+        </a></li>
     </nav>
     <footer id="temphome-foot-link">
         <a href="https://github.com/amckinley/heathskin">https://github.com/amckinley/heathskin</a><br>
-        <p>current_user.get_id() returns: {{ current_user.get_id() }}</p>
+        <p>&copy; 1996 by TeamSkin</p>
     </footer>
 </body>
 </html>

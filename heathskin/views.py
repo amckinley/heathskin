@@ -1,5 +1,6 @@
 import os
 from collections import defaultdict
+from random import randint
 
 from flask import render_template, session, request, \
     jsonify, abort, make_response, redirect
@@ -8,7 +9,7 @@ from flask.ext.login import current_user
 from werkzeug import secure_filename
 
 from heathskin.frontend import app, db
-from heathskin.models import Deck, Card, CardDeckAssociation, GameHistory
+from heathskin.models import Deck, Card, CardDeckAssociation, GameHistory, HeroGreetings
 from heathskin.game_universe import GameUniverse
 from heathskin import card_database, utils, deck
 
@@ -79,8 +80,10 @@ def entity_dump():
 
 @app.route('/')
 def index():
+    greetings = HeroGreetings.query.all()
+    i = randint(0, 8)
 
-    return render_template('temphome.html')
+    return render_template('temphome.html', greeting=greetings[i], )
 
 
 # @app.route('/')
