@@ -27,7 +27,11 @@
                         );
               var cost = card.cost > 0 ? card.cost : "0";
               return (
-                <li className="hand-item">{img}
+                <li className="hand-item">
+                    <span className="banner-container">
+                        <img className="banner-image"
+                            src={card.bannerSrc}></img>
+                    </span>
                     <img src="ui_images/mana.png" className="mana-gem"></img>
                     <span className="banner-text">
                         {cost}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{card.name}

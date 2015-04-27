@@ -20,6 +20,10 @@ app.config['SECURITY_SEND_REGISTER_EMAIL'] = False
 # XXX: hurr durr security is hard
 app.config['WTF_CSRF_ENABLED'] = False
 
+import os
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))   # refers to application_top
+APP_STATIC = os.path.join(APP_ROOT, 'public')
+
 # Create database connection object
 db = SQLAlchemy(app)
 
