@@ -48,13 +48,13 @@ class GameUniverse(object):
         return os.path.join(
             self.session_log_path, user_id, session_start.replace(":", "_"))
 
-    def feed_line(self, user_id, session_start, log_line):
-        session_key = (int(user_id), session_start)
+    def feed_line(self, user, session_start, log_line):
+        session_key = (user.get_id(), session_start)
         if session_key not in self.sessions:
             self.logger.info("Starting new session: %s", session_key)
 
             session_log_path = self.get_session_log_path(
-                user_id, session_start)
+                user.get_id(), session_start)
             session_log_dir = os.path.dirname(session_log_path)
             if not os.path.exists(session_log_dir):
                 os.makedirs(session_log_dir)
@@ -65,7 +65,7 @@ class GameUniverse(object):
             self.sessions[session_key] = {
                 'last_seen_at': datetime.now(),
                 'file_handle': file_handle,
-                'game_state': game_state.GameState(),
+                'game_state': game_state.GameState(user.get_log_name()),
                 'lines_seen': 0
             }
 

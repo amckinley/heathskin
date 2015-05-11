@@ -1,9 +1,11 @@
 import os
 from datetime import datetime
 from collections import defaultdict
+import json
 
 from heathskin.frontend import db
 from heathskin.models import Card, Deck, CardDeckAssociation, User
+from heathskin.models import HeroGreetings
 from heathskin import card_database
 
 
@@ -73,7 +75,8 @@ def make_default_users():
         email="p@p.com",
         password="password",
         active=True,
-        confirmed_at=datetime.now())
+        confirmed_at=datetime.now(),
+        battletag="p-meister")
     ryan = User(
         email="ryan.higdon@gmail.com",
         password="wang",
@@ -85,6 +88,14 @@ def make_default_users():
     db.session.add(andrew)
     db.session.add(peter)
     db.session.add(ryan)
+
+
+def db_init_for_website():
+    with open('data/greetemotes.json') as f:
+        herogreetings = json.load(f)
+        for hero, greeting in herogreetings['HeroGreetings'][0].items():
+            db.session.add(HeroGreetings(hero=hero, greeting=greeting))
+        db.session.commit()
 
 
 def main():
@@ -115,6 +126,8 @@ def main():
     deck_id_to_card_list(4, card_db)
     print "\n\n\n"
     deck_id_to_card_list(5, card_db)
+
+    db_init_for_website()
 
 
 if __name__ == '__main__':

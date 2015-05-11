@@ -197,7 +197,7 @@ class LogParser(object):
 
                 ent = Entity(**results)
                 if ent.entity_id in self.game_state.entities:
-                    raise Exception("fuckup")
+                    raise PreventableException("Entity already exists")
 
                 self.game_state.entities[ent.entity_id] = ent
                 self.ent_in_progress = ent

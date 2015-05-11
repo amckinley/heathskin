@@ -14,9 +14,9 @@ def iso_str_to_datetime(iso_str):
     return iso8601.parse_date(iso_str)
 
 
-def replayer(path):
+def replayer(path, player):
     logger = logging.getLogger()
-    gs = GameState(friendy_player_name="austin", replay_from_log=True)
+    gs = GameState(friendy_player_name=player, replay_from_log=True)
     f = open(path, "r")
 
     for line in f.readlines():

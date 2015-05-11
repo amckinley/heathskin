@@ -1,0 +1,13 @@
+{
+    "HeroGreetings":[
+    {"Anduin Wyrnn": "Greetings {}.",
+    "Malfurion Stormrage": "My Greetings, {}.",
+    "Rexxar": "{}, greetings, traveler.",
+    "Jaina Proudmoore": "Hello {}.",
+    "Uther Lightbringer": "Well met {}!",
+    "Valeera Sanguinar": "The pleasure is mine, {}.",
+    "Thrall": "{}, Greetings, friend.",
+    "Gul'dan": "I greet you, {}.",
+    "Garrosh Hellscream": "Heh, greetings {}."}
+    ]
+}
