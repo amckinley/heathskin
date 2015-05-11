@@ -21,9 +21,10 @@ class GameState(object):
         gs.entities = entities
         return gs
 
-    def __init__(self, replay_from_log=False):
+    def __init__(self, friendy_player_name, replay_from_log=False):
         self.logger = logging.getLogger()
         self.replay_from_log = replay_from_log
+        self.friendy_player_name = friendy_player_name
 
         self.players = {}
 
@@ -57,42 +58,59 @@ class GameState(object):
         db.session.add(history)
         db.session.commit()
 
-    def _get_entity_id_of_first_player(self):
-        for player in self.players.values():
-            if player.get('first'):
-                return player.get('entity_id')
+    def get_friendly_player(self):
+        friend_ent, opposing_ent = self._get_player_entities()
+        return friend_ent
 
-    def _get_first_player_entity(self):
-        return self.entities.get(self._get_entity_id_of_first_player())
+    def get_opposing_player(self):
+        friend_ent, opposing_ent = self._get_player_entities()
+        return opposing_ent
 
-    def _get_first_hero_entity(self):
-        first_player = self._get_first_player_entity()
-        return self.entities.get(str(first_player.get_tag('HERO_ENTITY')))
+    def _get_player_entities(self):
+        if len(self.players) != 2:
+            raise PreventableException("unknown players")
 
-    def _get_entity_id_of_second_player(self):
-        for player in self.players.values():
-            if not player.get('first'):
-                return player.get('entity_id')
+        friend_ent = None
+        opposing_ent = None
+        for k, v in self.players.items():
+            if v['username'] == self.friendy_player_name:
+                friend_ent = self.entities[v['entity_id']]
+            else:
+                opposing_ent = self.entities[v['entity_id']]
 
-    def _get_second_hero_entity(self):
-        second_player = self.entities.get(self._get_entity_id_of_second_player())
-        return self.entities.get(str(second_player.get_tag('HERO_ENTITY')))
+        return friend_ent, opposing_ent
 
-    def _get_heroes_from_entities(self):
-        """ Find both heroes from the entities dictionary
-          The Hero can randomly be in position 4 or 36
-        """
-        return self._get_first_hero_entity(), self._get_second_hero_entity()
+    def get_friendly_hero(self):
+        friend_hero, opposing_hero = self._get_hero_entities()
+        return friend_hero
 
-    def _is_player_first(self):
-        return self.entities.get('36').get_tag('ZONE') == 'OPPOSING PLAY (Hero)'
+    def get_opposing_hero(self):
+        friend_hero, opposing_hero = self._get_hero_entities()
+        return opposing_hero
 
-    def _get_player_healths(self):
-        player1_hero, player2_hero = self._get_heroes_from_entities()
-        player1_health = (30 - player1_hero.get_tag('DAMAGE', 0))
-        player2_health = (30 - player2_hero.get_tag('DAMAGE', 0))
+    def _get_hero_entities(self):
+        friend_ent, opposing_ent = self._get_player_entities()
+        friend_hero = self.entities.get(
+            str(friend_ent.get_tag('HERO_ENTITY')))
+        opposing_hero = self.entities.get(
+            str(opposing_ent.get_tag('HERO_ENTITY')))
 
-        return player1_health, player2_health
+        return friend_hero, opposing_hero
+
+    def get_friendly_health(self):
+        friendly_health, opposing_health = self._get_hero_healths()
+        return friendly_health
+
+    def get_opposing_health(self):
+        friendly_health, opposing_health = self._get_hero_healths()
+        return opposing_health
+
+    def _get_hero_healths(self):
+        friendly_hero, opposing_hero = self._get_hero_entities()
+        friendly_health = (30 - friendly_hero.get_tag('DAMAGE', 0))
+        opposing_health = (30 - opposing_hero.get_tag('DAMAGE', 0))
+
+        return friendly_health, opposing_health
 
     def set_game_type(self, new_game_type):
         self.game_type = new_game_type

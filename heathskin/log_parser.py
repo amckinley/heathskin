@@ -331,18 +331,20 @@ class LogParser(object):
             # raise PreventableException("failed to handle tag change for msg: '{}'".format(msg))
 
         target_ent.update_tag(**results)
-        if results.get('tag_name') == 'DAMAGE':
-            self.logger.debug(
-                "DAMAGE tag change entity: %s, player 1 health: %s, player 2 health: %s",
-                target_ent,
-                self.game_state._get_player_healths()[0],
-                self.game_state._get_player_healths()[1]
-                )
+        # if results.get('tag_name') == 'DAMAGE':
+        #     self.logger.debug(
+        #         "DAMAGE tag change entity: %s, player 1 health: %s, player 2 health: %s",
+        #         target_ent,
+        #         self.game_state._get_player_healths()[0],
+        #         self.game_state._get_player_healths()[1]
+        #         )
 
     def _setup_players_from_entity_name(self, results):
-        """ The player's username that appears first is player1 (first to act)
-         check to see if we have seen a username yet.. if not set it to this first username
-         and otherwise check to see if it is a new username and if so set it to player2
+        """
+        The player's username that appears first is player1 (first to act)
+        check to see if we have seen a username yet.. if not set it to this
+        first username and otherwise check to see if it is a new username
+        and if so set it to player2
         """
         entity_name = results.get('entity_name')
         if len(self.game_state.players) == 0:
@@ -355,6 +357,7 @@ class LogParser(object):
                 self.game_state.players[entity_name] = {
                     'username': entity_name,
                 }
+
     def parse_zone_change_list_process_changes(self, msg):
         if not self.game_started:
             return

@@ -31,6 +31,13 @@ class User(db.Model, UserMixin):
     battletag = db.Column(db.String(255), unique=True)
     battlenet_id = db.Column(db.Integer, unique=True)
 
+    def get_log_name(self):
+        if "#" in self.battletag:
+            tag_name, tag_id = self.battletag.split("#")
+        else:
+            tag_name = self.battletag
+        return tag_name
+
 
 class CardDeckAssociation(db.Model):
     __tablename__ = 'cards_decks'
