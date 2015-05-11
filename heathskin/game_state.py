@@ -33,7 +33,7 @@ class GameState(object):
 
         self.card_db = card_database.CardDatabase.get_database()
 
-    def _create_history(self, *args, **kwargs):
+    def _create_history(self):
         """ Create Game History after game Ends
         """
         history = GameHistory()
@@ -44,11 +44,13 @@ class GameState(object):
             history.user_id = current_user.get_id()
         else:
             history.user_id = 0
-        history.hero = kwargs.get('hero')
-        history.opponent = kwargs.get('opponent')
-        history.enemy_health, history.hero_health = self._get_player_healths()
-        history.turns = kwargs.get('turns')
-        history.first = not self._is_player_first()
+
+        history.hero = self.get_friendly_hero().name
+        history.opponent = self.get_opposing_hero().name
+        history.enemy_health, history.hero_health = self._get_hero_healths()
+        history.turns = self.get_num_turns()
+
+        history.first = not self.get_friendly_player_did_act_first()
         history.start_time = self.start_time
         for player in self.players.values():
             if player.get('first'):
@@ -113,6 +115,13 @@ class GameState(object):
 
         return friendly_health, opposing_health
 
+    def get_friendly_player_did_act_first(self):
+        if len(self.players) != 2:
+            raise PreventableException("huge fuckup")
+
+        friendly = self.get_friendly_player()
+        return friendly.get_tag("FIRST_PLAYER") == 1
+
     def get_friendly_did_win(self):
         play_state = self.get_friendly_player().get_tag('PLAYSTATE')
 
@@ -148,11 +157,7 @@ class GameState(object):
         if self.is_gameover() and not self.replay_from_log:
             our_hero, enemy_hero = self._get_hero_entities()
 
-            self._create_history(**{
-                'hero': self.card_db.get_card_by_id(our_hero.card_id)['name'],
-                'opponent': self.card_db.get_card_by_id(enemy_hero.card_id)['name'],
-                'turns': self.entities.get('1').get_tag('TURN'),
-            })
+            self._create_history()
             self.logger.info("Detected gameover")
             self.start_new_game()
 
@@ -218,3 +223,6 @@ class GameState(object):
         for zone in zones:
             played_cards += self.get_entities_by_zone(player + " " + zone)
         return played_cards
+
+    def get_num_turns(self):
+        return self.entities.get('1').get_tag('TURN')

@@ -26,3 +26,8 @@ class TestLogParser(unittest2.TestCase):
 
         print self.gs.get_friendly_played_cards()
         print friendly_player.tags.items()
+
+        self.assertEqual(self.gs.get_num_turns(), 3)
+
+        self.assertEqual(self.gs.get_friendly_player_did_act_first(), True)
+        self.gs._create_history()
