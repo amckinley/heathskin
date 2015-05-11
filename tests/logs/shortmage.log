@@ -1767,3 +1767,43 @@
 2015-05-11T05:37:21.100689	Unloading 2 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
 2015-05-11T05:37:21.100808	Unloading 329 unused Assets to reduce memory usage. Loaded Objects now: 12030.
 2015-05-11T05:37:21.100907	Total: 52.773552 ms (FindLiveObjects: 0.946092 ms CreateObjectMapping: 1.466976 ms MarkObjects: 45.819324 ms  DeleteObjects: 4.442692 ms)
+2015-05-11T05:57:08.793740	Unloading 1 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
+2015-05-11T05:57:08.793856	Unloading 1153 unused Assets to reduce memory usage. Loaded Objects now: 12230.
+2015-05-11T05:57:08.793938	Total: 45.388241 ms (FindLiveObjects: 0.788924 ms CreateObjectMapping: 2.102697 ms MarkObjects: 35.990452 ms  DeleteObjects: 6.390659 ms)
+2015-05-11T05:57:09.126246	[Bob] ---RegisterScreenCollectionManager---
+2015-05-11T05:57:09.126358	[Bob] NetCache ...USE NetCacheDecks
+2015-05-11T05:57:09.126437	[Bob] NetCache ...USE NetCacheCollection
+2015-05-11T05:57:09.126516	[Bob] NetCache ...USE NetCacheDeckLimit
+2015-05-11T05:57:09.126586	[Bob] NetCache ...USE NetCacheCardValues
+2015-05-11T05:57:09.126659	[Bob] NetCache ...USE NetCacheArcaneDustBalance
+2015-05-11T05:57:09.126729	[Bob] NetCache ...USE NetCacheClientOptions
+2015-05-11T05:57:09.126797	[Bob] NetCache ...SKIP NetCacheCollection
+2015-05-11T05:57:09.126864	[Bob] NetCache ...USE NetCacheFeatures
+2015-05-11T05:57:09.126930	[Bob] NetCache ...USE NetCacheHeroLevels
+2015-05-11T05:57:09.458468	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.458681	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.458782	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.458892	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.459037	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.459117	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.459190	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.459281	[Kyle] ShaderTime.UpdateMaterials() m_materials==null
+2015-05-11T05:57:09.459367	[Kyle] SeedMaterialEffects()
+2015-05-11T05:57:09.787990	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for EX1_169 was already in the cache...
+2015-05-11T05:57:09.788437	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for CS2_008 was already in the cache...
+2015-05-11T05:57:09.788590	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for CS2_005 was already in the cache...
+2015-05-11T05:57:09.788725	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for EX1_161 was already in the cache...
+2015-05-11T05:57:13.120893	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for EX1_277 was already in the cache...
+2015-05-11T05:57:13.121097	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for CS2_027 was already in the cache...
+2015-05-11T05:57:13.121317	[Rachelle] CollectionCardCache.AddCard(): somehow the card def for CS2_025 was already in the cache...
+2015-05-11T05:57:15.508380	[Kyle] BlurEnabled
+2015-05-11T05:57:15.508527	[Kyle] SeedMaterialEffects()
+2015-05-11T05:57:29.606513	[Kyle] BlurEnabled
+2015-05-11T05:57:29.606646	[Ben] Final Transaction Amount = 0
+2015-05-11T05:57:29.837556	[Kyle] BlurEnabled
+2015-05-11T05:57:29.837689	[Kyle] BlurEnabled
+2015-05-11T06:27:29.534653	Error.AddFatal() - message=It's been a while since your last Hearthstone action and your connection was shut down. Relaunch the game when you're ready!
+2015-05-11T06:27:29.660490	Unloading 3 Unused Serialized files (Serialized files now loaded: 28 / Dirty serialized files: 0)
+2015-05-11T06:27:29.660670	Unloading 937 unused Assets to reduce memory usage. Loaded Objects now: 15647.
+2015-05-11T06:27:29.660766	Total: 60.165077 ms (FindLiveObjects: 1.612119 ms CreateObjectMapping: 1.350368 ms MarkObjects: 41.380775 ms  DeleteObjects: 15.734270 ms)
+2015-05-11T06:27:30.091134	[Mike] FatalErrorScene.Awake() - calling DialogManager.Get().Suppress()

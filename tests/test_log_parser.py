@@ -59,3 +59,9 @@ class TestShortMage(unittest2.TestCase):
 
         self.assertEqual(self.gs.get_friendly_player_did_act_first(), True)
         self.gs._create_history()
+
+    def test_played_cards(self):
+        expected_blizz_ids = ["CS2_024", "NEW1_012"]
+        actual_blizz_ids = [e.card_id for e in self.gs.get_friendly_played_cards()]
+
+        self.assertEqual(actual_blizz_ids, expected_blizz_ids)
