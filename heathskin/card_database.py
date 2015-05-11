@@ -125,7 +125,7 @@ class CardDatabase(object):
     def get_card_by_id(self, card_id):
         path = 'card_images/banners/%s_banner.png' % card_id
         if not os.path.exists(path):
-          path = "http://placehold.it/200x40/000000/000000/" 
+          path = "http://placehold.it/200x40/000000/000000/"
         card = self.cards_by_id[card_id]
         card.update({"bannerSrc": path })
         return card
@@ -197,3 +197,6 @@ class CardDatabase(object):
                 valid_names.add(c["name"])
 
         return valid_names
+
+    def get_collectible_card_names(self):
+        return [c['id'] for c in self.all_collectible_cards]

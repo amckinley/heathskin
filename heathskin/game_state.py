@@ -215,10 +215,12 @@ class GameState(object):
 
     def _get_played_cards(self, player):
         played_cards = []
-        zones = ["HAND", "PLAY", "GRAVEYARD", "SECRET"]
+        zones = ["GRAVEYARD", "SECRET"]
         for zone in zones:
             played_cards += self.get_entities_by_zone(player + " " + zone)
-        return played_cards
+        played_cards += self.get_entities_by_zone("PLAY")
+        r = [c for c in played_cards if c.card_id in self.card_db.get_collectible_card_names()]
+        return r
 
     def get_num_turns(self):
         return self.entities.get('1').get_tag('TURN')
