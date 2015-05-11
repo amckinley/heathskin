@@ -31,12 +31,13 @@ class GameState(object):
         self.start_new_game()
         self.game_type = None
 
+        self.card_db = card_database.CardDatabase.get_database()
+
     def _create_history(self, *args, **kwargs):
         """ Create Game History after game Ends
         """
         history = GameHistory()
-        history.won = self._get_first_player_entity().get_tag('PLAYSTATE') == "WON"
-
+        history.won = self.get_friendly_did_win()
         history.end_time = datetime.now()
 
         if current_user:
@@ -112,6 +113,17 @@ class GameState(object):
 
         return friendly_health, opposing_health
 
+    def get_friendly_did_win(self):
+        play_state = self.get_friendly_player().get_tag('PLAYSTATE')
+
+        if play_state == "WON":
+            return True
+        elif play_state == "LOST":
+            return False
+        else:
+            raise PreventableException(
+                "winner isnt known?! '{}'".format(play_state))
+
     def set_game_type(self, new_game_type):
         self.game_type = new_game_type
         self.logger.info("New game type detected: %s", self.game_type)
@@ -134,12 +146,11 @@ class GameState(object):
             self.parser.feed_line(**results.groupdict())
 
         if self.is_gameover() and not self.replay_from_log:
-            card_db = card_database.CardDatabase.get_database()
-            our_hero, enemy_hero = self._get_heroes_from_entities()
+            our_hero, enemy_hero = self._get_hero_entities()
 
             self._create_history(**{
-                'hero': card_db.get_card_by_id(our_hero.card_id)['name'],
-                'opponent': card_db.get_card_by_id(enemy_hero.card_id)['name'],
+                'hero': self.card_db.get_card_by_id(our_hero.card_id)['name'],
+                'opponent': self.card_db.get_card_by_id(enemy_hero.card_id)['name'],
                 'turns': self.entities.get('1').get_tag('TURN'),
             })
             self.logger.info("Detected gameover")
@@ -198,12 +209,12 @@ class GameState(object):
             results[zone] += 1
         return results
 
-    def get_played_cards_friendly(self):
-        return self.get_played_cards("FRIENDLY")
+    def get_friendly_played_cards(self):
+        return self._get_played_cards("FRIENDLY")
 
-    def get_played_cards(self, player):
+    def _get_played_cards(self, player):
         played_cards = []
-        zones = ["HAND", "PLAY", "GRAVEYARD", "SECRET", "DECK"]
+        zones = ["HAND", "PLAY", "GRAVEYARD", "SECRET"]
         for zone in zones:
             played_cards += self.get_entities_by_zone(player + " " + zone)
         return played_cards

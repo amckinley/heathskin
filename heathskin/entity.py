@@ -23,6 +23,8 @@ ACTION_END
 
 import logging
 
+from heathskin import card_database
+
 
 class Entity(object):
     def __init__(self, **kwargs):
@@ -34,6 +36,7 @@ class Entity(object):
         self.tags = {}
         self.entity_id = None
         self.card_id = None
+        self.card_db = card_database.CardDatabase.get_database()
 
         self.tag_history = []
 
@@ -78,12 +81,21 @@ class Entity(object):
         return tag_value
 
     def __repr__(self):
-        try:
-            card_str = "name={}".format(self.name)
-        except AttributeError:
+        if self.card_id:
+            name = self.card_db.get_card_by_id(self.card_id)['name']
+            card_str = "name='{}'".format(name)
+        else:
             card_str = "entity_id={}".format(self.entity_id)
 
         return "[Entity {}]".format(card_str)
+
+
+    @property
+    def name(self):
+        if self.card_id:
+            name = self.card_db.get_card_by_id(self.card_id)['name']
+            return name
+        return None
 
 class EntityChangeEvent(object):
     def __init__(self, tag_name, old_value, new_value):
