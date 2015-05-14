@@ -6,8 +6,10 @@ import argparse
 import logging
 from itertools import islice
 import time
+import json
+import sys
 
-from os.path import expanduser
+from os.path import expanduser, exists
 from requests.exceptions import ConnectionError
 from heathskin.tail_thread import TailThread
 from heathskin.log_uploader import LogUploader
@@ -41,7 +43,24 @@ def run(args):
     logging.getLogger("requests").setLevel(logging.WARNING)
     logger = logging.getLogger()
 
-    uploader = LogUploader(args.log_server, args.username, args.password)
+    # if the config exists, use those values, except where overriden by
+    # arguments passed at the command line
+    if exists(args.config):
+        try:
+            with open(args.config) as f:
+                config = json.load(f)
+                for k, v in config.items():
+                    if getattr(args, k) is None:
+                        setattr(args, k, v)
+        except:
+            logger.error("Failed to parse config file at %s", args.config)
+            sys.exit(1)
+
+    if not args.log_file_path:
+        default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
+        args.log_file_path = default_log_location
+
+    uploader = LogUploader(args.server, args.username, args.password)
 
     stop_event = threading.Event()
 
@@ -98,7 +117,7 @@ def run(args):
         t = TailThread(args.log_file_path, stop_event, output_queue)
         t.start()
 
-        while True:
+        while True and not t.stopped:
             lines = read_from_queue_until_empty(output_queue)
             if not lines:
                 time.sleep(0.1)
@@ -127,18 +146,22 @@ def run(args):
 
 
 def main(args):
-    run(args)
+    sys.exit(run(args))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Track some skins')
+    default_config_location = expanduser("~/.heathskin")
+    parser.add_argument(
+        '-f',
+        '--config',
+        default=default_config_location,
+        help='location of the heathskin uploader config file`')
     parser.add_argument('--use-replay-log', default=False)
-    default_log_location = expanduser("~/Library/Logs/Unity/Player.log")
-    parser.add_argument('--log-file-path', default=default_log_location)
+    parser.add_argument('--log-file-path')
     parser.add_argument('--debug', default=False, action='store_true')
-    parser.add_argument('--log-server', default='127.0.0.1:3000')
-    parser.add_argument('--username', required=True)
-    parser.add_argument('--password', required=True)
+    parser.add_argument('--server')
+    parser.add_argument('--username')
+    parser.add_argument('--password')
 
     args = parser.parse_args()
-
     main(args)

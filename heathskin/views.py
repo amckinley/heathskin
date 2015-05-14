@@ -232,7 +232,7 @@ def upload_lines():
 
     for l in log_lines:
         universe.feed_line(
-            user_id=current_user.get_id(),
+            user=current_user,
             session_start=session['session_start_time'],
             log_line=l)
 

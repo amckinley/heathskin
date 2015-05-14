@@ -2,8 +2,6 @@ import copy
 from collections import defaultdict
 import operator
 
-from datetime import datetime
-
 from flask.ext.security import UserMixin, RoleMixin
 from heathskin.frontend import db
 
@@ -99,26 +97,6 @@ class Deck(db.Model):
         return count_dict
 
 
-    def get_remaining_cards(self, deck, game_state):
-        friendly_entities = game_state.get_played_cards_friendly()
-        unplayed_cards = deck.blizz_ids
-
-        for entity in friendly_entities:
-            if len(entity.card_id) == 0:
-                break
-            # XXX TODO doesn't work yet, still need to get the first zone set properly. filter to only cards played from deck
-            if entity.get_source_zone():
-                pass
-            for b in deck.blizz_ids:
-                card = card_db.get_card_by_id(b)
-                if entity.card_id == card['id']:
-                    unplayed_cards.remove(b)
-            for b in unplayed_cards:
-                card = card_db.get_card_by_id(b)
-
-        return unplayed_cards
-
-
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     blizz_id = db.Column(db.String(32), unique=True, nullable=False)
@@ -131,8 +109,12 @@ class GameHistory(db.Model):
     first = db.Column(db.Boolean())
     hero = db.Column(db.String(255), nullable=False)
     opponent = db.Column(db.String(255), nullable=False)
+
     hero_health = db.Column(db.Integer)
     enemy_health = db.Column(db.Integer)
+    hero_armor = db.Column(db.Integer)
+    enemy_armor = db.Column(db.Integer)
+
     turns = db.Column(db.Integer)
     player1 = db.Column(db.String(255))
     player2 = db.Column(db.String(255))

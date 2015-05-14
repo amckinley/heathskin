@@ -42,7 +42,8 @@ class GameState(object):
 
         history.hero = self.get_friendly_hero().name
         history.opponent = self.get_opposing_hero().name
-        history.enemy_health, history.hero_health = self._get_hero_healths()
+        history.hero_health, history.enemy_health = self._get_hero_healths()
+        history.hero_armor, history.enemy_armor = self._get_hero_armors()
         history.turns = self.get_num_turns()
 
         history.first = not self.get_friendly_player_did_act_first()
@@ -109,6 +110,20 @@ class GameState(object):
         opposing_health = (30 - opposing_hero.get_tag('DAMAGE', 0))
 
         return friendly_health, opposing_health
+
+    def get_friendly_armor(self):
+        friendly_armor, opposing_armor = self._get_hero_armors()
+        return friendly_armor
+
+    def get_opposing_armor(self):
+        friendly_armor, opposing_armor = self._get_hero_armors()
+        return opposing_armor
+
+    def _get_hero_armors(self):
+        friendly_hero, opposing_hero = self._get_hero_entities()
+        friendly_armor = friendly_hero.get_tag('ARMOR', 0)
+        opposing_armor = opposing_hero.get_tag('ARMOR', 0)
+        return friendly_armor, opposing_armor
 
     def get_friendly_player_did_act_first(self):
         if len(self.players) != 2:
