@@ -1,0 +1,25 @@
+﻿<Window x:Class="wpf_test.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Greetings" Height="350" Width="529.8">
+    <Grid HorizontalAlignment="Left" Margin="10,10,0,6.4" Width="505" RenderTransformOrigin="0.234,0.386">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="14*"/>
+            <ColumnDefinition Width="239*"/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="Username" HorizontalAlignment="Left" Height="23" Margin="47,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="420" Grid.Column="1" Text="bearontheroof@gmail.com"/>
+        <Label Content="Username" HorizontalAlignment="Left" Margin="10,180,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="26" Width="64"/>
+        <Label Content="Password" HorizontalAlignment="Left" Margin="10,211,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.531,0.602" Grid.ColumnSpan="2" Height="26" Width="59"/>
+        <Button x:Name="ConnectLogger" Content="Connect" HorizontalAlignment="Left" Margin="342,274,0,0" VerticalAlignment="Top" Width="101" Grid.Column="1" Height="22" Click="ConnectLogger_Click"/>
+        <TextBox x:Name="LogFilePath" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="47,242,0,0" TextWrapping="Wrap" Text="C:\Program Files (x86)\Hearthstone\Hearthstone_Data\output_log.txt" VerticalAlignment="Top" Width="420"/>
+        <Label Content="Log File" HorizontalAlignment="Left" Margin="10,240,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <PasswordBox x:Name="Password" Grid.Column="1" HorizontalAlignment="Left" Margin="47,218,0,0" VerticalAlignment="Top" Width="420" Password="wangwang"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="148" Margin="10,0,0,0" VerticalAlignment="Top" Width="486" Grid.ColumnSpan="2">
+            <TextBlock x:Name="LogSnippet" TextWrapping="Wrap" Margin="-0.8,-0.8,-0.4,1.4" Text="balls"/>
+        </Border>
+        <Button x:Name="DisconnectLogger" Content="Disconnect" Grid.Column="1" HorizontalAlignment="Left" Margin="240,274,0,0" VerticalAlignment="Top" Width="75" Click="DisconnectLogger_Click" Visibility="Hidden"/>
+        <StatusBar x:Name="UploaderStatusBar" HorizontalAlignment="Left" Height="23" Margin="10,157,0,0" VerticalAlignment="Top" Width="485" Grid.ColumnSpan="2">
+            <TextBlock x:Name="UploaderStatusBox" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Width="327"/>
+        </StatusBar>
+    </Grid>
+</Window>

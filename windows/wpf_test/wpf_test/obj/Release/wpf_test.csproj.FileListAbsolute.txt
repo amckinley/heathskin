@@ -1,0 +1,12 @@
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Release\wpf_test.exe.config
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Release\wpf_test.exe
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Release\wpf_test.pdb
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\BallerStatus.baml
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\BallerStatus.g.cs
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\App.g.cs
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test_MarkupCompile.cache
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test.g.resources
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test.Properties.Resources.resources
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test.csproj.GenerateResource.Cache
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test.exe
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Release\wpf_test.pdb

@@ -1,0 +1,13 @@
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Debug\wpf_test.exe.config
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Debug\wpf_test.exe
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\bin\Debug\wpf_test.pdb
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.csprojResolveAssemblyReference.cache
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\App.g.cs
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test_MarkupCompile.cache
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.g.resources
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.Properties.Resources.resources
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.csproj.GenerateResource.Cache
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.exe
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\wpf_test.pdb
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\HeathskinUploader.baml
+c:\users\austin\documents\visual studio 2013\Projects\wpf_test\wpf_test\obj\Debug\HeathskinUploader.g.cs
