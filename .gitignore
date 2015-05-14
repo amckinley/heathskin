@@ -57,3 +57,9 @@ game_log.txt
 
 *.swp
 session_logs/
+
+# windows nonsense
+*.exe
+*.baml
+*.cache
+*.baml
