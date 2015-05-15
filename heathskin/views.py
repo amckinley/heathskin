@@ -19,21 +19,10 @@ logger = app.logger
 
 @app.route('/')
 def index():
-    dev_urls = {
-        "deck_list": "Our Deck Lists",
-        "upload_form": "Upload A New Deck",
-        "current_hand": "Your Current Hand",
-        "get_named_cards": "I Don't Know What This Does",
-        "deck_maker": "The Deck Builder",
-        "universe_dump": "Universe Dump",
-        "api/help": "All Available URLs",
-        "history": "Your Record"
-        }
-
     greetings = HeroGreetings.query.all()
     i = randint(0, 8)
 
-    return render_template('dev_links.html', urls=dev_urls, greeting=greetings[i], )
+    return render_template('dev_links.html', greeting=greetings[i], )
 
 
 @app.route('/deck_list')
