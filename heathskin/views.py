@@ -17,6 +17,25 @@ from heathskin import card_database, utils, deck
 logger = app.logger
 
 
+@app.route('/')
+def index():
+    dev_urls = {
+        "deck_list": "Our Deck Lists",
+        "upload_form": "Upload A New Deck",
+        "current_hand": "Your Current Hand",
+        "get_named_cards": "I Don't Know What This Does",
+        "deck_maker": "The Deck Builder",
+        "universe_dump": "Universe Dump",
+        "api/help": "All Available URLs",
+        "history": "Your Record"
+        }
+
+    greetings = HeroGreetings.query.all()
+    i = randint(0, 8)
+
+    return render_template('dev_links.html', urls=dev_urls, greeting=greetings[i], )
+
+
 @app.route('/deck_list')
 def deck_list_unfiltered():
     return deck_list("")
@@ -77,13 +96,6 @@ def entity_dump():
     if not game_state:
         return "no game state found for user {}".format(current_user.get_id())
     return str(set([e.card_id for e in game_state.entities.values()]))
-
-@app.route('/')
-def index():
-    greetings = HeroGreetings.query.all()
-    i = randint(0, 8)
-
-    return render_template('temphome.html', greeting=greetings[i], )
 
 
 # @app.route('/')

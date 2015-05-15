@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Heathskin - Links{% endblock %}
+{% block content %}
+    <script type="text/jsx" src="scripts/dev_links.js"></script>
+    <div class="banner_container"><img src="ui_images/vector_logo.png">
+    </div>
+    <div class="blurb">
+        <span id="body_h1"><br/><strong>{{ greeting.greeting.format(current_user.battletag) }}</strong></span>
+        <p id="body_h1sub"><br/>Welcome to Heathskin, a web application capable of providing useful game-tracking in real-time, and statisticaly, over many games.</p>
+        <p id="body_github_link">For more information, see our <a href="https://github.com/amckinley/heathskin">github.</a></p>
+    </div>
+    <div class="links">
+        <ul>
+            <li id="links-li0"><br/><strong>Universe Dump</strong></li>
+            <li id="links-li1"><br/><strong>Your Current Hand</strong></li>
+            <li id="links-li2"><br/><strong>Your Record</strong></li>
+            <li id="links-li3"><br/><strong>I Don't Know What This Does</strong></li>
+            <li id="links-li4"><br/><strong>All Available URLs</strong></li>
+            <li id="links-li5"><br/><strong>Deck Builder</strong></li>
+            <li id="links-li6"><br/><strong>Our Deck Lists</strong></li>
+            <li id="links-li7"><br/><strong>Upload A Deck</strong></li>
+        </ul>
+    </div>
+{% endblock %}
