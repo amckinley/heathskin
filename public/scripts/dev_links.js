@@ -1,6 +1,5 @@
 $(document).ready(function(){
     $(".links li").each(function(){
-        // $(this).append("<div>hello</div>");
         $(this).mouseenter(function(){
             $(this).fadeTo("fast", 0.9);
             $(this).animate({width: 240}, 150);
@@ -21,6 +20,4 @@ $(document).ready(function(){
             i++;
         }
     });
-    // $("#dev_links").append("<strong>Test</strong>");
-    // });
 });
