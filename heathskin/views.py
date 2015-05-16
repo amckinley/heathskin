@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from random import randint
+from random import randint, choice
 
 from flask import render_template, session, request, \
     jsonify, abort, make_response, redirect
@@ -20,9 +20,8 @@ logger = app.logger
 @app.route('/')
 def index():
     greetings = HeroGreetings.query.all()
-    i = randint(0, 8)
 
-    return render_template('dev_links.html', greeting=greetings[i], )
+    return render_template('dev_links.html', greeting=choice(greetings), )
 
 
 @app.route('/deck_list')
