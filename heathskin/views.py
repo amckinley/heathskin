@@ -1,6 +1,6 @@
 import os
 from collections import defaultdict
-from random import randint
+from random import randint, choice
 
 from flask import render_template, session, request, \
     jsonify, abort, make_response, redirect
@@ -15,6 +15,13 @@ from heathskin import card_database, utils, deck
 
 
 logger = app.logger
+
+
+@app.route('/')
+def index():
+    greetings = HeroGreetings.query.all()
+
+    return render_template('dev_links.html', greeting=choice(greetings), )
 
 
 @app.route('/deck_list')
@@ -77,13 +84,6 @@ def entity_dump():
     if not game_state:
         return "no game state found for user {}".format(current_user.get_id())
     return str(set([e.card_id for e in game_state.entities.values()]))
-
-@app.route('/')
-def index():
-    greetings = HeroGreetings.query.all()
-    i = randint(0, 8)
-
-    return render_template('temphome.html', greeting=greetings[i], )
 
 
 # @app.route('/')

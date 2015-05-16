@@ -1,27 +1,3 @@
-#temphome-h1 {
-    padding-left: 10px;
-}
-
-#temphome-h2 {
-    padding-left: 10px;
-}
-
-#temphome-subh1 {
-    padding-left: 5px;
-}
-
-.temphome-links {
-    list-style-type: none;
-    font-size: 20px;
-    padding-top: 20px;
-    padding-left: 30px;
-}
-
-#temphome-foot-link {
-    padding-top: 30px;
-    padding-left: 5px;
-}
-
 .hand-list {
     list-style-type: none;
     padding: 0px;
@@ -80,4 +56,102 @@
 
 .Rexxar {
   color: green;
+}
+
+body{
+    background-color: #FFFFFF;
+}
+
+ul{
+    list-style-type: none;
+}
+
+.links{
+    margin-top: -252px;
+}
+
+.links li{
+    height: 60px;
+    width: 230px;
+    margin-left: -50px;
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+    border-top-style: none;
+    background-color: #0D1D15;
+    text-align: center;
+    color: #FFFFFF;
+    font-family: Verdana, Arial, Sans-Serif;
+    opacity: 1;
+}
+
+.banner_container{
+    /*padding-left: 200px;*/
+    background-color: #0D1D15;
+    margin-top: -10px;
+    margin-left: -10px;
+    margin-right: -10px;
+    border-color: black;
+    border-width: 2px;
+    border-bottom-style: solid;
+}
+
+.banner_container img{
+    display: block;
+    height: 200px;
+    width: 800px;
+    /*text-align: center;*/
+    margin-right: auto;
+    margin-left: auto;
+    opacity: .9;
+}
+
+.blurb{
+    padding-left: 250px;
+}
+
+#body_h1{
+    color: black;
+    background: white;
+    font-size: 2em;
+}
+
+.blurb p{
+    color: black;
+    background: white;
+    width: 500px;
+    font-size: 1.2em;
+    padding-top: 5px;
+}
+
+.blurb #body_github_link{
+    /*font-size: 5em;*/
+}
+
+#footer{
+    text-align: center
+}
+
+#temphome-h1 {
+    padding-left: 10px;
+}
+
+#temphome-h2 {
+    padding-left: 10px;
+}
+
+#temphome-subh1 {
+    padding-left: 5px;
+}
+
+.temphome-links {
+    list-style-type: none;
+    font-size: 20px;
+    padding-top: 20px;
+    padding-left: 30px;
+}
+
+#temphome-foot-link {
+    padding-top: 30px;
+    padding-left: 5px;
 }
