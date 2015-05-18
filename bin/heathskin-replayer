@@ -99,7 +99,9 @@ def main(args):
 
 def replayer(args):
     logger = logging.getLogger()
-    gs = GameState(replay_from_log=True)
+    # name does not matter when replaying logs
+    gs = GameState("Outis", replay_from_log=True)
+    # gs = GameState(friendly_player_name="", replay_from_log=True)
     f = open(args.LOG_FILE, "r")
 
     tk = None
